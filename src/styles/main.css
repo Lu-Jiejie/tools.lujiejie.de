@@ -7,34 +7,57 @@ body,
 }
 
 :root {
-  --c-bg: #fff;
-  --c-scrollbar: #eee;
+  --c-bg: #fafafa;
+  --c-scrollbar: #d4d4d8;
+  --c-sidebar: #ffffff;
+  --c-border: #e4e4e7;
+  --c-accent: #f97316;
 }
 
 html.dark {
-  --c-bg: #121212;
-  --c-scrollbar: #222;
+  --c-bg: #09090b;
+  --c-scrollbar: #27272a;
+  --c-sidebar: #111113;
+  --c-border: #27272a;
+  --c-accent: #fb923c;
   color-scheme: dark;
 }
 
 html {
   background-color: var(--c-bg);
   overflow-x: hidden;
-  overflow-y: scroll;
-  /* scrollbar-gutter: stable; */
 }
 
 * {
   scrollbar-color: var(--c-scrollbar) transparent;
+  scrollbar-width: thin;
 }
 
-/* Transitions */
+/* Page transitions */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.15s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Slide-in for tool pages */
+.slide-enter-active,
+.slide-leave-active {
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }

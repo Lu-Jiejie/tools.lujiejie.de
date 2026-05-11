@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 
-const params = useRoute('/hi/[name]').params
+const params = useRoute().params
 const router = useRouter()
 </script>
 
@@ -16,7 +16,7 @@ const router = useRouter()
     </p>
 
     <div>
-      <button text-sm btn m-3 mt-8 @click="router.back()">
+      <button btn text-sm m-3 mt-8 @click="router.back()">
         Back
       </button>
     </div>

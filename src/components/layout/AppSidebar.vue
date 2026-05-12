@@ -8,7 +8,7 @@ import { CATEGORY_LABELS } from '~/data/tools'
 defineEmits<{ close: [] }>()
 
 const route = useRoute()
-const { toolsByCategory } = useTools()
+const { toolsByCategory, isFavorite } = useTools()
 
 const collapsed = useLocalStorage<ToolCategory[]>('tools-sidebar-collapsed', [])
 
@@ -32,63 +32,64 @@ function isActive(toolId: string) {
 <template>
   <aside class="border-r border-[var(--c-border)] bg-[var(--c-surface)] flex flex-col h-full">
     <nav class="px-2 py-4 flex-1 overflow-y-auto">
-      <div
-        v-for="group in toolsByCategory"
-        :key="group.category"
-        class="mb-2"
-      >
-        <!-- 分类标题（可折叠） -->
-        <button
-          class="category-btn mb-0.5 px-3 py-1.5 rounded-lg flex w-full select-none transition-colors duration-150 items-center justify-between"
-          @click="toggleCategory(group.category)"
-        >
-          <span class="text-[10px] text-[var(--c-text-faint)] tracking-widest font-semibold uppercase">
-            {{ CATEGORY_LABELS[group.category] }}
-          </span>
-          <div
-            class="i-carbon-chevron-down text-xs text-[var(--c-text-faint)] transition-transform duration-200"
-            :class="{ '-rotate-90': isCollapsed(group.category) }"
-          />
-        </button>
-
-        <!-- 工具列表：用 grid-template-rows 实现流畅高度动画 -->
+      <TransitionGroup name="list" tag="div">
         <div
-          class="category-items"
-          :class="{ collapsed: isCollapsed(group.category) }"
+          v-for="group in toolsByCategory"
+          :key="group.category"
+          class="mb-2"
         >
-          <div class="category-items-inner">
-            <RouterLink
-              v-for="tool in group.tools"
-              :key="tool.id"
-              :to="`/${tool.id}`"
-              class="nav-item text-sm mb-0.5 px-3 py-1.5 rounded-lg flex transition-colors duration-150 items-center"
-              :class="{ 'nav-item-active': isActive(tool.id) }"
-              @click="$emit('close')"
-            >
-              {{ tool.name }}
-            </RouterLink>
+          <!-- 分类标题（可折叠） -->
+          <button
+            class="mb-0.5 px-3 py-1.5 rounded-lg flex w-full select-none items-center justify-between"
+            @click="toggleCategory(group.category)"
+          >
+            <span class="text-[11px] text-[var(--c-text)] tracking-widest font-bold opacity-50 uppercase">
+              {{ CATEGORY_LABELS[group.category] }}
+            </span>
+            <div
+              class="i-carbon-chevron-down text-xs text-[var(--c-text-faint)] transition-transform duration-200"
+              :class="{ '-rotate-90': isCollapsed(group.category) }"
+            />
+          </button>
+
+          <!-- 工具列表：用 grid-template-rows 实现流畅高度动画 -->
+          <div
+            class="category-items"
+            :class="{ collapsed: isCollapsed(group.category) }"
+          >
+            <div class="category-items-inner ml-2 border-l border-[var(--c-border)]">
+              <RouterLink
+                v-for="tool in group.tools"
+                :key="tool.id"
+                :to="`/${tool.id}`"
+                class="nav-item text-sm mb-0.5 ml-2 px-2 py-1.5 rounded-lg flex transition-colors duration-150 items-center justify-between"
+                :class="{ 'nav-item-active': isActive(tool.id) }"
+                @click="$emit('close')"
+              >
+                <span>{{ tool.name }}</span>
+                <div v-if="group.category !== 'favorites' && isFavorite(tool.id)" class="i-carbon-star-filled text-[10px] text-amber-500 ml-1.5 shrink-0" />
+              </RouterLink>
+            </div>
           </div>
         </div>
-      </div>
+      </TransitionGroup>
     </nav>
   </aside>
 </template>
 
 <style scoped>
-.category-btn:hover {
-  background: var(--c-surface-raised);
-}
-
 .nav-item {
-  color: var(--c-text-muted);
+  color: var(--c-text);
+  opacity: 0.85;
 }
 .nav-item:hover {
   background: var(--c-surface-raised);
-  color: var(--c-text);
+  opacity: 1;
 }
 .nav-item-active {
   background: var(--c-accent-soft);
   color: var(--c-accent);
+  opacity: 1;
 }
 .nav-item-active:hover {
   background: var(--c-accent-soft);

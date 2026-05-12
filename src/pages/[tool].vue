@@ -6,7 +6,7 @@ import { CATEGORY_LABELS } from '~/data/tools'
 
 const route = useRoute()
 const router = useRouter()
-const { findTool } = useTools()
+const { findTool, isFavorite, toggleFavorite } = useTools()
 
 const tool = computed(() => findTool(route.params.tool as string))
 
@@ -19,15 +19,19 @@ if (!tool.value) {
   <div v-if="tool" class="mx-auto px-6 py-12 max-w-4xl md:px-12">
     <!-- 工具头部 -->
     <div class="mb-8 flex gap-4 items-start">
-      <div class="rounded-2xl bg-[var(--c-accent-soft)] flex shrink-0 h-12 w-12 items-center justify-center">
-        <div :class="tool.icon" class="text-2xl text-[var(--c-accent)]" />
-      </div>
       <div class="flex flex-col gap-1.5 min-w-0">
-        <div class="flex flex-wrap gap-2 items-center">
+        <div class="flex flex-wrap gap-3 items-center">
           <h1 class="text-xl text-[var(--c-text)] tracking-tight font-bold select-none">
             {{ tool.name }}
           </h1>
-          <span class="category-pill select-none">{{ CATEGORY_LABELS[tool.category] }}</span>
+          <button
+            :class="isFavorite(tool.id) ? 'btn-favorite-active' : 'btn-favorite'"
+            title="收藏"
+            @click="toggleFavorite(tool.id)"
+          >
+            <div :class="isFavorite(tool.id) ? 'i-carbon-star-filled' : 'i-carbon-star'" class="text-xl" />
+          </button>
+          <span class="category-pill ml-1 select-none">{{ CATEGORY_LABELS[tool.category] }}</span>
         </div>
         <p class="text-sm text-[var(--c-text-muted)] leading-relaxed">
           {{ tool.description }}

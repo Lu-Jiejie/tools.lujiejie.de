@@ -19,17 +19,17 @@ const isSearching = computed(() => searchQuery.value.trim().length > 0)
         Tools<span class="text-[var(--c-accent)]">.</span>
       </h1>
       <p class="text-base text-[var(--c-text-muted)] leading-relaxed">
-        持续增长的小工具集合，为日常开发提效。
+        Tools I need.
       </p>
     </div>
 
     <!-- 搜索框 -->
-    <div class="search-box mb-10 px-3.5 py-2 border border-[var(--c-border)] rounded-xl bg-[var(--c-surface)] flex gap-2.5 transition-colors duration-200 items-center">
+    <div class="mb-10 search-box">
       <div class="i-carbon-search text-base text-[var(--c-text-faint)] shrink-0" />
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="搜索工具..."
+        placeholder="Search tools..."
         class="text-sm text-[var(--c-text)] outline-none bg-transparent flex-1 placeholder-[var(--c-text-faint)]"
       >
       <button
@@ -43,7 +43,7 @@ const isSearching = computed(() => searchQuery.value.trim().length > 0)
 
     <!-- 搜索结果 -->
     <template v-if="isSearching">
-      <div v-if="filteredTools.length > 0" class="gap-3 grid grid-cols-1 md:grid-cols-2">
+      <div v-if="filteredTools.length > 0" class="gap-3 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2">
         <ToolCard v-for="tool in filteredTools" :key="tool.id" :tool="tool" />
       </div>
       <div v-else class="py-20 text-center flex flex-col gap-3 items-center">
@@ -56,24 +56,20 @@ const isSearching = computed(() => searchQuery.value.trim().length > 0)
 
     <!-- 分组展示 -->
     <template v-else>
-      <div
-        v-for="group in toolsByCategory"
-        :key="group.category"
-        class="mb-12"
-      >
-        <h2 class="section-label mb-4">
-          {{ CATEGORY_LABELS[group.category] }}
-        </h2>
-        <div class="gap-3 grid grid-cols-1 md:grid-cols-2">
-          <ToolCard v-for="tool in group.tools" :key="tool.id" :tool="tool" />
+      <TransitionGroup name="list" tag="div">
+        <div
+          v-for="group in toolsByCategory"
+          :key="group.category"
+          class="mb-12"
+        >
+          <h2 class="section-label mb-4">
+            {{ CATEGORY_LABELS[group.category] }}
+          </h2>
+          <div class="gap-3 grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2">
+            <ToolCard v-for="tool in group.tools" :key="tool.id" :tool="tool" />
+          </div>
         </div>
-      </div>
+      </TransitionGroup>
     </template>
   </div>
 </template>
-
-<style scoped>
-.search-box:focus-within {
-  border-color: var(--c-border-strong);
-}
-</style>

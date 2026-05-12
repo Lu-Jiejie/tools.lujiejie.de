@@ -1,5 +1,4 @@
 export type ToolCategory = 'text' | 'format' | 'encode' | 'convert'
-export type ToolStatus = 'available' | 'coming-soon'
 
 export interface Tool {
   id: string
@@ -7,7 +6,6 @@ export interface Tool {
   description: string
   icon: string
   category: ToolCategory
-  status: ToolStatus
   keywords?: string[]
 }
 
@@ -27,7 +25,6 @@ export const tools: Tool[] = [
     description: 'Convert text between camelCase, snake_case, PascalCase, kebab-case, and more.',
     icon: 'i-carbon-text-font',
     category: 'text',
-    status: 'coming-soon',
     keywords: ['case', 'camel', 'snake', 'pascal', 'kebab'],
   },
   {
@@ -36,7 +33,6 @@ export const tools: Tool[] = [
     description: 'Find and replace text with support for regex patterns.',
     icon: 'i-carbon-find-and-replace',
     category: 'text',
-    status: 'coming-soon',
     keywords: ['find', 'replace', 'regex', 'search'],
   },
   {
@@ -45,7 +41,6 @@ export const tools: Tool[] = [
     description: 'Count words, characters, sentences, and estimate reading time.',
     icon: 'i-carbon-word-cloud',
     category: 'text',
-    status: 'coming-soon',
     keywords: ['word', 'count', 'character', 'reading'],
   },
   {
@@ -54,7 +49,6 @@ export const tools: Tool[] = [
     description: 'Test and debug regular expressions with live match highlighting.',
     icon: 'i-carbon-search',
     category: 'text',
-    status: 'coming-soon',
     keywords: ['regex', 'regexp', 'pattern', 'match'],
   },
   {
@@ -63,7 +57,6 @@ export const tools: Tool[] = [
     description: 'Format, validate, and minify JSON data with syntax highlighting.',
     icon: 'i-carbon-data-structured',
     category: 'format',
-    status: 'coming-soon',
     keywords: ['json', 'format', 'validate', 'minify'],
   },
   {
@@ -72,7 +65,6 @@ export const tools: Tool[] = [
     description: 'Write and preview Markdown with real-time rendering.',
     icon: 'i-carbon-logo-markdown',
     category: 'format',
-    status: 'coming-soon',
     keywords: ['markdown', 'preview', 'md', 'render'],
   },
   {
@@ -81,7 +73,6 @@ export const tools: Tool[] = [
     description: 'Encode and decode Base64 strings instantly.',
     icon: 'i-carbon-password',
     category: 'encode',
-    status: 'coming-soon',
     keywords: ['base64', 'encode', 'decode'],
   },
   {
@@ -90,7 +81,6 @@ export const tools: Tool[] = [
     description: 'Encode and decode URL components and query strings.',
     icon: 'i-carbon-link',
     category: 'encode',
-    status: 'coming-soon',
     keywords: ['url', 'encode', 'decode', 'percent', 'uri'],
   },
   {
@@ -99,7 +89,6 @@ export const tools: Tool[] = [
     description: 'Convert colors between HEX, RGB, HSL, and other formats.',
     icon: 'i-carbon-color-palette',
     category: 'convert',
-    status: 'coming-soon',
     keywords: ['color', 'hex', 'rgb', 'hsl', 'convert'],
   },
   {
@@ -108,7 +97,6 @@ export const tools: Tool[] = [
     description: 'Convert between Unix timestamps and human-readable date formats.',
     icon: 'i-carbon-time',
     category: 'convert',
-    status: 'coming-soon',
     keywords: ['timestamp', 'unix', 'date', 'time', 'epoch'],
   },
 ]

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ToolEmpty from '~/components/tools/ToolEmpty.vue'
 import { useTools } from '~/composables/useTools'
 import { CATEGORY_LABELS } from '~/data/tools'
 
@@ -18,29 +17,35 @@ if (!tool.value) {
 
 <template>
   <div v-if="tool" class="mx-auto px-6 py-12 max-w-4xl md:px-12">
-    <!-- Tool header -->
+    <!-- 工具头部 -->
     <div class="mb-8 flex gap-4 items-start">
-      <div class="rounded-xl bg-zinc-100 flex shrink-0 h-11 w-11 items-center justify-center dark:bg-zinc-800">
-        <div :class="tool.icon" class="text-xl text-zinc-600 dark:text-zinc-400" />
+      <div class="rounded-2xl bg-[var(--c-accent-soft)] flex shrink-0 h-12 w-12 items-center justify-center">
+        <div :class="tool.icon" class="text-2xl text-[var(--c-accent)]" />
       </div>
-      <div class="flex flex-col gap-1 min-w-0">
+      <div class="flex flex-col gap-1.5 min-w-0">
         <div class="flex flex-wrap gap-2 items-center">
-          <h1 class="text-lg text-zinc-900 tracking-tight font-semibold dark:text-zinc-100">
+          <h1 class="text-xl text-[var(--c-text)] tracking-tight font-bold select-none">
             {{ tool.name }}
           </h1>
-          <span class="category-pill">{{ CATEGORY_LABELS[tool.category] }}</span>
-          <span v-if="tool.status === 'coming-soon'" class="status-badge">Coming soon</span>
+          <span class="category-pill select-none">{{ CATEGORY_LABELS[tool.category] }}</span>
         </div>
-        <p class="text-sm text-zinc-500 leading-relaxed dark:text-zinc-400">
+        <p class="text-sm text-[var(--c-text-muted)] leading-relaxed">
           {{ tool.description }}
         </p>
       </div>
     </div>
 
-    <!-- Tool content -->
-    <div class="border border-zinc-200 rounded-xl bg-white overflow-hidden dark:border-zinc-800 dark:bg-zinc-900">
-      <ToolEmpty v-if="tool.status === 'coming-soon'" :tool="tool" />
-      <!-- Future: dynamic tool component slot -->
+    <!-- 工具内容区 -->
+    <div class="tool-content border border-[var(--c-border)] rounded-2xl bg-[var(--c-surface)] min-h-48 overflow-hidden">
+      <!-- 工具组件将在此处添加 -->
     </div>
   </div>
 </template>
+
+<style scoped>
+.tool-content {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+</style>

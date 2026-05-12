@@ -4,7 +4,7 @@
   "packageManager": "pnpm@11.1.0",
   "scripts": {
     "build": "vite build",
-    "dev": "vite --port 3333 --open",
+    "dev": "vite --port 3333 --open --host",
     "deploy": "netlify deploy",
     "lint": "eslint .",
     "typecheck": "vue-tsc",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
     "@iconify-json/carbon": "^1.2.21",
+    "@iconify-json/material-symbols": "^1.2.71",
     "@types/node": "^25.6.2",
     "@unocss/eslint-plugin": "^66.6.8",
     "@unocss/transformer-directives": "^66.6.8",

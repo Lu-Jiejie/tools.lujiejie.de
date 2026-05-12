@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTools } from '~/composables/useTools'
-import { CATEGORY_LABELS } from '~/data/tools'
+import { CATEGORY_LABELS, getToolComponent } from '~/data/tools'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,7 +43,8 @@ if (!tool.value) {
 
     <!-- 工具内容区 -->
     <div class="tool-content border border-c-border rounded-2xl bg-c-surface min-h-48 overflow-hidden">
-      <!-- 工具组件将在此处添加 -->
+      <!-- 动态加载对应的组件 -->
+      <component :is="getToolComponent(tool.id)" />
     </div>
   </div>
 </template>

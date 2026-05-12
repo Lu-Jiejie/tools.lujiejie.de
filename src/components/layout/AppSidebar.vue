@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { ToolCategory } from '~/data/tools'
 import { useLocalStorage } from '@vueuse/core'
-import { useRoute } from 'vue-router'
 import { useTools } from '~/composables/useTools'
 import { CATEGORY_LABELS } from '~/data/tools'
 
 defineEmits<{ close: [] }>()
 
-const route = useRoute()
 const { toolsByCategory, isFavorite } = useTools()
 
 const collapsed = useLocalStorage<ToolCategory[]>('tools-sidebar-collapsed', [])
@@ -23,14 +21,10 @@ function toggleCategory(cat: ToolCategory) {
   else
     collapsed.value.push(cat)
 }
-
-function isActive(toolId: string) {
-  return route.params.tool === toolId
-}
 </script>
 
 <template>
-  <aside class="border-r border-[var(--c-border)] bg-[var(--c-surface)] flex flex-col h-full">
+  <aside class="border-r border-c-border bg-c-surface flex flex-col h-full">
     <nav class="px-2 py-4 flex-1 overflow-y-auto">
       <TransitionGroup name="list" tag="div">
         <div
@@ -43,11 +37,11 @@ function isActive(toolId: string) {
             class="mb-0.5 px-3 py-1.5 rounded-lg flex w-full select-none items-center justify-between"
             @click="toggleCategory(group.category)"
           >
-            <span class="text-[11px] text-[var(--c-text)] tracking-widest font-bold opacity-50 uppercase">
+            <span class="section-label">
               {{ CATEGORY_LABELS[group.category] }}
             </span>
             <div
-              class="i-carbon-chevron-down text-xs text-[var(--c-text-faint)] transition-transform duration-200"
+              class="i-carbon-chevron-down text-xs text-c-faint transition-transform duration-200"
               :class="{ '-rotate-90': isCollapsed(group.category) }"
             />
           </button>
@@ -57,13 +51,13 @@ function isActive(toolId: string) {
             class="category-items"
             :class="{ collapsed: isCollapsed(group.category) }"
           >
-            <div class="category-items-inner ml-2 border-l border-[var(--c-border)]">
+            <div class="category-items-inner ml-2 border-l border-c-border">
               <RouterLink
                 v-for="tool in group.tools"
                 :key="tool.id"
                 :to="`/${tool.id}`"
-                class="nav-item text-sm mb-0.5 ml-2 px-2 py-1.5 rounded-lg flex transition-colors duration-150 items-center justify-between"
-                :class="{ 'nav-item-active': isActive(tool.id) }"
+                class="nav-item"
+                active-class="nav-item-active"
                 @click="$emit('close')"
               >
                 <span>{{ tool.name }}</span>
@@ -78,24 +72,6 @@ function isActive(toolId: string) {
 </template>
 
 <style scoped>
-.nav-item {
-  color: var(--c-text);
-  opacity: 0.85;
-}
-.nav-item:hover {
-  background: var(--c-surface-raised);
-  opacity: 1;
-}
-.nav-item-active {
-  background: var(--c-accent-soft);
-  color: var(--c-accent);
-  opacity: 1;
-}
-.nav-item-active:hover {
-  background: var(--c-accent-soft);
-  color: var(--c-accent);
-}
-
 /* grid-template-rows 高度动画：从 1fr → 0fr，比 max-height 更流畅 */
 .category-items {
   display: grid;

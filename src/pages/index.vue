@@ -12,25 +12,25 @@ const isSearching = computed(() => searchQuery.value.trim().length > 0)
 </script>
 
 <template>
-  <div class="mx-auto px-6 py-12 max-w-4xl md:px-12">
+  <div class="page-container">
     <!-- 标题区 -->
     <div class="mb-8">
-      <h1 class="text-5xl text-[var(--c-text)] leading-none tracking-tight font-bold mb-3 select-none">
-        Tools<span class="text-[var(--c-accent)]">.</span>
+      <h1 class="page-title mb-3">
+        Tools<span class="text-c-accent">.</span>
       </h1>
-      <p class="text-base text-[var(--c-text-muted)] leading-relaxed">
+      <p class="text-base text-c-muted leading-relaxed">
         Tools I need.
       </p>
     </div>
 
     <!-- 搜索框 -->
     <div class="mb-10 search-box">
-      <div class="i-carbon-search text-base text-[var(--c-text-faint)] shrink-0" />
+      <div class="i-carbon-search text-base text-c-faint shrink-0" />
       <input
         v-model="searchQuery"
         type="text"
         placeholder="Search tools..."
-        class="text-sm text-[var(--c-text)] outline-none bg-transparent flex-1 placeholder-[var(--c-text-faint)]"
+        class="text-sm text-c-text outline-none bg-transparent flex-1 placeholder-c-faint"
       >
       <button
         v-if="searchQuery"
@@ -47,8 +47,8 @@ const isSearching = computed(() => searchQuery.value.trim().length > 0)
         <ToolCard v-for="tool in filteredTools" :key="tool.id" :tool="tool" />
       </div>
       <div v-else class="py-20 text-center flex flex-col gap-3 items-center">
-        <div class="i-carbon-search text-4xl text-[var(--c-text-faint)]" />
-        <p class="text-sm text-[var(--c-text-faint)]">
+        <div class="i-carbon-search text-4xl text-c-faint" />
+        <p class="text-sm text-c-faint">
           没有找到 "{{ searchQuery }}"
         </p>
       </div>

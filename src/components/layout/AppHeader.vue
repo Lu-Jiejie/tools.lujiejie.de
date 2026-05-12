@@ -16,18 +16,18 @@ const currentTool = computed(() => {
 </script>
 
 <template>
-  <header class="app-header px-4 border-b border-[var(--c-border)] flex gap-3 h-14 items-center top-0 sticky z-10">
+  <header class="app-header px-4 border-b border-c-border flex gap-3 h-14 items-center top-0 sticky z-10">
     <!-- Logo / 面包屑 -->
     <div class="flex flex-1 gap-2 min-w-0 items-center">
       <RouterLink
         to="/"
-        class="text-xl text-[var(--c-text)] tracking-tight font-bold shrink-0 select-none transition-opacity hover:opacity-70"
+        class="text-xl text-c-text tracking-tight font-bold shrink-0 select-none transition-opacity hover:opacity-70"
       >
-        Tools<span class="text-[var(--c-accent)]">.</span>
+        Tools<span class="text-c-accent">.</span>
       </RouterLink>
       <template v-if="currentTool">
-        <span class="text-sm text-[var(--c-text-faint)] shrink-0 select-none">/</span>
-        <span class="text-sm text-[var(--c-text-muted)] select-none truncate">{{ currentTool.name }}</span>
+        <span class="text-sm text-c-faint shrink-0 select-none">/</span>
+        <span class="text-sm text-c-muted select-none truncate">{{ currentTool.name }}</span>
       </template>
     </div>
 
@@ -44,7 +44,7 @@ const currentTool = computed(() => {
       </a>
 
       <button
-        class="lang-btn text-xs font-mono font-semibold px-2 rounded-lg h-7 select-none transition-colors duration-150"
+        class="text-xs text-c-muted font-mono font-semibold px-2 rounded-lg h-7 select-none transition-colors duration-150 hover:text-c-text hover:bg-c-raised"
         :title="locale === 'zh' ? '切换到英文' : 'Switch to Chinese'"
         @click="toggleLocale()"
       >
@@ -72,13 +72,5 @@ const currentTool = computed(() => {
   background-color: color-mix(in srgb, var(--c-surface) 85%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-}
-
-.lang-btn {
-  color: var(--c-text-muted);
-}
-.lang-btn:hover {
-  color: var(--c-text);
-  background: var(--c-surface-raised);
 }
 </style>

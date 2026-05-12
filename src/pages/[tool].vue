@@ -16,31 +16,33 @@ if (!tool.value) {
 </script>
 
 <template>
-  <div v-if="tool" class="mx-auto px-6 py-12 max-w-4xl md:px-12">
+  <div v-if="tool" class="page-container">
     <!-- 工具头部 -->
     <div class="mb-8 flex gap-4 items-start">
       <div class="flex flex-col gap-1.5 min-w-0">
         <div class="flex flex-wrap gap-3 items-center">
-          <h1 class="text-xl text-[var(--c-text)] tracking-tight font-bold select-none">
+          <h1 class="text-xl text-c-text tracking-tight font-bold select-none">
             {{ tool.name }}
           </h1>
+
+          <span class="category-pill ml-1 select-none">{{ CATEGORY_LABELS[tool.category] }}</span>
+
           <button
             :class="isFavorite(tool.id) ? 'btn-favorite-active' : 'btn-favorite'"
-            title="收藏"
+            title="Favorite"
             @click="toggleFavorite(tool.id)"
           >
             <div :class="isFavorite(tool.id) ? 'i-carbon-star-filled' : 'i-carbon-star'" class="text-xl" />
           </button>
-          <span class="category-pill ml-1 select-none">{{ CATEGORY_LABELS[tool.category] }}</span>
         </div>
-        <p class="text-sm text-[var(--c-text-muted)] leading-relaxed">
+        <p class="text-sm text-c-muted leading-relaxed">
           {{ tool.description }}
         </p>
       </div>
     </div>
 
     <!-- 工具内容区 -->
-    <div class="tool-content border border-[var(--c-border)] rounded-2xl bg-[var(--c-surface)] min-h-48 overflow-hidden">
+    <div class="tool-content border border-c-border rounded-2xl bg-c-surface min-h-48 overflow-hidden">
       <!-- 工具组件将在此处添加 -->
     </div>
   </div>

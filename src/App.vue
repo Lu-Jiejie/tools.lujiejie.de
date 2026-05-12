@@ -7,7 +7,7 @@ const { mobileOpen, closeMobile } = useSidebar()
 </script>
 
 <template>
-  <div class="font-sans flex flex-col min-h-screen" style="background: var(--c-bg); color: var(--c-text)">
+  <div class="text-c-text font-sans bg-c-bg flex flex-col min-h-screen">
     <AppHeader />
 
     <div class="flex flex-1">

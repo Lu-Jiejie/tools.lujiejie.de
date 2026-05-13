@@ -44,16 +44,6 @@ if (!tool.value) {
     </div>
 
     <!-- 工具内容区 -->
-    <div class="tool-content" border="~ c-border" rounded-2xl bg-c-surface min-h-48 overflow-hidden>
-      <component :is="getToolComponent(tool.id)" />
-    </div>
+    <component :is="getToolComponent(tool.id)" />
   </div>
 </template>
-
-<style scoped>
-.tool-content {
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-</style>

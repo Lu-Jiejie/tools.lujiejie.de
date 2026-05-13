@@ -1,15 +1,33 @@
-import type { Tool, ToolCategory } from '~/data/tools'
+import type { Tool, ToolCategory } from '~/tools'
 import { useLocalStorage } from '@vueuse/core'
 import { computed, ref } from 'vue'
-import { CATEGORY_ORDER, tools } from '~/data/tools'
+import { CATEGORY_ORDER, tools } from '~/tools'
+import { useLocale } from './useLocale'
 
 const activeCategory = ref<ToolCategory | 'all'>('all')
 const searchQuery = ref('')
 const favorites = useLocalStorage<string[]>('favorite-tools', [])
 
+function localize(tool: Tool, locale: 'zh' | 'en'): Tool {
+  if (locale === 'zh') {
+    return {
+      ...tool,
+      name: tool.nameZh || tool.name,
+      description: tool.descriptionZh || tool.description,
+    }
+  }
+  return tool
+}
+
 export function useTools() {
+  const { locale } = useLocale()
+
+  const localizedTools = computed(() =>
+    tools.map(t => localize(t, locale.value)),
+  )
+
   const filteredTools = computed(() => {
-    let result = tools
+    let result = localizedTools.value
     if (activeCategory.value !== 'all')
       result = result.filter(t => t.category === activeCategory.value)
 
@@ -28,12 +46,12 @@ export function useTools() {
   const toolsByCategory = computed(() => {
     const list: { category: ToolCategory, tools: Tool[] }[] = CATEGORY_ORDER.map(cat => ({
       category: cat,
-      tools: tools.filter(t => t.category === cat),
+      tools: localizedTools.value.filter(t => t.category === cat),
     }))
 
     if (favorites.value.length > 0) {
       const favTools = favorites.value
-        .map(id => tools.find(t => t.id === id))
+        .map(id => localizedTools.value.find(t => t.id === id))
         .filter((t): t is Tool => !!t)
 
       list.unshift({
@@ -46,7 +64,8 @@ export function useTools() {
   })
 
   function findTool(id: string): Tool | undefined {
-    return tools.find(t => t.id === id)
+    const tool = tools.find(t => t.id === id)
+    return tool ? localize(tool, locale.value) : undefined
   }
 
   function toggleFavorite(id: string) {
@@ -61,7 +80,7 @@ export function useTools() {
   }
 
   return {
-    tools,
+    tools: localizedTools,
     filteredTools,
     toolsByCategory,
     activeCategory,

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { ToolCategory } from '~/data/tools'
+import type { ToolCategory } from '~/tools'
 import { useLocalStorage } from '@vueuse/core'
+import { useI18n } from '~/composables/useI18n'
 import { useTools } from '~/composables/useTools'
-import { CATEGORY_LABELS } from '~/data/tools'
 
 defineEmits<{ close: [] }>()
 
+const { t } = useI18n()
 const { toolsByCategory, isFavorite } = useTools()
 
 const collapsed = useLocalStorage<ToolCategory[]>('tools-sidebar-collapsed', [])
@@ -24,24 +25,24 @@ function toggleCategory(cat: ToolCategory) {
 </script>
 
 <template>
-  <aside class="border-r border-c-border bg-c-surface flex flex-col h-full">
-    <nav class="px-2 py-4 flex-1 overflow-y-auto">
+  <aside border="r c-border" bg-c-surface flex="~ col" h-full>
+    <nav px-2 py-4 flex-1 overflow-y-auto>
       <TransitionGroup name="list" tag="div">
         <div
           v-for="group in toolsByCategory"
           :key="group.category"
-          class="mb-2"
+          mb-2
         >
           <!-- 分类标题（可折叠） -->
           <button
-            class="mb-0.5 px-3 py-1.5 rounded-lg flex w-full select-none items-center justify-between"
+            mb-0.5 px-3 py-1.5 rounded-lg flex w-full select-none items-center justify-between
             @click="toggleCategory(group.category)"
           >
-            <span class="section-label">
-              {{ CATEGORY_LABELS[group.category] }}
+            <span text-xs tracking-widest font-semibold op-50 select-none uppercase>
+              {{ t(`category.${group.category}`) }}
             </span>
             <div
-              class="i-carbon-chevron-down text-xs text-c-faint transition-transform duration-200"
+              i-carbon-chevron-down text-xs op-30 transition-transform duration-200
               :class="{ '-rotate-90': isCollapsed(group.category) }"
             />
           </button>
@@ -51,17 +52,17 @@ function toggleCategory(cat: ToolCategory) {
             class="category-items"
             :class="{ collapsed: isCollapsed(group.category) }"
           >
-            <div class="category-items-inner ml-2 border-l border-c-border">
+            <div class="category-items-inner" ml-2 border="l c-border">
               <RouterLink
                 v-for="tool in group.tools"
                 :key="tool.id"
                 :to="`/${tool.id}`"
                 class="nav-item"
-                active-class="nav-item-active"
+                active-class="!bg-c-soft !text-c-accent !op-100"
                 @click="$emit('close')"
               >
                 <span>{{ tool.name }}</span>
-                <div v-if="group.category !== 'favorites' && isFavorite(tool.id)" class="i-carbon-star-filled text-[10px] text-amber-500 ml-1.5 shrink-0" />
+                <div v-if="group.category !== 'favorites' && isFavorite(tool.id)" i-carbon-star-filled text="[10px] amber-500" ml-1.5 shrink-0 />
               </RouterLink>
             </div>
           </div>

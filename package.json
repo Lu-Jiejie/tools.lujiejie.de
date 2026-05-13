@@ -21,10 +21,13 @@
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
     "@iconify-json/carbon": "^1.2.21",
+    "@iconify-json/icon-park-outline": "^1.2.4",
     "@iconify-json/material-symbols": "^1.2.71",
+    "@iconify-json/ri": "^1.2.10",
     "@types/node": "^25.6.2",
     "@unocss/eslint-plugin": "^66.6.8",
     "@unocss/transformer-directives": "^66.6.8",
+    "@unocss/transformer-variant-group": "^66.6.8",
     "@vitejs/plugin-vue": "^6.0.6",
     "eslint": "^10.3.0",
     "eslint-plugin-format": "^2.0.1",

@@ -1,8 +1,8 @@
-import { ref } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
 
 export type Locale = 'zh' | 'en'
 
-const locale = ref<Locale>('zh')
+const locale = useLocalStorage<Locale>('locale', 'zh')
 
 export function useLocale() {
   function toggleLocale() {

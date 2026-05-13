@@ -5,20 +5,22 @@ export type ToolCategory = 'favorites' | 'text' | 'format' | 'encode' | 'convert
 export interface Tool {
   id: string
   name: string
+  nameZh?: string
   description: string
+  descriptionZh?: string
   category: ToolCategory
   keywords?: string[]
 }
 
-export const CATEGORY_LABELS: Record<ToolCategory, string> = {
-  favorites: 'Favorites',
-  text: 'Text',
-  format: 'Format',
-  encode: 'Encode',
-  convert: 'Convert',
+export const CATEGORY_LABELS: Record<ToolCategory, { en: string, zh: string }> = {
+  favorites: { en: 'Favorites', zh: '收藏夹' },
+  text: { en: 'Text', zh: '文本' },
+  format: { en: 'Format', zh: '格式化' },
+  encode: { en: 'Encode', zh: '编码' },
+  convert: { en: 'Convert', zh: '转换' },
 }
 
-export const CATEGORY_ORDER: ToolCategory[] = ['text', 'format', 'encode', 'convert']
+export const CATEGORY_ORDER: ToolCategory[] = ['convert', 'encode', 'format', 'text']
 
 // 辅助函数，为具体工具的 meta 提供自动类型推导和提示
 export function defineTool(tool: Tool): Tool {

@@ -1,4 +1,5 @@
 import transformerDirectives from '@unocss/transformer-directives'
+import transformerVariantGroup from '@unocss/transformer-variant-group'
 import {
   defineConfig,
   presetAttributify,
@@ -16,26 +17,24 @@ export default defineConfig({
         'raised': 'var(--c-surface-raised)',
         'border': 'var(--c-border)',
         'border-strong': 'var(--c-border-strong)',
-        'text': 'var(--c-text)',
-        'muted': 'var(--c-text-muted)',
-        'faint': 'var(--c-text-faint)',
         'accent': 'var(--c-accent)',
         'soft': 'var(--c-accent-soft)',
       },
     },
   },
   shortcuts: [
+    // layout primitives
+    ['place-center', 'flex items-center justify-center'],
     ['page-container', 'mx-auto px-6 py-12 max-w-4xl md:px-12'],
-    ['page-title', 'text-5xl text-c-text leading-none tracking-tight font-bold select-none'],
-    ['tool-card', 'flex flex-col gap-4 p-5 rounded-2xl cursor-pointer bg-c-surface border border-c-border transition-all duration-200 hover:border-c-border-strong'],
-    ['search-box', 'px-3.5 py-2 border border-c-border rounded-xl bg-c-surface flex gap-2.5 transition-colors duration-200 items-center hover:border-c-border-strong focus-within:border-c-border-strong'],
-    ['category-pill', 'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-c-raised text-c-faint border border-c-border'],
-    ['icon-btn', 'flex items-center justify-center w-7 h-7 rounded-lg text-c-muted hover:text-c-text hover:bg-c-raised transition-colors duration-150'],
-    ['btn-favorite', 'flex shrink-0 h-6 w-6 transition-colors duration-200 items-center justify-center text-c-faint hover:text-c-muted'],
-    ['btn-favorite-active', 'flex shrink-0 h-6 w-6 transition-colors duration-200 items-center justify-center text-amber-500'],
-    ['section-label', 'text-xs font-semibold uppercase tracking-widest select-none text-c-muted'],
-    ['nav-item', 'text-sm ml-2 mb-0.5 px-2 py-1.5 rounded-lg flex transition-colors duration-150 items-center justify-between text-c-text opacity-85 hover:(bg-c-raised opacity-100)'],
-    ['nav-item-active', '!bg-c-soft !text-c-accent !opacity-100'],
+    // tools grid (used in two places)
+    ['tools-grid', 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'],
+    // icon button (header icons + search clear button)
+    ['icon-btn', 'place-center rounded-lg op-60 hover:op-90 hover:bg-c-raised transition-150'],
+    // favorite buttons (ToolCard + [tool].vue)
+    ['btn-favorite', 'flex shrink-0 size-6 place-center op-30 hover:op-60 transition-colors duration-200'],
+    ['btn-favorite-active', 'flex shrink-0 size-6 place-center text-amber-500 transition-colors duration-200'],
+    // sidebar nav (nav links + active state)
+    ['nav-item', 'text-sm ml-2 mb-0.5 px-2 py-1.5 rounded-lg flex transition-colors duration-150 items-center justify-between op-85 hover:(bg-c-raised !op-90)'],
   ],
   presets: [
     presetWind4(),
@@ -54,5 +53,6 @@ export default defineConfig({
   ],
   transformers: [
     transformerDirectives(),
+    transformerVariantGroup(),
   ],
 })

@@ -4,7 +4,9 @@ import { defineTool } from './index'
 export const toolMeta = defineTool({
   id: 'word-counter',
   name: 'Word Counter',
+  nameZh: '字数统计',
   description: 'Count words, characters, sentences, and estimate reading time.',
+  descriptionZh: '统计字数、字符数、句子数，估算阅读时间。',
   category: 'text',
   keywords: ['word', 'count', 'character', 'reading'],
 })
@@ -14,7 +16,7 @@ export const toolMeta = defineTool({
 </script>
 
 <template>
-  <div class="text-sm text-c-muted p-6">
+  <div text-sm p-6 op-60>
     Word Counter component logic goes here...
   </div>
 </template>

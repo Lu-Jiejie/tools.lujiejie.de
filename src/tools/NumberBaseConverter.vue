@@ -15,6 +15,7 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue'
+import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import NumberInput from '~/components/NumberInput.vue'
 import Panel from '~/components/Panel.vue'
@@ -24,7 +25,10 @@ import { useI18n } from '~/composables/useI18n'
 const { t } = useI18n({
   input_label: ['Input', '输入'],
   output_label: ['Output', '输出'],
-  invalid: ['Invalid number', '无效数字'],
+  invalid_char: [
+    (char: string, base: string) => `"${char}" is not valid in base ${base}.`,
+    (char: string, base: string) => `"${char}" 在 ${base} 进制中不合法。`,
+  ],
   bin: ['Binary', '二进制'],
   oct: ['Octal', '八进制'],
   dec: ['Decimal', '十进制'],
@@ -52,19 +56,34 @@ const PRESET_BASES: BaseKey[] = ['bin', 'oct', 'dec', 'hex', 'base32', 'base36']
 
 const inputBase = shallowRef(10)
 const inputValue = shallowRef('255')
-const error = shallowRef(false)
+const errorChar = shallowRef<string | null>(null)
 const bigIntValue = shallowRef<bigint | null>(255n)
 const customOutputBase = shallowRef(12)
 
 function setBase(n: number) {
-  const clamped = Math.max(2, Math.min(36, n))
-  if (clamped === inputBase.value)
+  if (n === inputBase.value)
     return
-  inputBase.value = clamped
-  // 重新解析当前输入，不修改输入框内容
-  const parsed = parse(inputValue.value, clamped)
-  error.value = inputValue.value.trim() !== '' && parsed === null
-  bigIntValue.value = parsed
+  inputBase.value = n
+  const result = parse(inputValue.value, n)
+  errorChar.value = inputValue.value.trim() !== '' && result === null ? findInvalidChar(inputValue.value, n) : null
+  bigIntValue.value = result
+}
+
+function findInvalidChar(val: string, base: number): string {
+  const s = val.trim().toLowerCase()
+  let clean = s
+  if (base === 16 && (clean.startsWith('0x') || clean.startsWith('#')))
+    clean = clean.replace(/^0x|^#/, '')
+  else if (base === 2 && clean.startsWith('0b'))
+    clean = clean.slice(2)
+  else if (base === 8 && clean.startsWith('0o'))
+    clean = clean.slice(2)
+  for (const c of clean) {
+    const d = Number.parseInt(c, base)
+    if (Number.isNaN(d) || d >= base)
+      return c
+  }
+  return clean[0] ?? ''
 }
 
 function parse(val: string, base: number): bigint | null {
@@ -106,20 +125,19 @@ function onInput(val: string) {
   inputValue.value = val
   const parsed = parse(val, inputBase.value)
   if (parsed === null) {
-    error.value = val.trim() !== ''
+    errorChar.value = val.trim() !== '' ? findInvalidChar(val, inputBase.value) : null
     bigIntValue.value = null
     return
   }
-  error.value = false
+  errorChar.value = null
   bigIntValue.value = parsed
 }
 
 watch(inputBase, (base) => {
   const parsed = parse(inputValue.value, base)
-  error.value = inputValue.value.trim() !== '' && parsed === null
+  errorChar.value = inputValue.value.trim() !== '' && parsed === null ? findInvalidChar(inputValue.value, base) : null
   bigIntValue.value = parsed
 })
-
 const outputs = computed(() => {
   return PRESET_BASES.map(key => ({
     key,
@@ -152,7 +170,7 @@ const customOutput = computed(() =>
 
         <div flex="~ gap-2" items-end>
           <div flex="~ col gap-1.5">
-            <label text-xs tracking-wide font-medium op-50 select-none uppercase>{{ t('base') }}</label>
+            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('base') }}</label>
             <NumberInput
               :model-value="inputBase"
               :min="2"
@@ -163,14 +181,18 @@ const customOutput = computed(() =>
           <TextInput
             :model-value="inputValue"
             :label="t('value')"
-            :error="error"
+            :error="errorChar !== null"
             :copyable="false"
             :placeholder="t('input_placeholder')"
             class="flex-1"
             @update:model-value="onInput"
           />
         </div>
-        <span v-if="error" text-xs text-red-400>{{ t('invalid') }}</span>
+        <Transition name="warn">
+          <AlertTip v-if="errorChar !== null" type="error">
+            {{ t('invalid_char', errorChar, String(inputBase)) }}
+          </AlertTip>
+        </Transition>
       </div>
     </Panel>
 
@@ -186,7 +208,7 @@ const customOutput = computed(() =>
         <!-- 自定义进制输出 -->
         <div flex="~ gap-2" items-end>
           <div flex="~ col gap-1.5">
-            <label text-xs tracking-wide font-medium op-50 select-none uppercase>{{ t('custom') }} ({{ customOutputBase }})</label>
+            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('custom') }} ({{ customOutputBase }})</label>
             <NumberInput
               :model-value="customOutputBase"
               :min="2"

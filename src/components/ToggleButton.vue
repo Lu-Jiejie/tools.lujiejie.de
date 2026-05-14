@@ -16,7 +16,7 @@ const emit = defineEmits<{
 
 <template>
   <button
-    border="~" flex="~ gap-1.5" text-sm px-3 py-1.5 rounded-lg transition-colors items-center
+    border="~" flex="~ gap-1.5" p="x-3 y-2" text-sm rounded-lg transition-colors items-center
     :class="modelValue
       ? 'border-c-accent bg-c-raised text-c-accent'
       : 'border-c-border bg-c-raised hover:border-c-border-strong'"
@@ -25,7 +25,7 @@ const emit = defineEmits<{
     <div
       v-if="icon || activeIcon"
       :class="modelValue ? (activeIcon ?? icon) : icon"
-      text-sm
+      text-sm op-60
     />
     <slot />
   </button>

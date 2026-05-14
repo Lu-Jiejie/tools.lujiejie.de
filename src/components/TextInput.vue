@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
+import BaseButton from '~/components/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const props = withDefaults(defineProps<{
@@ -40,7 +41,7 @@ async function copy() {
 }
 
 const fieldClass = computed(() => [
-  props.error ? 'border-red-400 dark:border-red-500' : 'border-c-border',
+  props.error ? 'border-red-400' : 'border-c-border',
   props.monospace ? 'font-mono' : '',
   props.readonly ? 'bg-c-input-readonly op-70' : 'bg-c-input focus:border-c-border-strong',
   slots.prefix ? 'pl-8' : '',
@@ -49,7 +50,7 @@ const fieldClass = computed(() => [
 
 <template>
   <div flex="~ col gap-1.5">
-    <label v-if="label" text-xs tracking-wide font-medium op-50 select-none uppercase>{{ label }}</label>
+    <label v-if="label" text-xs tracking-wide font-medium op-60 select-none uppercase>{{ label }}</label>
     <div flex="~ gap-2" items-center>
       <div flex flex-1 min-w-0 items-center relative>
         <slot name="prefix" />
@@ -64,20 +65,19 @@ const fieldClass = computed(() => [
         <div
           v-else
           :class="fieldClass"
-          border="~" text-sm px-3 py-2 rounded-xl w-full select-none whitespace-nowrap overflow-x-auto
+          border="~" text-sm px-3 py-2 rounded-xl min-h-9 w-full select-none whitespace-nowrap overflow-x-auto
         >
           {{ modelValue }}
         </div>
       </div>
       <slot name="append" />
-      <button
+      <BaseButton
         v-if="copyable"
-        :title="copied ? t('copied') : t('copy')"
-        border="~ c-border" rounded-lg bg-c-raised flex shrink-0 h-8 w-8 transition-colors items-center justify-center hover:border-c-border-strong
+        icon-only
+        icon="i-carbon-copy"
+        :title="t('copy')"
         @click="copy()"
-      >
-        <div :class="copied ? 'i-carbon-checkmark text-c-accent' : 'i-carbon-copy op-50'" text-sm />
-      </button>
+      />
     </div>
   </div>
 </template>

@@ -35,8 +35,6 @@ export default defineConfig({
     // favorite buttons (ToolCard + [tool].vue)
     ['btn-favorite', 'flex shrink-0 size-6 place-center op-30 hover:op-60 transition-colors duration-200'],
     ['btn-favorite-active', 'flex shrink-0 size-6 place-center text-amber-500 transition-colors duration-200'],
-    // sidebar nav (nav links + active state)
-    ['nav-item', 'text-sm ml-2 mb-0.5 px-2 py-1.5 rounded-lg flex transition-colors duration-150 items-center justify-between op-85 hover:(bg-c-raised !op-90)'],
   ],
   presets: [
     presetWind4(),

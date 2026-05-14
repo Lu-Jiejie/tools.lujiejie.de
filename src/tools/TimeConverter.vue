@@ -15,6 +15,7 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, onUnmounted, shallowRef, watch } from 'vue'
+import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
@@ -24,29 +25,33 @@ import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
   unix_s: ['Unix (seconds)', 'Unix 秒'],
+  unix_s_short: ['Unix (s)', 'Unix (s)'],
   unix_ms: ['Unix (milliseconds)', 'Unix 毫秒'],
+  unix_ms_short: ['Unix (ms)', 'Unix (ms)'],
   iso: ['ISO 8601', 'ISO 8601'],
   local: ['Local time', '本地时间'],
+  local_short: ['Local', '本地时间'],
   utc: ['UTC string', 'UTC 字符串'],
-  locale: ['Locale date', '本地化日期'],
+  locale: ['Locale time', '本地化时间'],
+  locale_short: ['Locale', '本地化时间'],
   relative: ['Relative', '相对时间'],
   now: ['Now', '当前时间'],
-  live: ['Live', '实时'],
-  invalid: ['Invalid date', '无效日期'],
+  live: ['Live', '实时更新'],
+  invalid: ['Invalid date', '无效时间'],
   input_label: ['Input', '输入'],
   output_label: ['Output', '输出'],
 })
 
 type FormatKey = 'unix_s' | 'unix_ms' | 'iso' | 'local' | 'utc' | 'locale'
 
-const FORMAT_OPTIONS: { key: FormatKey, label: string }[] = [
-  { key: 'unix_s', label: 'Unix (s)' },
-  { key: 'unix_ms', label: 'Unix (ms)' },
-  { key: 'iso', label: 'ISO 8601' },
-  { key: 'local', label: 'Local' },
-  { key: 'utc', label: 'UTC' },
-  { key: 'locale', label: 'Locale' },
-]
+const FORMAT_OPTIONS = computed<{ label: string, value: FormatKey }[]>(() => [
+  { value: 'unix_s', label: t('unix_s_short') },
+  { value: 'unix_ms', label: t('unix_ms_short') },
+  { value: 'iso', label: 'ISO 8601' },
+  { value: 'local', label: t('local_short') },
+  { value: 'utc', label: 'UTC' },
+  { value: 'locale', label: t('locale_short') },
+])
 
 // ── 核心状态 ──
 const ms = shallowRef(Date.now())
@@ -206,11 +211,15 @@ const outputs = computed(() => [
           <template #append>
             <SelectInput
               v-model="inputFormat"
-              :options="FORMAT_OPTIONS.map(o => ({ label: o.label, value: o.key }))"
+              :options="FORMAT_OPTIONS"
             />
-            <span v-if="error" text-xs text-red-400 shrink-0>{{ t('invalid') }}</span>
           </template>
         </TextInput>
+        <Transition name="warn">
+          <AlertTip v-if="error" type="error">
+            {{ t('invalid') }}
+          </AlertTip>
+        </Transition>
       </div>
     </Panel>
 

@@ -103,3 +103,16 @@ button {
 .list-move {
   transition: transform 0.3s ease;
 }
+
+/* ── AlertTip 弹出动画 ── */
+.warn-enter-active,
+.warn-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.warn-enter-from,
+.warn-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}

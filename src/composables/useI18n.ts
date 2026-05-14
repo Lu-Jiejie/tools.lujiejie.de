@@ -2,7 +2,9 @@ import type { ToolCategory } from '~/tools'
 import { CATEGORY_LABELS } from '~/tools'
 import { useLocale } from './useLocale'
 
-type MessageValue = [string, string] // [en, zh]
+type MessageString = [string, string] // [en, zh]
+type MessageFn<T extends string[]> = [((...args: T) => string), ((...args: T) => string)]
+type MessageValue = MessageString | MessageFn<string[]>
 export type MessageRecord = Record<string, MessageValue>
 
 // 从 CATEGORY_LABELS 自动生成分类翻译
@@ -35,11 +37,12 @@ export function useI18n(componentMessages?: MessageRecord) {
     ? { ...globalMessages, ...componentMessages }
     : globalMessages
 
-  function t(key: string): string {
+  function t(key: string, ...args: string[]): string {
     const pair = messages[key]
     if (!pair)
       return key
-    return locale.value === 'zh' ? pair[1] : pair[0]
+    const val = locale.value === 'zh' ? pair[1] : pair[0]
+    return typeof val === 'function' ? val(...args) : val
   }
 
   return { t }

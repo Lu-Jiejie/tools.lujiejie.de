@@ -55,14 +55,13 @@ function toggleCategory(cat: ToolCategory) {
             <div class="category-items-inner" ml-2 border="l c-border">
               <RouterLink
                 v-for="tool in group.tools"
-                :key="tool.id"
-                :to="`/${tool.id}`"
-                class="nav-item"
+                :key="tool.id" :to="`/${tool.id}`"
+                m="b-0.5 l-2" p="x-2 y-1.5" text-sm rounded-lg op-85 flex transition-colors duration-150 items-center hover:(bg-c-raised) !hover:op-90
                 active-class="!bg-c-soft !text-c-accent !op-100"
                 @click="$emit('close')"
               >
                 <span>{{ tool.name }}</span>
-                <div v-if="group.category !== 'favorites' && isFavorite(tool.id)" i-carbon-star-filled text="[10px] amber-500" ml-1.5 shrink-0 />
+                <div v-if="group.category !== 'favorites' && isFavorite(tool.id)" i-carbon-star-filled text="[12px] amber-500" ml-1 shrink-0 />
               </RouterLink>
             </div>
           </div>

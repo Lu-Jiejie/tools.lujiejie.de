@@ -17,9 +17,13 @@ function clamp(n: number) {
 }
 
 function onInput(e: Event) {
-  const n = Number.parseInt((e.target as HTMLInputElement).value)
-  if (!Number.isNaN(n))
-    emit('update:modelValue', clamp(n))
+  const input = e.target as HTMLInputElement
+  const n = Number.parseInt(input.value)
+  if (!Number.isNaN(n)) {
+    const clamped = clamp(n)
+    input.value = String(clamped)
+    emit('update:modelValue', clamped)
+  }
 }
 
 function step(delta: number) {
@@ -28,7 +32,9 @@ function step(delta: number) {
 </script>
 
 <template>
-  <div flex="~ gap-1" border="~ c-border" rounded-xl bg-c-input shrink-0 items-center overflow-hidden>
+  <div
+    flex="~ gap-1" border="~ c-border" rounded-xl bg-c-input shrink-0 items-center overflow-hidden
+  >
     <input
       :value="modelValue"
       type="number"

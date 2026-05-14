@@ -15,6 +15,8 @@ export default defineConfig({
         'bg': 'var(--c-bg)',
         'surface': 'var(--c-surface)',
         'raised': 'var(--c-surface-raised)',
+        'input': 'var(--c-input)',
+        'input-readonly': 'var(--c-input-readonly)',
         'border': 'var(--c-border)',
         'border-strong': 'var(--c-border-strong)',
         'accent': 'var(--c-accent)',

@@ -42,7 +42,7 @@ async function copy() {
 const fieldClass = computed(() => [
   props.error ? 'border-red-400 dark:border-red-500' : 'border-c-border',
   props.monospace ? 'font-mono' : '',
-  props.readonly ? 'op-80' : 'focus:border-c-border-strong',
+  props.readonly ? 'bg-c-input-readonly op-70' : 'bg-c-input focus:border-c-border-strong',
   slots.prefix ? 'pl-8' : '',
 ])
 </script>
@@ -58,13 +58,13 @@ const fieldClass = computed(() => [
           :value="modelValue"
           :placeholder="placeholder"
           :class="fieldClass"
-          border="~" text-sm px-3 py-2 outline-none rounded-xl bg-c-raised w-full transition-colors
+          border="~" text-sm px-3 py-2 outline-none rounded-xl w-full transition-colors
           @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
         >
         <div
           v-else
           :class="fieldClass"
-          border="~" text-sm px-3 py-2 rounded-xl bg-c-raised w-full select-none whitespace-nowrap overflow-x-auto
+          border="~" text-sm px-3 py-2 rounded-xl w-full select-none whitespace-nowrap overflow-x-auto
         >
           {{ modelValue }}
         </div>

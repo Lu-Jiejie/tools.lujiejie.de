@@ -11,6 +11,9 @@ importers:
       '@vueuse/core':
         specifier: ^14.3.0
         version: 14.3.0(vue@3.5.34(typescript@6.0.3))
+      vanilla-colorful:
+        specifier: ^0.7.2
+        version: 0.7.2
       vue:
         specifier: ^3.5.34
         version: 3.5.34(typescript@6.0.3)
@@ -21,18 +24,12 @@ importers:
       '@antfu/eslint-config':
         specifier: ^9.0.0
         version: 9.0.0(@typescript-eslint/rule-tester@8.59.2(eslint@10.3.0(jiti@2.6.1))(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.59.2(typescript@6.0.3))(@typescript-eslint/utils@8.59.2(eslint@10.3.0(jiti@2.6.1))(typescript@6.0.3))(@unocss/eslint-plugin@66.6.8(eslint@10.3.0(jiti@2.6.1))(typescript@6.0.3))(@vue/compiler-sfc@3.5.34)(eslint-plugin-format@2.0.1(eslint@10.3.0(jiti@2.6.1)))(eslint@10.3.0(jiti@2.6.1))(typescript@6.0.3)(vitest@4.1.6(@types/node@25.6.2)(vite@8.0.12(@types/node@25.6.2)(jiti@2.6.1)(yaml@2.8.4)))
-      '@iconify-json/carbon':
-        specifier: ^1.2.21
-        version: 1.2.21
-      '@iconify-json/icon-park-outline':
-        specifier: ^1.2.4
-        version: 1.2.4
       '@iconify-json/material-symbols':
         specifier: ^1.2.71
         version: 1.2.71
-      '@iconify-json/ri':
-        specifier: ^1.2.10
-        version: 1.2.10
+      '@iconify/json':
+        specifier: ^2.2.472
+        version: 2.2.472
       '@types/node':
         specifier: ^25.6.2
         version: 25.6.2
@@ -316,17 +313,11 @@ packages:
     resolution: {integrity: sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/carbon@1.2.21':
-    resolution: {integrity: sha512-yCutC5KWR7uiXdCum1MqNrnfUhq118WYhHkUiBux6wekc6UnlVKvIte54AER0B2uEe0wfKxFIMoJqJugjViATQ==}
-
-  '@iconify-json/icon-park-outline@1.2.4':
-    resolution: {integrity: sha512-NyZxXe2gD2TbTOyoRRMdtEJhr6i2KQCdDlYYoOn5oZLndQjwpIhw79hzeFhXvP38/o40D3gQ+l+IaSJgbB+0TQ==}
-
   '@iconify-json/material-symbols@1.2.71':
     resolution: {integrity: sha512-anxtI3TtLv7VVtISrp8WqXU4vexszKwN7yFOmXoZjSSsIgiFp3HrMeWBFqlZPr90CVgP717dxc2OhCJyiEnOfw==}
 
-  '@iconify-json/ri@1.2.10':
-    resolution: {integrity: sha512-WWMhoncVVM+Xmu9T5fgu2lhYRrKTEWhKk3Com0KiM111EeEsRLiASjpsFKnC/SrB6covhUp95r2mH8tGxhgd5Q==}
+  '@iconify/json@2.2.472':
+    resolution: {integrity: sha512-oVE2GD59vnpApCwYzBfVhjEH+TxDfkWL5ahbTA5kEDHsPmWfnABdfkdw0x7EUhf/EgRycLtxqZg3BLSmJMjmaw==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -2506,6 +2497,9 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
+  vanilla-colorful@0.7.2:
+    resolution: {integrity: sha512-z2YZusTFC6KnLERx1cgoIRX2CjPRP0W75N+3CC6gbvdX5Ch47rZkEMGO2Xnf+IEmi3RiFLxS18gayMA27iU7Kg==}
+
   vite@8.0.12:
     resolution: {integrity: sha512-w2dDofOWv2QB09ZITZBsvKTVAlYvPR4IAmrY/v0ir9KvLs0xybR7i48wxhM1/oyBWO34wPns+bPGw5ZrZqDpZg==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -2916,21 +2910,14 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.2': {}
 
-  '@iconify-json/carbon@1.2.21':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/icon-park-outline@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
   '@iconify-json/material-symbols@1.2.71':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/ri@1.2.10':
+  '@iconify/json@2.2.472':
     dependencies:
       '@iconify/types': 2.0.0
+      pathe: 2.0.3
 
   '@iconify/types@2.0.0': {}
 
@@ -5342,6 +5329,8 @@ snapshots:
       punycode: 2.3.1
 
   util-deprecate@1.0.2: {}
+
+  vanilla-colorful@0.7.2: {}
 
   vite@8.0.12(@types/node@25.6.2)(jiti@2.6.1)(yaml@2.8.4):
     dependencies:

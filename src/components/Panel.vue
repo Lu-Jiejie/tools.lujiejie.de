@@ -6,7 +6,10 @@ defineProps<{
 
 <template>
   <div class="tool-panel" border="~ c-border" rounded-2xl bg-c-surface overflow-hidden>
-    <div v-if="title" text-xs tracking-wide font-medium px-5 py-3 border-b border-c-border op-50 select-none uppercase>
+    <div
+      v-if="title"
+      p="x-4 y-2" border="b c-border" text-sm tracking-wide font-medium op-50 select-none uppercase
+    >
       {{ title }}
     </div>
     <slot />

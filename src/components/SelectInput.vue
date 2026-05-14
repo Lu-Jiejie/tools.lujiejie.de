@@ -16,7 +16,7 @@ watchEffect(() => {
 <template>
   <select
     v-model="model"
-    border="~ c-border hover:c-border-strong" text-sm px-3 py-2 outline-none rounded-xl bg-c-raised shrink-0 cursor-pointer transition-colors
+    border="~ c-border hover:c-border-strong" text-sm px-3 py-2 outline-none rounded-xl bg-c-input shrink-0 cursor-pointer transition-colors
   >
     <option v-for="opt in options" :key="opt.value" :value="opt.value" bg-c-surface>
       {{ opt.label }}

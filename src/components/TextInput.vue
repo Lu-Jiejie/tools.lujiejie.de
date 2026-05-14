@@ -51,7 +51,7 @@ const fieldClass = computed(() => [
   <div flex="~ col gap-1.5">
     <label v-if="label" text-xs tracking-wide font-medium op-50 select-none uppercase>{{ label }}</label>
     <div flex="~ gap-2" items-center>
-      <div flex flex-1 items-center relative>
+      <div flex flex-1 min-w-0 items-center relative>
         <slot name="prefix" />
         <input
           v-if="!readonly"
@@ -64,7 +64,7 @@ const fieldClass = computed(() => [
         <div
           v-else
           :class="fieldClass"
-          border="~" text-sm px-3 py-2 rounded-xl bg-c-raised w-full select-none truncate
+          border="~" text-sm px-3 py-2 rounded-xl bg-c-raised w-full select-none whitespace-nowrap overflow-x-auto
         >
           {{ modelValue }}
         </div>

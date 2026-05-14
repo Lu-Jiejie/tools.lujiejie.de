@@ -16,10 +16,10 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, onUnmounted, shallowRef, watch } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
+import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import ToggleButton from '~/components/ToggleButton.vue'
-import ToolPanel from '~/components/ToolPanel.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -181,7 +181,7 @@ const outputs = computed(() => [
 <template>
   <div flex="~ col gap-4">
     <!-- 输入 Panel -->
-    <ToolPanel :title="t('input_label')">
+    <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
         <!-- 操作栏 -->
         <div flex="~ gap-2" items-center>
@@ -212,10 +212,10 @@ const outputs = computed(() => [
           </template>
         </TextInput>
       </div>
-    </ToolPanel>
+    </Panel>
 
     <!-- 输出 Panel -->
-    <ToolPanel :title="t('output_label')">
+    <Panel :title="t('output_label')">
       <div p-5 flex="~ col gap-3">
         <TextInput
           v-for="out in outputs"
@@ -223,6 +223,6 @@ const outputs = computed(() => [
           readonly
         />
       </div>
-    </ToolPanel>
+    </Panel>
   </div>
 </template>

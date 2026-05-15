@@ -1,4 +1,5 @@
 export * from './dark'
+export * from './useDevMode'
 export * from './useI18n'
 export * from './useLocale'
 export * from './useSidebar'

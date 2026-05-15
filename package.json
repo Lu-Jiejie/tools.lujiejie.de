@@ -14,10 +14,12 @@
     "postinstall": "npx simple-git-hooks"
   },
   "dependencies": {
+    "@regexper/render": "^1.0.0",
     "@vueuse/core": "^14.3.0",
     "vanilla-colorful": "^0.7.2",
     "vue": "^3.5.34",
-    "vue-router": "^5.0.6"
+    "vue-router": "^5.0.6",
+    "vue-shadow-dom": "^4.2.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@regexper/render':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@vueuse/core':
         specifier: ^14.3.0
         version: 14.3.0(vue@3.5.34(typescript@6.0.3))
@@ -20,6 +23,9 @@ importers:
       vue-router:
         specifier: ^5.0.6
         version: 5.0.6(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
+      vue-shadow-dom:
+        specifier: ^4.2.0
+        version: 4.2.0
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^9.0.0
@@ -627,6 +633,12 @@ packages:
   '@quansync/fs@1.0.0':
     resolution: {integrity: sha512-4TJ3DFtlf1L5LDMaM6CanJ/0lckGNtJcMjQ1NAV6zDmA0tEHKZtxNKin8EgPaVX1YzljbxckyT2tJrpQKAtngQ==}
 
+  '@regexper/parser@1.0.0':
+    resolution: {integrity: sha512-S8AWIGpCNdl9PNHdbhI6TpXZsPk6FDU/RTZI+6UFF4rVFqDQKjCIbZSgFu7NihoEZKq57wKFPbbT1EzrjVvPHA==}
+
+  '@regexper/render@1.0.0':
+    resolution: {integrity: sha512-xYm9RUgnhhZotTtf8UZpK1PG2CcTRXQ3JPwfTlYUZsy2J+UcTVc7BaO/MJadpMoVuT8jrIyptH4Y0HLzqhI3hQ==}
+
   '@rolldown/binding-android-arm64@1.0.0':
     resolution: {integrity: sha512-TWMZnRLMe63C2Lhyicviu7ZHaU4kxa6PS3rofvc9GmcvptzNN11BcfQ4Sl7MwTOsisQoa2keB/EBdNCAnUo8vA==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -740,6 +752,9 @@ packages:
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^9.0.0 || ^10.0.0
+
+  '@svgdotjs/svg.js@3.2.5':
+    resolution: {integrity: sha512-/VNHWYhNu+BS7ktbYoVGrCmsXDh+chFMaONMwGNdIBcFHrWqk2jY8fNyr3DLdtQUIalvkPfM554ZSFa3dm3nxQ==}
 
   '@tybys/wasm-util@0.10.2':
     resolution: {integrity: sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg==}
@@ -2608,6 +2623,9 @@ packages:
       pinia:
         optional: true
 
+  vue-shadow-dom@4.2.0:
+    resolution: {integrity: sha512-lguI064rT2HT/dxqSmXtz860KOvCq+W3nU1jMqroTmX3K1H46q22BMR4emh/Ld3ozy35XJKOaNGcr6mkJ/t/yg==}
+
   vue-tsc@3.2.8:
     resolution: {integrity: sha512-27vTLJ6Q2370obOd0PFYoYoKnmXJ521uUIedrs3Zhhhg/8YG10VOCMmwt+JQslatpAMTDbnWiitLnoD5VlIvog==}
     hasBin: true
@@ -3102,6 +3120,13 @@ snapshots:
     dependencies:
       quansync: 1.0.0
 
+  '@regexper/parser@1.0.0': {}
+
+  '@regexper/render@1.0.0':
+    dependencies:
+      '@regexper/parser': 1.0.0
+      '@svgdotjs/svg.js': 3.2.5
+
   '@rolldown/binding-android-arm64@1.0.0':
     optional: true
 
@@ -3168,6 +3193,8 @@ snapshots:
       espree: 10.4.0
       estraverse: 5.3.0
       picomatch: 4.0.3
+
+  '@svgdotjs/svg.js@3.2.5': {}
 
   '@tybys/wasm-util@0.10.2':
     dependencies:
@@ -5408,6 +5435,8 @@ snapshots:
       yaml: 2.8.2
     optionalDependencies:
       '@vue/compiler-sfc': 3.5.34
+
+  vue-shadow-dom@4.2.0: {}
 
   vue-tsc@3.2.8(typescript@6.0.3):
     dependencies:

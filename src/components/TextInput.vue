@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<{
   error?: boolean
   readonly?: boolean
   copyable?: boolean
+  backspaceable?: boolean
   monospace?: boolean
 }>(), {
   copyable: true,
@@ -38,6 +39,30 @@ async function copy() {
   await navigator.clipboard.writeText(props.modelValue)
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
+}
+
+let longPressTimer: ReturnType<typeof setTimeout> | null = null
+
+function onBackspacePointerDown() {
+  longPressTimer = setTimeout(() => {
+    longPressTimer = null
+    emit('update:modelValue', '')
+  }, 500)
+}
+
+function onBackspacePointerUp() {
+  if (longPressTimer !== null) {
+    clearTimeout(longPressTimer)
+    longPressTimer = null
+    emit('update:modelValue', props.modelValue.slice(0, -1))
+  }
+}
+
+function onBackspacePointerLeave() {
+  if (longPressTimer !== null) {
+    clearTimeout(longPressTimer)
+    longPressTimer = null
+  }
 }
 
 const fieldClass = computed(() => [
@@ -71,6 +96,14 @@ const fieldClass = computed(() => [
         </div>
       </div>
       <slot name="append" />
+      <BaseButton
+        v-if="backspaceable"
+        icon-only
+        icon="i-ph-backspace"
+        @pointerdown="onBackspacePointerDown"
+        @pointerup="onBackspacePointerUp"
+        @pointerleave="onBackspacePointerLeave"
+      />
       <BaseButton
         v-if="copyable"
         icon-only

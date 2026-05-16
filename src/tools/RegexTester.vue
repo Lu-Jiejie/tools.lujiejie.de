@@ -21,7 +21,6 @@ import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
-import ToggleButton from '~/components/ToggleButton.vue'
 import { isDark } from '~/composables/dark'
 import { isDev } from '~/composables/useDevMode'
 import { useI18n } from '~/composables/useI18n'
@@ -362,30 +361,42 @@ function applyExample(ex: Example) {
           </AlertTip>
         </Transition>
         <div flex="~ gap-2 wrap" items-center>
-          <ToggleButton v-model="flagG">
+          <BaseButton
+            :active="flagG"
+            @click="flagG = !flagG"
+          >
             g · {{ t('flag_g') }}
-          </ToggleButton>
-          <ToggleButton v-model="flagI">
+          </BaseButton>
+          <BaseButton
+            :active="flagI"
+            @click="flagI = !flagI"
+          >
             i · {{ t('flag_i') }}
-          </ToggleButton>
-          <ToggleButton v-model="flagM">
+          </BaseButton>
+          <BaseButton
+            :active="flagM"
+            @click="flagM = !flagM"
+          >
             m · {{ t('flag_m') }}
-          </ToggleButton>
-          <ToggleButton v-model="flagS">
+          </BaseButton>
+          <BaseButton
+            :active="flagS"
+            @click="flagS = !flagS"
+          >
             s · {{ t('flag_s') }}
-          </ToggleButton>
-          <ToggleButton
-            :model-value="flagU"
-            @update:model-value="flagU = $event; if ($event) flagV = false"
+          </BaseButton>
+          <BaseButton
+            :active="flagU"
+            @click="flagU = !flagU; if (flagU) flagV = false"
           >
             u · {{ t('flag_u') }}
-          </ToggleButton>
-          <ToggleButton
-            :model-value="flagV"
-            @update:model-value="flagV = $event; if ($event) flagU = false"
+          </BaseButton>
+          <BaseButton
+            :active="flagV"
+            @click="flagV = !flagV; if (flagV) flagU = false"
           >
             v · {{ t('flag_v') }}
-          </ToggleButton>
+          </BaseButton>
         </div>
       </div>
     </Panel>

@@ -19,7 +19,6 @@ import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
-import ToggleButton from '~/components/ToggleButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -288,21 +287,39 @@ async function copyResult() {
           @update:model-value="replacePattern = $event"
         />
         <div flex="~ gap-2 wrap" items-center>
-          <ToggleButton v-model="useRegex">
-            .* · {{ t('use_regex') }}
-          </ToggleButton>
-          <ToggleButton v-model="flagG">
+          <BaseButton
+            icon="i-material-symbols-code"
+            :active="useRegex"
+            @click="useRegex = !useRegex"
+          >
+            {{ t('use_regex') }}
+          </BaseButton>
+          <BaseButton
+            :active="flagG"
+            @click="flagG = !flagG"
+          >
             g · {{ t('flag_g') }}
-          </ToggleButton>
-          <ToggleButton v-model="flagI">
+          </BaseButton>
+          <BaseButton
+            :active="flagI"
+            @click="flagI = !flagI"
+          >
             i · {{ t('flag_i') }}
-          </ToggleButton>
-          <ToggleButton v-if="useRegex" v-model="flagM">
+          </BaseButton>
+          <BaseButton
+            v-if="useRegex"
+            :active="flagM"
+            @click="flagM = !flagM"
+          >
             m · {{ t('flag_m') }}
-          </ToggleButton>
-          <ToggleButton v-if="useRegex" v-model="flagS">
+          </BaseButton>
+          <BaseButton
+            v-if="useRegex"
+            :active="flagS"
+            @click="flagS = !flagS"
+          >
             s · {{ t('flag_s') }}
-          </ToggleButton>
+          </BaseButton>
         </div>
         <div text-sm op-60>
           <template v-if="result.error === null && findPattern">

@@ -12,6 +12,7 @@ const props = withDefaults(defineProps<{
   copyable?: boolean
   backspaceable?: boolean
   monospace?: boolean
+  secret?: boolean
 }>(), {
   copyable: true,
   monospace: true,
@@ -25,6 +26,8 @@ const slots = defineSlots<{
   prefix?: () => unknown
   append?: () => unknown
 }>()
+
+const visible = shallowRef(false)
 
 const { t } = useI18n({
   copy: ['Copy', '复制'],
@@ -82,6 +85,8 @@ const fieldClass = computed(() => [
         <input
           v-if="!readonly"
           :value="modelValue"
+          :type="secret && !visible ? 'password' : 'text'"
+          :autocomplete="secret ? 'off' : undefined"
           :placeholder="placeholder"
           :class="fieldClass"
           border="~" text-sm px-3 py-2 outline-none rounded-xl w-full transition-colors
@@ -92,7 +97,7 @@ const fieldClass = computed(() => [
           :class="fieldClass"
           border="~" text-sm px-3 py-2 rounded-xl min-h-9 w-full select-none whitespace-nowrap overflow-x-auto
         >
-          {{ modelValue }}
+          {{ secret && !visible ? '•'.repeat(modelValue.length) : modelValue }}&nbsp;
         </div>
       </div>
       <slot name="append" />
@@ -105,6 +110,12 @@ const fieldClass = computed(() => [
         @pointerleave="onBackspacePointerLeave"
       />
       <BaseButton
+        v-if="secret"
+        icon-only
+        :icon="visible ? 'i-material-symbols-visibility-off' : 'i-material-symbols-visibility'"
+        @click="visible = !visible"
+      />
+      <BaseButton
         v-if="copyable"
         icon-only
         icon="i-carbon-copy"
@@ -114,3 +125,10 @@ const fieldClass = computed(() => [
     </div>
   </div>
 </template>
+
+<style scoped>
+input::-ms-reveal,
+input::-webkit-credentials-auto-fill-button {
+  display: none;
+}
+</style>

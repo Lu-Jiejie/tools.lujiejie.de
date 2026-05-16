@@ -20,7 +20,6 @@ import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import TextInput from '~/components/TextInput.vue'
-import ToggleButton from '~/components/ToggleButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -193,12 +192,13 @@ const outputs = computed(() => [
           <BaseButton icon="i-carbon-time" @click="setNow">
             {{ t('now') }}
           </BaseButton>
-          <ToggleButton
-            :model-value="live"
-            @update:model-value="onLiveToggle"
+          <BaseButton
+            icon="i-material-symbols-play-arrow"
+            :active="live"
+            @click="onLiveToggle(!live)"
           >
             {{ t('live') }}
-          </ToggleButton>
+          </BaseButton>
         </div>
 
         <!-- 输入框 + 格式下拉 -->

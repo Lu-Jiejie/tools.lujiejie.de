@@ -16,7 +16,7 @@ export const CATEGORY_LABELS: Record<ToolCategory, { en: string, zh: string }> =
   favorites: { en: 'Favorites', zh: '收藏夹' },
   text: { en: 'Text', zh: '文本' },
   format: { en: 'Format', zh: '格式化' },
-  encode: { en: 'Encode', zh: '编码' },
+  encode: { en: 'Encode', zh: '编解码' },
   convert: { en: 'Convert', zh: '转换' },
 }
 

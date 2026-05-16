@@ -4,3 +4,4 @@ trustPolicy: no-downgrade
 
 allowBuilds:
   simple-git-hooks: false
+  vue-demi: false

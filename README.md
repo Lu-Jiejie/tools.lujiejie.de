@@ -1,3 +1,3 @@
-# Vitesse Personal
+# tools.lujiejie.de
 
-A personal modified fork of [vitesse-lite](https://github.com/antfu-collective/vitesse-lite).
+A collection of handy developer tools for myself.

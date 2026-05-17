@@ -4,9 +4,9 @@ import { defineTool } from './index'
 export const toolMeta = defineTool({
   id: 'keycode',
   name: 'KeyCode Viewer',
-  nameZh: 'KeyCode 查看器',
+  nameZh: '键值查看器',
   description: 'Press any key to view its keyCode, key, code, and other keyboard event properties.',
-  descriptionZh: '按下任意键查看对应的 keyCode、key、code 等键盘事件属性。',
+  descriptionZh: '按下任意键查看对应的键值、key、code 等键盘事件属性。',
   category: 'dev',
   keywords: ['keycode', 'keyboard', 'key', 'event', 'code'],
 })

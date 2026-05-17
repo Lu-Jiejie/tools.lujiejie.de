@@ -6,4 +6,6 @@ export default antfu(
     formatters: true,
     pnpm: true,
   },
-)
+).removeRules([
+  'no-alert',
+])

@@ -201,6 +201,11 @@ function highlight() {
 
 watch([outputText, language, isDark, highlighter, theme], highlight, { immediate: true })
 
+watch([inputText, canFormat], () => {
+  if (!canFormat.value)
+    outputText.value = inputText.value
+}, { immediate: true })
+
 async function copyOutput() {
   if (!outputText.value)
     return

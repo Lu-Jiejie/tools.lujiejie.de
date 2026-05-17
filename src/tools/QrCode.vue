@@ -7,7 +7,7 @@ export const toolMeta = defineTool({
   nameZh: '二维码生成',
   description: 'Generate QR codes from text or URLs with customizable options.',
   descriptionZh: '从文本或链接生成二维码，支持自定义样式。',
-  category: 'encode',
+  category: 'generate',
   keywords: ['qr', 'qrcode', 'barcode', 'scan'],
 })
 </script>

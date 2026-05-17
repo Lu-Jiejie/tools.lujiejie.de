@@ -7,7 +7,7 @@ export const toolMeta = defineTool({
   nameZh: '统一密码生成',
   description: 'Generate deterministic passwords from a master password and platform alias using Argon2.',
   descriptionZh: '通过主密码和平台别名，使用 Argon2 算法生成确定性密码。',
-  category: 'encode',
+  category: 'generate',
   keywords: ['password', 'argon2', 'hash', 'generate', 'unified'],
 })
 </script>

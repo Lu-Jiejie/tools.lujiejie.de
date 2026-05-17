@@ -18,7 +18,7 @@ if (!tool.value) {
 <template>
   <div v-if="tool" page-container>
     <!-- 工具头部 -->
-    <div mb-8 flex="~ gap-4" items-start>
+    <div mb-4 flex="~ gap-4" items-start>
       <div flex="~ col gap-1.5" min-w-0>
         <div flex="~ wrap gap-3" items-center>
           <h1 text-3xl tracking-tight font-bold op-90 select-none>

@@ -41,7 +41,7 @@ const currentTool = computed(() => {
 
     <!-- 右侧操作区 -->
     <div class="header-icons" flex shrink-0 gap-1 items-center>
-      <a href="https://github.com/Lu-Jiejie" target="_blank" rel="noreferrer" title="GitHub">
+      <a href="https://github.com/Lu-Jiejie/tools.lujiejie.de" target="_blank" rel="noreferrer" title="GitHub">
         <div i-ri-github-fill />
       </a>
 

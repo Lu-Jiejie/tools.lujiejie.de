@@ -7,7 +7,7 @@ export const toolMeta = defineTool({
   nameZh: '正则测试',
   description: 'Test and debug regular expressions with live match highlighting.',
   descriptionZh: '测试和调试正则表达式，实时高亮匹配结果。',
-  category: 'text',
+  category: 'dev',
   keywords: ['regex', 'regexp', 'pattern', 'match', '正则', '匹配'],
 })
 </script>

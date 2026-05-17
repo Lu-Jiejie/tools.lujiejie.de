@@ -4,10 +4,10 @@ import { defineTool } from './index'
 export const toolMeta = defineTool({
   id: 'uuid-generator',
   name: 'UUID Generator',
-  nameZh: 'UUID 生成器',
+  nameZh: 'UUID 生成',
   description: 'Generate UUIDs in multiple versions (NIL, v1, v3, v4, v5).',
   descriptionZh: '支持多版本（NIL、v1、v3、v4、v5）的 UUID 生成器。',
-  category: 'encode',
+  category: 'generate',
   keywords: ['uuid', 'guid', 'random', 'id', 'unique'],
 })
 </script>

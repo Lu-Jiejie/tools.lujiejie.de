@@ -19,6 +19,7 @@ import * as yaml from 'js-yaml'
 import { createHighlighter } from 'shiki'
 import * as TOML from 'smol-toml'
 import { onMounted, shallowRef, watch } from 'vue'
+import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
@@ -191,24 +192,19 @@ async function copyOutput() {
 
     <Panel :title="t('output_label')">
       <div p-5 flex="~ col gap-4">
-        <div v-if="error" text-sm text-red-500>
-          {{ t('error') }}: {{ error }}
+        <AlertTip v-if="error" type="error">
+          <span text-sm>{{ error }}</span>
+        </AlertTip>
+        <div flex="~ gap-2" items-center>
+          <BaseButton icon="i-carbon-copy" :disabled="!outputText" @click="copyOutput">
+            {{ copied ? t('copied') : t('copy') }}
+          </BaseButton>
         </div>
-        <template v-else-if="highlightedHtml">
-          <div flex="~ gap-2" items-center>
-            <BaseButton icon="i-carbon-copy" @click="copyOutput">
-              {{ copied ? t('copied') : t('copy') }}
-            </BaseButton>
-          </div>
-          <div
-            class="shiki-output"
-            border="~ c-border" text-sm rounded-xl overflow-x-auto
-            v-html="highlightedHtml"
-          />
-        </template>
-        <div v-else text-sm py-8 text-center op-40 select-none>
-          ...
-        </div>
+        <div
+          class="shiki-output"
+          border="~ c-border" text-sm rounded-xl min-h-48 overflow-x-auto
+          v-html="highlightedHtml"
+        />
       </div>
     </Panel>
   </div>

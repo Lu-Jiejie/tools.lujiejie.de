@@ -1,6 +1,6 @@
 import type { Component } from 'vue'
 
-export type ToolCategory = 'favorites' | 'text' | 'format' | 'encode' | 'convert'
+export type ToolCategory = 'favorites' | 'text' | 'dev' | 'encode' | 'convert'
 
 export interface Tool {
   id: string
@@ -15,12 +15,12 @@ export interface Tool {
 export const CATEGORY_LABELS: Record<ToolCategory, { en: string, zh: string }> = {
   favorites: { en: 'Favorites', zh: '收藏夹' },
   text: { en: 'Text', zh: '文本' },
-  format: { en: 'Format', zh: '格式化' },
+  dev: { en: 'Dev', zh: '开发' },
   encode: { en: 'Encode', zh: '编解码' },
   convert: { en: 'Convert', zh: '转换' },
 }
 
-export const CATEGORY_ORDER: ToolCategory[] = ['convert', 'encode', 'format', 'text']
+export const CATEGORY_ORDER: ToolCategory[] = ['convert', 'encode', 'dev', 'text']
 
 // 辅助函数，为具体工具的 meta 提供自动类型推导和提示
 export function defineTool(tool: Tool): Tool {

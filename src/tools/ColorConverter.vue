@@ -50,9 +50,9 @@ const FORMAT_OPTIONS: { label: string, value: FormatKey }[] = [
   { label: 'RGB (0–1)', value: 'rgb_norm' },
 ]
 
-const color = shallowRef<Rgba>({ r: 59, g: 130, b: 246, a: 1 })
+const color = shallowRef<Rgba>({ r: 45, g: 212, b: 191, a: 1 })
 const inputFormat = shallowRef<FormatKey>('hex')
-const inputValue = shallowRef('#3b82f6ff')
+const inputValue = shallowRef('#2dd4bfff')
 const error = shallowRef(false)
 
 // ── 颜色解析 ──
@@ -434,7 +434,7 @@ const eyeDropperSupported = 'EyeDropper' in window
           :model-value="inputValue"
           :error="error"
           :copyable="false"
-          placeholder="#3b82f6ff / rgba(59,130,246,1) / hsla(217,91%,60%,1)"
+          placeholder="#2dd4bfff / rgb(45, 212, 191, 1) / hsl(172, 66%, 50%, 1)"
           @update:model-value="onInput"
         >
           <template #append>

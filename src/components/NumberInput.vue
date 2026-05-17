@@ -3,9 +3,11 @@ const props = withDefaults(defineProps<{
   modelValue: number
   min?: number
   max?: number
+  size?: 'sm' | 'default'
 }>(), {
   min: -Infinity,
   max: Infinity,
+  size: 'default',
 })
 
 const emit = defineEmits<{
@@ -33,7 +35,8 @@ function step(delta: number) {
 
 <template>
   <div
-    flex="~ gap-1" border="~ c-border" rounded-xl bg-c-input shrink-0 items-center overflow-hidden
+    flex="~ gap-1" border="~ c-border" bg-c-input shrink-0 items-center overflow-hidden
+    :class="size === 'sm' ? 'rounded-lg' : 'rounded-xl'"
   >
     <input
       :value="modelValue"
@@ -41,18 +44,21 @@ function step(delta: number) {
       :min="min"
       :max="max"
       class="no-spinner"
-      text-sm font-mono px-3 py-2 text-center outline-none bg-transparent w-14
+      :class="size === 'sm' ? 'px-2 py-1 w-10 text-xs' : 'px-3 py-2 w-14 text-sm'"
+      font-mono text-center outline-none bg-transparent
       @change="onInput"
     >
     <div flex="~ col" border-l border-c-border self-stretch>
       <button
-        px-1.5 border-b border-c-border op-40 flex flex-1 transition-opacity items-center justify-center hover:op-100
+        border-b border-c-border op-40 flex flex-1 transition-opacity items-center justify-center hover:op-100
+        :class="size === 'sm' ? 'px-1' : 'px-1.5'"
         @click="step(1)"
       >
         <div i-carbon-chevron-up text-xs />
       </button>
       <button
-        px-1.5 op-40 flex flex-1 transition-opacity items-center justify-center hover:op-100
+        op-40 flex flex-1 transition-opacity items-center justify-center hover:op-100
+        :class="size === 'sm' ? 'px-1' : 'px-1.5'"
         @click="step(-1)"
       >
         <div i-carbon-chevron-down text-xs />

@@ -1,9 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <style>
-    path { fill: #222; }
+    .letter { fill: #222; }
     @media (prefers-color-scheme: dark) {
-      path { fill: #ffffff; }
+      .letter { fill: #ffffff; }
     }
   </style>
-  <path d="M27.562 26L17.17 8.928l2.366-3.888L17.828 4L16 7.005L14.17 4l-1.708 1.04l2.366 3.888L4.438 26H2v2h28v-2zM16 10.85L25.22 26H17v-8h-2v8H6.78z" />
+  <rect class="letter" x="4" y="4" width="24" height="5" rx="1" />
+  <rect class="letter" x="13" y="4" width="6" height="24" rx="1" />
+  <circle cx="26" cy="24" r="4" fill="#00b894" />
 </svg>

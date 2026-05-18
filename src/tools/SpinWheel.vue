@@ -243,16 +243,17 @@ onMounted(() => {
             ref="canvasRef"
             width="320"
             height="320"
-            class="wheel-canvas"
+            rounded-full shadow="[0_4px_20px_rgba(0,0,0,0.15)]"
           />
           <!-- 指针 -->
           <div class="pointer" />
           <!-- 中心按钮 -->
           <button
             type="button"
-            class="center-btn"
+            class="text-sm text-white font-bold border-3 border-white rounded-full h-12 w-12 cursor-pointer transition-opacity-150 transition-transform-150 left-1/2 top-1/2 absolute disabled:opacity-40 disabled:cursor-not-allowed -translate-x-1/2 -translate-y-1/2 hover:scale-110"
             :class="{ spinning }"
             :disabled="!canSpin"
+            :style="{ background: 'var(--c-accent, #4ecdc4)', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)' }"
             @click="spin"
           >
             GO
@@ -279,10 +280,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.wheel-canvas {
-  border-radius: 50%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
+/* CSS triangle pointer & @keyframes — UnoCSS cannot express border tricks or keyframe animations */
 .pointer {
   position: absolute;
   top: 50%;
@@ -295,33 +293,7 @@ onMounted(() => {
   border-right: 20px solid var(--c-accent, #4ecdc4);
   filter: drop-shadow(-2px 0 2px rgba(0, 0, 0, 0.2));
 }
-.center-btn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 3px solid #fff;
-  background: var(--c-accent, #4ecdc4);
-  color: #fff;
-  font-size: 0.875rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition:
-    transform 0.15s,
-    opacity 0.15s;
-}
-.center-btn:hover:not(:disabled) {
-  transform: translate(-50%, -50%) scale(1.1);
-}
-.center-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.center-btn.spinning {
+.spinning {
   animation: pulse 0.6s ease-in-out infinite;
 }
 @keyframes pulse {

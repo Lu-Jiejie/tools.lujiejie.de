@@ -145,7 +145,7 @@ onUnmounted(() => {
           <div flex="~ gap-2" mb-6 items-center>
             <template v-for="(part, i) in comboDisplay" :key="i">
               <span v-if="i > 0" text-2xl font-light op-40 select-none>+</span>
-              <span class="keycap">{{ part }}</span>
+              <span border="~ c-border" text-xl font-mono font-semibold px-4 py-2 border-b-3 rounded-lg inline-flex min-w-12 select-none items-center justify-center :style="{ background: 'linear-gradient(to bottom, var(--c-raised), var(--c-surface))', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)' }">{{ part }}</span>
             </template>
           </div>
           <div grid="~ cols-2 sm:cols-4 gap-3" max-w-2xl w-full>
@@ -215,24 +215,3 @@ onUnmounted(() => {
     </Panel>
   </div>
 </template>
-
-<style scoped>
-.keycap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 3rem;
-  padding: 0.5rem 1rem;
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-  font-size: 1.25rem;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  border: 1px solid var(--c-border);
-  border-bottom-width: 3px;
-  background: linear-gradient(to bottom, var(--c-raised), var(--c-surface));
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  user-select: none;
-}
-</style>

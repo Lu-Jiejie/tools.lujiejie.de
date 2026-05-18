@@ -169,12 +169,13 @@ const diffRows = computed<DiffRow[]>(() => {
     </Panel>
 
     <Panel title="Diff">
-      <div class="diff-container" max-h-500px overflow-auto>
+      <div max-h-500px overflow-auto class="diff-container">
         <table text-sm font-mono w-full border-collapse>
           <tbody>
             <tr v-for="(row, i) in diffRows" :key="i" class="diff-row">
               <td
-                class="diff-line-no"
+                px-2 text-right align-top min-w-10 w-10 select-none whitespace-nowrap
+                :style="{ color: 'rgba(128, 128, 128, 0.6)' }"
                 :class="{ 'diff-delete-bg': row.left?.type === 'delete' }"
               >
                 {{ row.left?.lineNo ?? '' }}
@@ -188,9 +189,10 @@ const diffRows = computed<DiffRow[]>(() => {
               >
                 <span v-if="row.left">{{ row.left.text }}</span>
               </td>
-              <td class="diff-divider" />
+              <td bg-c-border min-w-1px w-1px />
               <td
-                class="diff-line-no"
+                px-2 text-right align-top min-w-10 w-10 select-none whitespace-nowrap
+                :style="{ color: 'rgba(128, 128, 128, 0.6)' }"
                 :class="{ 'diff-insert-bg': row.right?.type === 'insert' }"
               >
                 {{ row.right?.lineNo ?? '' }}
@@ -213,54 +215,27 @@ const diffRows = computed<DiffRow[]>(() => {
 </template>
 
 <style scoped>
-.diff-container {
-  scrollbar-width: thin;
-}
-
 .diff-row {
   line-height: 1.6;
 }
-
-.diff-line-no {
-  width: 40px;
-  min-width: 40px;
-  padding: 0 8px;
-  text-align: right;
-  color: rgba(128, 128, 128, 0.6);
-  user-select: none;
-  vertical-align: top;
-  white-space: nowrap;
-}
-
 .diff-content {
   padding: 0 12px;
   white-space: pre;
   vertical-align: top;
   width: 50%;
 }
-
-.diff-divider {
-  width: 1px;
-  min-width: 1px;
-  background: var(--c-border, rgba(128, 128, 128, 0.2));
-}
-
 .diff-delete-bg {
   background-color: rgba(239, 68, 68, 0.12);
 }
-
 .diff-insert-bg {
   background-color: rgba(34, 197, 94, 0.12);
 }
-
 .diff-empty {
   background-color: rgba(128, 128, 128, 0.04);
 }
-
 :root.dark .diff-delete-bg {
   background-color: rgba(239, 68, 68, 0.15);
 }
-
 :root.dark .diff-insert-bg {
   background-color: rgba(34, 197, 94, 0.15);
 }

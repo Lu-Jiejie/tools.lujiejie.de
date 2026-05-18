@@ -49,10 +49,10 @@ function toggleCategory(cat: ToolCategory) {
 
           <!-- 工具列表：用 grid-template-rows 实现流畅高度动画 -->
           <div
-            class="category-items"
-            :class="{ collapsed: isCollapsed(group.category) }"
+            grid transition-all-200
+            :style="{ gridTemplateRows: isCollapsed(group.category) ? '0fr' : '1fr' }"
           >
-            <div class="category-items-inner" ml-2 border="l c-border">
+            <div ml-2 overflow-hidden border="l c-border">
               <RouterLink
                 v-for="tool in group.tools"
                 :key="tool.id" :to="`/${tool.id}`"
@@ -70,18 +70,3 @@ function toggleCategory(cat: ToolCategory) {
     </nav>
   </aside>
 </template>
-
-<style scoped>
-/* grid-template-rows 高度动画：从 1fr → 0fr，比 max-height 更流畅 */
-.category-items {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition: grid-template-rows 0.2s ease;
-}
-.category-items.collapsed {
-  grid-template-rows: 0fr;
-}
-.category-items-inner {
-  overflow: hidden;
-}
-</style>

@@ -181,7 +181,7 @@ manualInput.value = octal.value
         <div flex justify-center>
           <button
             type="button"
-            class="command-btn"
+            border="~ c-border hover:c-border-strong" px-3 py-1.5 rounded-lg bg-c-raised cursor-pointer transition-all-150
             @click="copyCommand"
           >
             <span text-sm font-mono>{{ command }}</span>
@@ -223,17 +223,3 @@ manualInput.value = octal.value
     </Panel>
   </div>
 </template>
-
-<style scoped>
-.command-btn {
-  border: 1px solid var(--c-border);
-  border-radius: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  cursor: pointer;
-  background: var(--c-raised);
-  transition: all 0.15s;
-}
-.command-btn:hover {
-  border-color: var(--c-border-strong);
-}
-</style>

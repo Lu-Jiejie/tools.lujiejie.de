@@ -68,6 +68,7 @@ function step(delta: number) {
 </template>
 
 <style scoped>
+/* Hide number input spinners — UnoCSS cannot target these pseudo-elements */
 .no-spinner::-webkit-inner-spin-button,
 .no-spinner::-webkit-outer-spin-button {
   -webkit-appearance: none;

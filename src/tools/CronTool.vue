@@ -400,8 +400,8 @@ manualInput.value = expression.value
               <button
                 v-for="mode in MODE_OPTIONS" :key="mode.value"
                 type="button"
-                :class="fieldConfigs[fieldName].mode === mode.value ? 'active-chip' : 'inactive-chip'"
-                class="mode-btn"
+                btn-chip
+                :class="fieldConfigs[fieldName].mode === mode.value ? 'btn-chip-active' : 'hover:border-c-border-strong'"
                 @click="fieldConfigs[fieldName].mode = mode.value"
               >
                 {{ t(mode.key) }}
@@ -413,8 +413,8 @@ manualInput.value = expression.value
             <button
               v-for="item in getSpecificValues(fieldName)" :key="item.value"
               type="button"
-              :class="fieldConfigs[fieldName].specific.includes(item.value) ? 'active-chip' : 'inactive-chip'"
-              class="specific-btn"
+              btn-chip font-mono px-1.5 text-center min-w-8
+              :class="fieldConfigs[fieldName].specific.includes(item.value) ? 'btn-chip-active' : 'hover:border-c-border-strong'"
               @click="toggleSpecific(fieldName, item.value)"
             >
               {{ item.label }}
@@ -502,36 +502,3 @@ manualInput.value = expression.value
     </Panel>
   </div>
 </template>
-
-<style scoped>
-.mode-btn {
-  border: 1px solid var(--c-border);
-  border-radius: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  transition: all 0.15s;
-  cursor: pointer;
-  background: var(--c-raised);
-}
-.specific-btn {
-  border: 1px solid var(--c-border);
-  border-radius: 0.375rem;
-  min-width: 2rem;
-  padding: 0.25rem 0.375rem;
-  font-size: 0.75rem;
-  font-family: ui-monospace, monospace;
-  transition: all 0.15s;
-  cursor: pointer;
-  background: var(--c-raised);
-  text-align: center;
-}
-.active-chip {
-  border-color: var(--c-accent);
-  color: var(--c-accent);
-  background: color-mix(in srgb, var(--c-accent) 8%, transparent);
-}
-.inactive-chip:hover {
-  border-color: var(--c-border-strong);
-}
-</style>

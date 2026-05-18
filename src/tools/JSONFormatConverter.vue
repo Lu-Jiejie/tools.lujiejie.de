@@ -16,14 +16,13 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { XMLBuilder, XMLParser } from 'fast-xml-parser'
 import * as yaml from 'js-yaml'
-import { createHighlighter } from 'shiki'
 import * as TOML from 'smol-toml'
-import { onMounted, shallowRef, watch } from 'vue'
+import { shallowRef, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
+import CodeEditor from '~/components/CodeEditor.vue'
 import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
-import { isDark } from '~/composables/dark'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -53,29 +52,13 @@ const INDENT_OPTIONS = [
   { label: 'Tab', value: 'tab' },
 ]
 
-const LANG_MAP: Record<Format, string> = {
-  json: 'json',
-  yaml: 'yaml',
-  toml: 'toml',
-  xml: 'xml',
-}
-
 const inputText = shallowRef('')
 const fromFormat = shallowRef<Format>('json')
 const toFormat = shallowRef<Format>('yaml')
 const indent = shallowRef('2')
 const error = shallowRef('')
-const highlightedHtml = shallowRef('')
 const copied = shallowRef(false)
-
-const highlighter = shallowRef<Awaited<ReturnType<typeof createHighlighter>> | null>(null)
-
-onMounted(async () => {
-  highlighter.value = await createHighlighter({
-    themes: ['vitesse-light', 'vitesse-dark'],
-    langs: ['json', 'yaml', 'toml', 'xml'],
-  })
-})
+const outputText = shallowRef('')
 
 function getIndent(): string | number {
   return indent.value === 'tab' ? '\t' : Number(indent.value)
@@ -122,8 +105,6 @@ function stringify(data: unknown, format: Format): string {
   }
 }
 
-const outputText = shallowRef('')
-
 watch([inputText, fromFormat, toFormat, indent], () => {
   if (!inputText.value.trim()) {
     error.value = ''
@@ -140,19 +121,6 @@ watch([inputText, fromFormat, toFormat, indent], () => {
     outputText.value = ''
   }
 }, { immediate: true })
-
-function highlight() {
-  if (!highlighter.value || !outputText.value) {
-    highlightedHtml.value = ''
-    return
-  }
-  highlightedHtml.value = highlighter.value.codeToHtml(outputText.value, {
-    lang: LANG_MAP[toFormat.value],
-    theme: isDark.value ? 'vitesse-dark' : 'vitesse-light',
-  })
-}
-
-watch([outputText, toFormat, isDark, highlighter], highlight, { immediate: true })
 
 async function copyOutput() {
   if (!outputText.value)
@@ -181,11 +149,12 @@ async function copyOutput() {
             <SelectInput v-model="indent" :options="INDENT_OPTIONS" />
           </div>
         </div>
-        <textarea
+        <CodeEditor
           v-model="inputText"
+          :language="fromFormat"
           :placeholder="t('placeholder')"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-none transition-colors
-          rows="10"
+          :rows="14"
+          :langs="['json', 'yaml', 'toml', 'xml']"
         />
       </div>
     </Panel>
@@ -200,24 +169,14 @@ async function copyOutput() {
             {{ copied ? t('copied') : t('copy') }}
           </BaseButton>
         </div>
-        <div
-          class="shiki-output"
-          border="~ c-border" text-sm rounded-xl min-h-48 overflow-x-auto
-          v-html="highlightedHtml"
+        <CodeEditor
+          :model-value="outputText"
+          :language="toFormat"
+          :rows="14"
+          :langs="['json', 'yaml', 'toml', 'xml']"
+          readonly
         />
       </div>
     </Panel>
   </div>
 </template>
-
-<style scoped>
-.shiki-output :deep(pre) {
-  margin: 0;
-  padding: 1rem;
-  overflow-x: auto;
-  background: transparent !important;
-}
-.shiki-output :deep(code) {
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-}
-</style>

@@ -467,6 +467,7 @@ const eyeDropperSupported = 'EyeDropper' in window
 </template>
 
 <style scoped>
+/* Vue <Transition> classes — UnoCSS cannot express transition enter/leave states */
 .picker-enter-active,
 .picker-leave-active {
   transition:

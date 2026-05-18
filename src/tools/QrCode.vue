@@ -171,6 +171,7 @@ function downloadBlob(blob: Blob, filename: string) {
 </template>
 
 <style scoped>
+/* Range slider styling — UnoCSS cannot target ::-webkit-slider-thumb / ::-moz-range-thumb */
 .ecc-slider {
   -webkit-appearance: none;
   appearance: none;

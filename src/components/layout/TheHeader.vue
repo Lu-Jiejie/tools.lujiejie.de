@@ -24,7 +24,7 @@ const currentTool = computed(() => {
 </script>
 
 <template>
-  <header class="app-header" px-4 border-b border-c-border flex gap-3 h-14 items-center top-0 sticky z-10>
+  <header px-4 border-b border-c-border header-blur flex gap-3 h-14 items-center top-0 sticky z-10>
     <!-- Logo / 面包屑 -->
     <div flex flex-1 gap-2 min-w-0 items-center>
       <RouterLink
@@ -40,35 +40,22 @@ const currentTool = computed(() => {
     </div>
 
     <!-- 右侧操作区 -->
-    <div class="header-icons" flex shrink-0 gap-1 items-center>
-      <a href="https://github.com/Lu-Jiejie/tools.lujiejie.de" target="_blank" rel="noreferrer" title="GitHub">
+    <div flex shrink-0 gap-1 items-center>
+      <a href="https://github.com/Lu-Jiejie/tools.lujiejie.de" target="_blank" rel="noreferrer" title="GitHub" text-lg icon-btn size-9>
         <div i-ri-github-fill />
       </a>
 
-      <button :title="t('switchLocale')" @click="toggleLocale()">
+      <button :title="t('switchLocale')" text-lg icon-btn size-9 @click="toggleLocale()">
         <div :class="locale === 'zh' ? 'i-icon-park-outline-chinese' : 'i-icon-park-outline-english'" />
       </button>
 
-      <button :title="isDark ? t('toLight') : t('toDark')" @click="toggleDark()">
+      <button :title="isDark ? t('toLight') : t('toDark')" text-lg icon-btn size-9 @click="toggleDark()">
         <div :class="isDark ? 'i-ri-sun-line' : 'i-ri-moon-line'" />
       </button>
 
-      <!-- 移动端汉堡菜单（仅手机端显示） -->
-      <button md:important-hidden :title="t('openSidebar')" @click="toggleMobile()">
+      <button :title="t('openSidebar')" text-lg icon-btn size-9 md:important-hidden @click="toggleMobile()">
         <div i-ri-menu-fill />
       </button>
     </div>
   </header>
 </template>
-
-<style scoped>
-.app-header {
-  background-color: color-mix(in srgb, var(--c-surface) 85%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.header-icons > * {
-  --uno: 'icon-btn size-9 text-lg';
-}
-</style>

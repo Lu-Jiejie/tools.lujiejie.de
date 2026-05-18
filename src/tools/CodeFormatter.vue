@@ -24,10 +24,10 @@ import postcssPlugin from 'prettier/plugins/postcss'
 import typescriptPlugin from 'prettier/plugins/typescript'
 import yamlPlugin from 'prettier/plugins/yaml'
 import * as prettier from 'prettier/standalone'
-import { createHighlighter } from 'shiki'
-import { computed, onMounted, shallowRef, watch } from 'vue'
+import { computed, shallowRef } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
+import CodeEditor from '~/components/CodeEditor.vue'
 import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import { isDark } from '~/composables/dark'
@@ -37,7 +37,6 @@ const { t } = useI18n({
   input_label: ['Input', '输入'],
   output_label: ['Output', '输出'],
   language: ['Language', '语言'],
-  theme: ['Theme', '主题'],
   indent: ['Indent', '缩进'],
   placeholder: ['Paste your code here...', '在此粘贴代码...'],
   copy: ['Copy', '复制'],
@@ -107,25 +106,7 @@ const LANG_OPTIONS: LangOption[] = [
   { label: 'Zig', value: 'zig', shikiLang: 'zig' },
 ]
 
-interface ThemeOption {
-  label: string
-  value: string
-  light: string
-  dark: string
-}
-
-const THEME_OPTIONS: ThemeOption[] = [
-  { label: 'Vitesse', value: 'vitesse', light: 'vitesse-light', dark: 'vitesse-dark' },
-  { label: 'GitHub', value: 'github', light: 'github-light', dark: 'github-dark' },
-  { label: 'Catppuccin', value: 'catppuccin', light: 'catppuccin-latte', dark: 'catppuccin-mocha' },
-  { label: 'Dracula', value: 'dracula', light: 'dracula-soft', dark: 'dracula' },
-  { label: 'Nord', value: 'nord', light: 'nord', dark: 'nord' },
-  { label: 'One Dark', value: 'one-dark', light: 'one-light', dark: 'one-dark-pro' },
-  { label: 'Tokyo Night', value: 'tokyo-night', light: 'tokyo-night', dark: 'tokyo-night' },
-  { label: 'Solarized', value: 'solarized', light: 'solarized-light', dark: 'solarized-dark' },
-]
-
-const ALL_THEMES = THEME_OPTIONS.flatMap(t => [t.light, t.dark]).filter((v, i, a) => a.indexOf(v) === i)
+const ALL_SHIKI_LANGS = LANG_OPTIONS.map(l => l.shikiLang)
 
 const INDENT_OPTIONS = [
   { label: '2', value: '2' },
@@ -135,26 +116,15 @@ const INDENT_OPTIONS = [
 
 const inputText = shallowRef('')
 const language = shallowRef('javascript')
-const theme = shallowRef('vitesse')
 const indent = shallowRef('2')
 const error = shallowRef('')
 const outputText = shallowRef('')
-const highlightedHtml = shallowRef('')
 const copied = shallowRef(false)
-const outputRef = shallowRef<HTMLElement | null>(null)
+const outputEditorRef = shallowRef<InstanceType<typeof CodeEditor> | null>(null)
 
 const currentLang = computed(() => LANG_OPTIONS.find(l => l.value === language.value)!)
-const currentTheme = computed(() => THEME_OPTIONS.find(t => t.value === theme.value)!)
 const canFormat = computed(() => !!currentLang.value.parser)
-
-const highlighter = shallowRef<Awaited<ReturnType<typeof createHighlighter>> | null>(null)
-
-onMounted(async () => {
-  highlighter.value = await createHighlighter({
-    themes: ALL_THEMES,
-    langs: LANG_OPTIONS.map(l => l.shikiLang),
-  })
-})
+const currentShikiLang = computed(() => currentLang.value.shikiLang)
 
 async function formatCode() {
   if (!inputText.value.trim()) {
@@ -187,25 +157,6 @@ async function formatCode() {
   }
 }
 
-function highlight() {
-  if (!highlighter.value || !outputText.value) {
-    highlightedHtml.value = ''
-    return
-  }
-  const themeId = isDark.value ? currentTheme.value.dark : currentTheme.value.light
-  highlightedHtml.value = highlighter.value.codeToHtml(outputText.value, {
-    lang: currentLang.value.shikiLang,
-    theme: themeId,
-  })
-}
-
-watch([outputText, language, isDark, highlighter, theme], highlight, { immediate: true })
-
-watch([inputText, canFormat], () => {
-  if (!canFormat.value)
-    outputText.value = inputText.value
-}, { immediate: true })
-
 async function copyOutput() {
   if (!outputText.value)
     return
@@ -215,16 +166,27 @@ async function copyOutput() {
 }
 
 async function takeScreenshot() {
-  if (!outputRef.value)
+  const el = outputEditorRef.value?.rootRef
+  if (!el)
     return
-  const dataUrl = await toPng(outputRef.value, {
-    pixelRatio: 2,
-    backgroundColor: isDark.value ? '#1e1e1e' : '#ffffff',
-  })
-  const link = document.createElement('a')
-  link.download = `code-${Date.now()}.png`
-  link.href = dataUrl
-  link.click()
+  const originalHeight = el.style.height
+  const originalOverflow = el.style.overflow
+  el.style.height = 'auto'
+  el.style.overflow = 'visible'
+  try {
+    const dataUrl = await toPng(el, {
+      pixelRatio: 2,
+      backgroundColor: isDark.value ? '#1e1e1e' : '#ffffff',
+    })
+    const link = document.createElement('a')
+    link.download = `code-${Date.now()}.png`
+    link.href = dataUrl
+    link.click()
+  }
+  finally {
+    el.style.height = originalHeight
+    el.style.overflow = originalOverflow
+  }
 }
 </script>
 
@@ -238,10 +200,6 @@ async function takeScreenshot() {
             <SelectInput v-model="language" :options="LANG_OPTIONS" />
           </div>
           <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('theme') }}</span>
-            <SelectInput v-model="theme" :options="THEME_OPTIONS" />
-          </div>
-          <div flex="~ gap-2" items-center>
             <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('indent') }}</span>
             <SelectInput v-model="indent" :options="INDENT_OPTIONS" />
           </div>
@@ -252,12 +210,12 @@ async function takeScreenshot() {
         <AlertTip v-if="!canFormat" type="info">
           <span text-sm>{{ t('no_formatter') }}</span>
         </AlertTip>
-        <textarea
+        <CodeEditor
           v-model="inputText"
+          :language="currentShikiLang"
           :placeholder="t('placeholder')"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-none transition-colors
-          rows="12"
-          spellcheck="false"
+          :rows="15"
+          :langs="ALL_SHIKI_LANGS"
         />
       </div>
     </Panel>
@@ -275,25 +233,15 @@ async function takeScreenshot() {
             {{ t('screenshot') }}
           </BaseButton>
         </div>
-        <div
-          ref="outputRef"
-          class="shiki-output"
-          border="~ c-border" text-sm rounded-xl min-h-48 overflow-x-auto
-          v-html="highlightedHtml"
+        <CodeEditor
+          ref="outputEditorRef"
+          :model-value="outputText"
+          :language="currentShikiLang"
+          :rows="15"
+          :langs="ALL_SHIKI_LANGS"
+          readonly
         />
       </div>
     </Panel>
   </div>
 </template>
-
-<style scoped>
-.shiki-output :deep(pre) {
-  margin: 0;
-  padding: 1rem;
-  overflow-x: auto;
-  background: transparent !important;
-}
-.shiki-output :deep(code) {
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-}
-</style>

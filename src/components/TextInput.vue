@@ -127,6 +127,7 @@ const fieldClass = computed(() => [
 </template>
 
 <style scoped>
+/* MS Edge / Chrome password reveal button — UnoCSS cannot target these pseudo-elements */
 input::-ms-reveal,
 input::-webkit-credentials-auto-fill-button {
   display: none;

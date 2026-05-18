@@ -35,6 +35,16 @@ export default defineConfig({
     // favorite buttons (ToolCard + [tool].vue)
     ['btn-favorite', 'flex shrink-0 size-6 place-center op-30 hover:op-60 transition-colors duration-200'],
     ['btn-favorite-active', 'flex shrink-0 size-6 place-center text-amber-500 transition-colors duration-200'],
+    // panel card shadow
+    ['panel-shadow', 'shadow-[0_1px_3px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.04)]'],
+    // chip/tag button — base (CronTool mode-btn / specific-btn)
+    ['btn-chip', 'border border-c-border rounded-md px-2.5 py-1 text-xs font-medium transition-all-150 cursor-pointer bg-c-raised'],
+    // chip/tag button — active state
+    ['btn-chip-active', 'border-c-accent text-c-accent bg-[color-mix(in_srgb,var(--c-accent)_8%,transparent)]'],
+    // header glass-morphism blur
+    ['header-blur', 'bg-[color-mix(in_srgb,var(--c-surface)_85%,transparent)] backdrop-blur-12'],
+    // custom <select> dropdown arrow
+    ['select-base', 'appearance-none bg-no-repeat'],
   ],
   presets: [
     presetWind4(),

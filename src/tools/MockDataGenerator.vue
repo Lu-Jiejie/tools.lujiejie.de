@@ -15,6 +15,7 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { ref, shallowRef, watch } from 'vue'
+import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
 import NumberInput from '~/components/NumberInput.vue'
@@ -32,6 +33,7 @@ const { t } = useI18n({
   generate: ['Generate', '生成'],
   copy: ['Copy', '复制'],
   copied: ['Copied', '已复制'],
+  download: ['Download JSON', '下载 JSON'],
   count: ['Count', '数量'],
   field_name: ['Field Name', '字段名'],
   mock_type: ['Mock Type', 'Mock 类型'],
@@ -592,6 +594,22 @@ async function copyOutput() {
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
 }
+
+function downloadOutput() {
+  if (!outputJson.value)
+    return
+
+  const blob = new Blob([outputJson.value], { type: 'application/json;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const timestamp = new Date().toISOString().replaceAll(':', '-')
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `mock-data-${timestamp}.json`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
 </script>
 
 <template>
@@ -599,9 +617,9 @@ async function copyOutput() {
     <!-- Module 1: Data Model -->
     <Panel :title="t('model_title')">
       <div p-5 flex="~ col gap-4">
-        <div flex="~ gap-3 wrap" items-center>
-          <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('language') }}</span>
+        <div flex="~ gap-3 wrap" items-end>
+          <div flex="~ col gap-1">
+            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('language') }}</label>
             <SelectInput v-model="language" :options="LANG_OPTIONS" />
           </div>
           <BaseButton icon="i-carbon-data-structured" @click="parseModel">
@@ -609,10 +627,9 @@ async function copyOutput() {
           </BaseButton>
         </div>
         <CodeEditor v-model="inputCode" :language="language" :placeholder="t('placeholder')" :rows="20" />
-        <div v-if="parseMessage" flex="~ gap-1.5" px-3 py-2 border rounded-lg select-none items-center :class="parseMessageType === 'success' ? 'text-green-500 bg-green-400/10 border-green-400' : 'text-red-400 bg-red-400/10 border-red-400'">
-          <div shrink-0 :class="parseMessageType === 'success' ? 'i-carbon-checkmark-filled' : 'i-carbon-close-filled'" />
+        <AlertTip v-if="parseMessage" :type="parseMessageType">
           <span text-sm>{{ parseMessage }}</span>
-        </div>
+        </AlertTip>
       </div>
     </Panel>
 
@@ -628,7 +645,7 @@ async function copyOutput() {
             <span>{{ t('field_name') }}</span>
             <span>{{ t('mock_type') }}</span>
             <span>{{ t('options') }}</span>
-            <span text-center w-20>{{ t('actions') }}</span>
+            <span text-center w-15>{{ t('actions') }}</span>
           </div>
           <!-- Rows -->
           <div
@@ -665,7 +682,7 @@ async function copyOutput() {
               border="~ c-border focus:c-border-strong" text-sm px-2 py-1 outline-none rounded-lg bg-c-input w-full transition-colors
               :class="{ 'op-30 cursor-not-allowed': field.mockType !== 'enum' }"
             >
-            <div flex="~ gap-1" w-20 justify-center>
+            <div flex="~ gap-1" w-15 justify-center>
               <button
                 p-1
                 op-40 transition-opacity hover:op-100
@@ -706,6 +723,9 @@ async function copyOutput() {
           </BaseButton>
           <BaseButton icon="i-carbon-copy" :disabled="!outputJson" @click="copyOutput">
             {{ copied ? t('copied') : t('copy') }}
+          </BaseButton>
+          <BaseButton icon="i-carbon-download" :disabled="!outputJson" @click="downloadOutput">
+            {{ t('download') }}
           </BaseButton>
         </div>
         <CodeEditor

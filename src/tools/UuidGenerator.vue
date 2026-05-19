@@ -237,13 +237,13 @@ generate()
   <div flex="~ col gap-4">
     <Panel :title="t('settings_label')">
       <div p-5 flex="~ col gap-4">
-        <div flex="~ gap-3 wrap" items-center>
-          <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('version') }}</span>
+        <div flex="~ gap-3 wrap" items-end>
+          <div flex="~ col gap-1">
+            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('version') }}</label>
             <SelectInput v-model="version" :options="VERSION_OPTIONS" />
           </div>
-          <div v-if="version !== 'nil'" flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('count') }}</span>
+          <div v-if="version !== 'nil'" flex="~ col gap-1">
+            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('count') }}</label>
             <NumberInput v-model="count" :min="1" :max="50" />
           </div>
           <BaseButton :active="uppercase" @click="uppercase = !uppercase">
@@ -258,7 +258,7 @@ generate()
         </div>
 
         <template v-if="needsNameInput">
-          <div flex="~ gap-2" items-center>
+          <div flex="~ col gap-1">
             <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('namespace') }}</span>
             <SelectInput v-model="namespace" :options="NS_OPTIONS" />
           </div>

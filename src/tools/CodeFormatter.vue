@@ -28,7 +28,8 @@ import { computed, shallowRef } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
-import Panel from '~/components/Panel.vue'
+import LabelField from '~/components/container/LabelField.vue'
+import Panel from '~/components/container/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import { isDark } from '~/composables/dark'
 import { useI18n } from '~/composables/useI18n'
@@ -194,15 +195,13 @@ async function takeScreenshot() {
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <div flex="~ gap-3 wrap" items-center>
-          <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('language') }}</span>
+        <div flex="~ gap-3 wrap" items-end>
+          <LabelField :label="t('language')">
             <SelectInput v-model="language" :options="LANG_OPTIONS" />
-          </div>
-          <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('indent') }}</span>
+          </LabelField>
+          <LabelField :label="t('indent')">
             <SelectInput v-model="indent" :options="INDENT_OPTIONS" />
-          </div>
+          </LabelField>
           <BaseButton icon="i-carbon-clean" :disabled="!canFormat" @click="formatCode">
             {{ t('format') }}
           </BaseButton>

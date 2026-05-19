@@ -17,7 +17,7 @@ export const toolMeta = defineTool({
 import { blake2b, blake2s, blake3, crc32, md5, ripemd160, sha1, sha3, sha224, sha256, sha384, sha512, sm3, whirlpool } from 'hash-wasm'
 import { ref, watch } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
-import Panel from '~/components/Panel.vue'
+import Panel from '~/components/container/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 

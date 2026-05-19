@@ -16,7 +16,7 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
-import Panel from '~/components/Panel.vue'
+import Panel from '~/components/container/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 

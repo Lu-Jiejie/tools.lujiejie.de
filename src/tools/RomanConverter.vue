@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -17,7 +18,7 @@ export const toolMeta = defineTool({
 import { computed, shallowRef } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
-import Panel from '~/components/Panel.vue'
+import Panel from '~/components/container/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -122,40 +123,42 @@ function appendRomanChar(char: string) {
 
 <template>
   <div flex="~ col gap-4">
+    <!-- Arabic to Roman -->
     <Panel :title="t('arabic_to_roman')">
       <div p-5 flex="~ col gap-4">
-        <TextInput
-          :model-value="arabicInput"
-          :label="t('arabic_label')"
-          :error="arabicError"
-          :copyable="false"
-          :placeholder="t('arabic_placeholder')"
-          @update:model-value="onArabicInput"
-        />
+        <LabelField :label="t('arabic_label')">
+          <TextInput
+            :model-value="arabicInput"
+            :error="arabicError"
+            :copyable="false"
+            :placeholder="t('arabic_placeholder')"
+            @update:model-value="onArabicInput"
+          />
+        </LabelField>
         <Transition name="warn">
           <AlertTip v-if="arabicError" type="error">
             {{ t('invalid_arabic') }}
           </AlertTip>
         </Transition>
-        <TextInput
-          :model-value="arabicToRoman"
-          :label="t('result_label')"
-          readonly
-        />
+        <LabelField :label="t('result_label')">
+          <TextInput :model-value="arabicToRoman" readonly />
+        </LabelField>
       </div>
     </Panel>
 
+    <!-- Roman to Arabic -->
     <Panel :title="t('roman_to_arabic')">
       <div p-5 flex="~ col gap-4">
-        <TextInput
-          :model-value="romanInput"
-          :label="t('roman_label')"
-          :error="romanError"
-          :copyable="false"
-          :backspaceable="true"
-          :placeholder="t('roman_placeholder')"
-          @update:model-value="onRomanInput"
-        />
+        <LabelField :label="t('roman_label')">
+          <TextInput
+            :model-value="romanInput"
+            :error="romanError"
+            :copyable="false"
+            :backspaceable="true"
+            :placeholder="t('roman_placeholder')"
+            @update:model-value="onRomanInput"
+          />
+        </LabelField>
         <div flex="~ gap-2 wrap">
           <BaseButton
             v-for="char in ROMAN_CHARS"
@@ -171,11 +174,9 @@ function appendRomanChar(char: string) {
             {{ t('invalid_roman') }}
           </AlertTip>
         </Transition>
-        <TextInput
-          :model-value="romanToArabic"
-          :label="t('result_label')"
-          readonly
-        />
+        <LabelField :label="t('result_label')">
+          <TextInput :model-value="romanToArabic" readonly />
+        </LabelField>
       </div>
     </Panel>
   </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -17,8 +18,8 @@ export const toolMeta = defineTool({
 import { computed, shallowRef, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
+import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
-import Panel from '~/components/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -159,8 +160,7 @@ const customOutput = computed(() =>
         <div flex="~ gap-2" flex-wrap items-center>
           <BaseButton
             v-for="key in PRESET_BASES"
-            :key="key"
-            :active="inputBase === BASE_MAP[key]"
+            :key="key" :active="inputBase === BASE_MAP[key]"
             @click="setBase(BASE_MAP[key])"
           >
             <span>{{ t(key) }}</span>
@@ -169,24 +169,23 @@ const customOutput = computed(() =>
         </div>
 
         <div flex="~ gap-2" items-end>
-          <div flex="~ col gap-1.5">
-            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('base') }}</label>
+          <LabelField :label="t('base')">
             <NumberInput
               :model-value="inputBase"
               :min="2"
               :max="36"
-              @update:model-value="setBase"
+              @update:model-value="setBase($event)"
             />
-          </div>
-          <TextInput
-            :model-value="inputValue"
-            :label="t('value')"
-            :error="errorChar !== null"
-            :copyable="false"
-            :placeholder="t('input_placeholder')"
-            class="flex-1"
-            @update:model-value="onInput"
-          />
+          </LabelField>
+          <LabelField :label="t('value')" flex-1>
+            <TextInput
+              :model-value="inputValue"
+              :error="errorChar !== null"
+              :copyable="false"
+              :placeholder="t('input_placeholder')"
+              @update:model-value="onInput"
+            />
+          </LabelField>
         </div>
         <Transition name="warn">
           <AlertTip v-if="errorChar !== null" type="error">
@@ -198,13 +197,19 @@ const customOutput = computed(() =>
 
     <Panel :title="t('output_label')">
       <div p-5 flex="~ col gap-3">
-        <TextInput
+        <!-- <TextInput
           v-for="out in outputs"
           :key="out.key"
           :model-value="out.value"
           :label="out.label"
           readonly
-        />
+        /> -->
+        <LabelField v-for="out in outputs" :key="out.key" :label="out.label">
+          <TextInput
+            :model-value="out.value"
+            readonly
+          />
+        </LabelField>
         <!-- 自定义进制输出 -->
         <div flex="~ gap-2" items-end>
           <div flex="~ col gap-1.5">

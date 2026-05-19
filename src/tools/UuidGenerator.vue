@@ -16,8 +16,8 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
+import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
-import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'

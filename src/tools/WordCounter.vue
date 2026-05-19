@@ -15,7 +15,7 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import Panel from '~/components/Panel.vue'
+import Panel from '~/components/container/Panel.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

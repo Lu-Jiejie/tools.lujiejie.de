@@ -4,7 +4,6 @@ import BaseButton from '~/components/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const props = withDefaults(defineProps<{
-  label?: string
   modelValue: string
   placeholder?: string
   error?: boolean
@@ -77,52 +76,49 @@ const fieldClass = computed(() => [
 </script>
 
 <template>
-  <div flex="~ col gap-1.5">
-    <label v-if="label" text-xs tracking-wide font-medium op-60 select-none uppercase>{{ label }}</label>
-    <div flex="~ gap-2" items-center>
-      <div flex flex-1 min-w-0 items-center relative>
-        <slot name="prefix" />
-        <input
-          v-if="!readonly"
-          :value="modelValue"
-          :type="secret && !visible ? 'password' : 'text'"
-          :autocomplete="secret ? 'off' : undefined"
-          :placeholder="placeholder"
-          :class="fieldClass"
-          border="~" text-sm px-3 py-2 outline-none rounded-xl w-full transition-colors
-          @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-        >
-        <div
-          v-else
-          :class="fieldClass"
-          border="~" text-sm px-3 py-2 rounded-xl min-h-9 w-full select-none whitespace-nowrap overflow-x-auto
-        >
-          {{ secret && !visible ? '•'.repeat(modelValue.length) : modelValue }}&nbsp;
-        </div>
+  <div flex="~ gap-2" items-center>
+    <div flex="~ 1" min-w-0 items-center relative>
+      <slot name="prefix" />
+      <input
+        v-if="!readonly"
+        :value="modelValue"
+        :type="secret && !visible ? 'password' : 'text'"
+        :autocomplete="secret ? 'off' : undefined"
+        :placeholder="placeholder"
+        :class="fieldClass"
+        text-sm px-3 py-2 outline-none border rounded-xl w-full transition-colors
+        @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+      >
+      <div
+        v-else
+        :class="fieldClass"
+        text-sm px-3 py-2 border rounded-xl min-h-9 w-full select-none whitespace-nowrap overflow-x-auto
+      >
+        {{ secret && !visible ? '•'.repeat(modelValue.length) : modelValue }}&nbsp;
       </div>
-      <slot name="append" />
-      <BaseButton
-        v-if="backspaceable"
-        icon-only
-        icon="i-ph-backspace"
-        @pointerdown="onBackspacePointerDown"
-        @pointerup="onBackspacePointerUp"
-        @pointerleave="onBackspacePointerLeave"
-      />
-      <BaseButton
-        v-if="secret"
-        icon-only
-        :icon="visible ? 'i-material-symbols-visibility-off' : 'i-material-symbols-visibility'"
-        @click="visible = !visible"
-      />
-      <BaseButton
-        v-if="copyable"
-        icon-only
-        icon="i-carbon-copy"
-        :title="t('copy')"
-        @click="copy()"
-      />
     </div>
+    <slot name="append" />
+    <BaseButton
+      v-if="backspaceable"
+      icon-only
+      icon="i-ph-backspace"
+      @pointerdown="onBackspacePointerDown"
+      @pointerup="onBackspacePointerUp"
+      @pointerleave="onBackspacePointerLeave"
+    />
+    <BaseButton
+      v-if="secret"
+      icon-only
+      :icon="visible ? 'i-material-symbols-visibility-off' : 'i-material-symbols-visibility'"
+      @click="visible = !visible"
+    />
+    <BaseButton
+      v-if="copyable"
+      icon-only
+      icon="i-carbon-copy"
+      :title="t('copy')"
+      @click="copy()"
+    />
   </div>
 </template>
 

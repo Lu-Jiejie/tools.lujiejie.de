@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -18,8 +19,8 @@ import { ref, shallowRef, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
+import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
-import Panel from '~/components/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -618,10 +619,9 @@ function downloadOutput() {
     <Panel :title="t('model_title')">
       <div p-5 flex="~ col gap-4">
         <div flex="~ gap-3 wrap" items-end>
-          <div flex="~ col gap-1">
-            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('language') }}</label>
+          <LabelField :label="t('language')">
             <SelectInput v-model="language" :options="LANG_OPTIONS" />
-          </div>
+          </LabelField>
           <BaseButton icon="i-carbon-data-structured" @click="parseModel">
             {{ t('parse') }}
           </BaseButton>
@@ -650,23 +650,19 @@ function downloadOutput() {
           <!-- Rows -->
           <div
             v-for="(field, index) in fields"
-            :key="field.id"
-            grid="~ cols-[2fr_1fr_1.5fr_auto]"
-            border="~ c-border"
-            :data-field-index="index"
-            px-2 py-1.5 rounded-lg bg-c-raised gap-2 transition-all duration-150 items-center
+            :key="field.id" :data-field-index="index"
+            grid="~ cols-[2fr_1fr_1.5fr_auto]" border="~ c-border"
+            p="x-2 y-1.5" rounded-lg bg-c-raised gap-2 transition-150 items-center
             :class="{
               'op-50 scale-98 z-10': dragState === 'dragging' && dragFromIndex === index,
             }"
           >
             <input
-              v-model="field.name"
-              type="text"
+              v-model="field.name" type="text"
               border="~ c-border focus:c-border-strong" text-sm font-mono px-2 py-1 outline-none rounded-lg bg-c-input w-full transition-colors
             >
             <select
               v-model="field.mockType"
-
               border="~ c-border" text-sm px-2 py-1 select-base outline-none rounded-lg bg-c-input cursor-pointer transition-colors
               :style="{ backgroundImage: `url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23aaa%22 d=%22M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z%22/%3E%3C/svg%3E')`, backgroundPosition: 'right 6px center', backgroundSize: '16px', paddingRight: '1.5rem' }"
             >
@@ -675,8 +671,7 @@ function downloadOutput() {
               </option>
             </select>
             <input
-              v-model="field.options"
-              type="text"
+              v-model="field.options" type="text"
               :placeholder="field.mockType === 'enum' ? 'a,b,c' : ''"
               :disabled="field.mockType !== 'enum'"
               border="~ c-border focus:c-border-strong" text-sm px-2 py-1 outline-none rounded-lg bg-c-input w-full transition-colors
@@ -713,11 +708,10 @@ function downloadOutput() {
     <!-- Module 3: Generate Data -->
     <Panel :title="t('output_title')">
       <div p-5 flex="~ col gap-4">
-        <div flex="~ gap-3 wrap" items-center>
-          <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('count') }}</span>
+        <div flex="~ gap-3 wrap" items-end>
+          <LabelField :label="t('count')">
             <NumberInput v-model="generateCount" :min="1" :max="1000" />
-          </div>
+          </LabelField>
           <BaseButton icon="i-carbon-play" :disabled="fields.length === 0" @click="generateData">
             {{ t('generate') }}
           </BaseButton>

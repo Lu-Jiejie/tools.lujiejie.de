@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -17,7 +18,7 @@ export const toolMeta = defineTool({
 import { computed, onUnmounted, shallowRef, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
-import Panel from '~/components/Panel.vue'
+import Panel from '~/components/container/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
@@ -225,12 +226,17 @@ const outputs = computed(() => [
 
     <!-- 输出 Panel -->
     <Panel :title="t('output_label')">
-      <div p-5 flex="~ col gap-3">
+      <!-- <div p-5 flex="~ col gap-3">
         <TextInput
           v-for="out in outputs"
           :key="out.key" :model-value="out.value" :label="out.label"
           readonly
         />
+      </div> -->
+      <div p-5 flex="~ col gap-3">
+        <LabelField v-for="out in outputs" :key="out.key" :label="out.label">
+          <TextInput :model-value="out.value" readonly />
+        </LabelField>
       </div>
     </Panel>
   </div>

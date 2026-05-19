@@ -1,4 +1,6 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
+import RadioButtonGroup from '~/components/RadioButtonGroup.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -15,13 +17,14 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { encode } from 'uqr'
-import { computed, shallowRef } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
-import Panel from '~/components/Panel.vue'
+import Panel from '~/components/container/Panel.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
   input_label: ['Input', '输入'],
+  content: ['Content', '内容'],
   output_label: ['Output', '输出'],
   placeholder: ['Enter text or URL', '输入文本或链接'],
   ecc: ['Error Correction', '容错等级'],
@@ -36,10 +39,13 @@ const input = shallowRef('')
 const fgColor = shallowRef('#000000')
 const bgColor = shallowRef('#ffffff')
 
-const ECC_LEVELS = ['L', 'M', 'Q', 'H'] as const
-const ECC_LABELS = ['L 7%', 'M 15%', 'Q 25%', 'H 30%']
-const eccIndex = shallowRef(1)
-const eccLevel = computed(() => ECC_LEVELS[eccIndex.value])
+const ECC_OPTIONS = [
+  { value: 'L', label: 'L', subLabel: '7%' },
+  { value: 'M', label: 'M', subLabel: '15%' },
+  { value: 'Q', label: 'Q', subLabel: '25%' },
+  { value: 'H', label: 'H', subLabel: '30%' },
+]
+const eccLevel = ref<'L' | 'M' | 'Q' | 'H'>('M')
 
 const qrData = computed(() => {
   if (!input.value.trim())
@@ -107,42 +113,58 @@ function downloadBlob(blob: Blob, filename: string) {
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <textarea
-          v-model="input"
-          :placeholder="t('placeholder')"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-none transition-colors
-          rows="3"
-        />
-        <div flex="~ gap-3 wrap" items-center>
-          <div flex="~ gap-2" min-w-48 items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('ecc') }}</span>
-            <input
-              v-model.number="eccIndex"
-              type="range"
-              min="0"
-              max="3"
-              step="1"
-              class="ecc-slider"
-              flex-1 cursor-pointer
-            >
-            <span text-xs font-mono op-70 w-10>{{ ECC_LABELS[eccIndex] }}</span>
-          </div>
-          <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('fg_color') }}</span>
-            <input
-              v-model="fgColor"
-              type="color"
-              border="~ c-border" p-1 rounded-lg bg-c-input size-9 cursor-pointer
-            >
-          </div>
-          <div flex="~ gap-2" items-center>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('bg_color') }}</span>
-            <input
-              v-model="bgColor"
-              type="color"
-              border="~ c-border" p-1 rounded-lg bg-c-input size-9 cursor-pointer
-            >
-          </div>
+        <!-- <div flex="~ col gap-1.5">
+          <label for="qr-content" text-xs tracking-wide font-medium op-60 select-none uppercase>
+            {{ t('content') }}
+          </label>
+          <textarea
+            id="qr-content"
+            v-model="input"
+            :placeholder="t('placeholder')"
+            border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-none transition-colors
+            rows="3"
+          />
+        </div> -->
+        <LabelField :label="t('content')">
+          <textarea
+            id="qr-content"
+            v-model="input"
+            :placeholder="t('placeholder')"
+            border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-none transition-colors
+            rows="3"
+          />
+        </LabelField>
+
+        <LabelField :label="t('ecc')">
+          <RadioButtonGroup
+            v-model="eccLevel" :options="ECC_OPTIONS"
+          />
+        </LabelField>
+
+        <div grid="~ cols-2 gap-4">
+          <LabelField :label="t('fg_color')">
+            <div flex="~ gap-4" border="~ c-border" p-3 rounded-xl bg-c-input items-center>
+              <input
+                id="qr-fg-color"
+                v-model="fgColor"
+                type="color"
+                border="~ c-border" p-1 rounded-lg bg-c-surface shrink-0 size-10 cursor-pointer
+              >
+              <span text-sm font-mono op-70 truncate>{{ fgColor.toUpperCase() }}</span>
+            </div>
+          </LabelField>
+
+          <LabelField :label="t('bg_color')">
+            <div flex="~ gap-4" border="~ c-border" p-3 rounded-xl bg-c-input items-center>
+              <input
+                id="qr-bg-color"
+                v-model="bgColor"
+                type="color"
+                border="~ c-border" p-1 rounded-lg bg-c-surface shrink-0 size-10 cursor-pointer
+              >
+              <span text-sm font-mono op-70 truncate>{{ bgColor.toUpperCase() }}</span>
+            </div>
+          </LabelField>
         </div>
       </div>
     </Panel>
@@ -169,40 +191,3 @@ function downloadBlob(blob: Blob, filename: string) {
     </Panel>
   </div>
 </template>
-
-<style scoped>
-/* Range slider styling — UnoCSS cannot target ::-webkit-slider-thumb / ::-moz-range-thumb */
-.ecc-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--c-border);
-  outline: none;
-}
-.ecc-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--c-accent);
-  border: 2px solid var(--c-surface);
-  box-shadow: 0 0 0 1px var(--c-border);
-  cursor: pointer;
-}
-.ecc-slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--c-accent);
-  border: 2px solid var(--c-surface);
-  box-shadow: 0 0 0 1px var(--c-border);
-  cursor: pointer;
-}
-.ecc-slider::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--c-border);
-}
-</style>

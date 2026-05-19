@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -14,25 +15,31 @@ export const toolMeta = defineTool({
 
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
+import { useLocalStorage } from '@vueuse/core'
 // @ts-expect-error no type definitions available
 import argon2 from 'argon2-browser/dist/argon2-bundled.min.js'
-import { shallowRef, watch } from 'vue'
-import BaseButton from '~/components/BaseButton.vue'
+import { watch } from 'vue'
+import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
-import Panel from '~/components/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
+import ToggleButtonGroup from '~/components/ToggleButtonGroup.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
   input_label: ['Input', '输入'],
   output_label: ['Output', '输出'],
   settings_label: ['Settings', '设置'],
+
   password: ['Master Password', '主密码'],
   password_placeholder: ['Enter your master password', '输入你的主密码'],
+
   alias: ['Platform Alias', '平台别名'],
   alias_placeholder: ['e.g. github, google', '如 github、google'],
-  hint: ['Enter password and alias to generate', '输入密码和别名以生成'],
+
   length: ['Length', '长度'],
+
+  charset: ['Character Set', '字符集'],
+
   lowercase: ['a-z', '小写'],
   uppercase: ['A-Z', '大写'],
   digits: ['0-9', '数字'],
@@ -40,40 +47,133 @@ const { t } = useI18n({
 })
 
 const SALT = 'Unified_Password'
+
 const CHARS_LOWER = 'abcdefghijklmnopqrstuvwxyz'
 const CHARS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const CHARS_DIGITS = '0123456789'
 const CHARS_SYMBOLS = '!@#$%^&*()-_=+[]{}|;:,.<>?'
 
-const pwd = shallowRef('')
-const alias = shallowRef('')
-const hash = shallowRef('')
-const length = shallowRef(16)
-const useLower = shallowRef(true)
-const useUpper = shallowRef(true)
-const useDigits = shallowRef(true)
-const useSymbols = shallowRef(false)
+const pwd = useLocalStorage(
+  'unified-password:pwd',
+  '',
+)
+
+const alias = useLocalStorage(
+  'unified-password:alias',
+  '',
+)
+
+const hash = useLocalStorage(
+  'unified-password:hash',
+  '',
+)
+
+const length = useLocalStorage(
+  'unified-password:length',
+  16,
+)
+
+const charsetTypes = useLocalStorage<string[]>(
+  'unified-password:charset',
+  [
+    'lower',
+    'upper',
+    'digits',
+  ],
+)
+
+const charsetOptions = [
+  { label: t('lowercase'), value: 'lower' },
+  { label: t('uppercase'), value: 'upper' },
+  { label: t('digits'), value: 'digits' },
+  { label: t('symbols'), value: 'symbols' },
+]
 
 function buildCharset(): string {
   let charset = ''
-  if (useLower.value)
+
+  if (charsetTypes.value.includes('lower'))
     charset += CHARS_LOWER
-  if (useUpper.value)
+
+  if (charsetTypes.value.includes('upper'))
     charset += CHARS_UPPER
-  if (useDigits.value)
+
+  if (charsetTypes.value.includes('digits'))
     charset += CHARS_DIGITS
-  if (useSymbols.value)
+
+  if (charsetTypes.value.includes('symbols'))
     charset += CHARS_SYMBOLS
-  return charset || CHARS_LOWER + CHARS_DIGITS
+
+  return charset
 }
 
-function bytesToPassword(bytes: Uint8Array, charset: string, len: number): string {
-  let result = ''
-  for (let i = 0; i < len; i++) {
-    const idx = ((bytes[i * 2] << 8) | bytes[i * 2 + 1]) % charset.length
-    result += charset[idx]
+function pickChar(
+  bytes: Uint8Array,
+  index: number,
+  chars: string,
+): string {
+  return chars[
+    bytes[index % bytes.length] % chars.length
+  ]
+}
+
+function bytesToPassword(
+  bytes: Uint8Array,
+  len: number,
+): string {
+  const result: string[] = []
+
+  let offset = 0
+
+  // 保证每种字符类型至少出现一次
+  if (charsetTypes.value.includes('lower')) {
+    result.push(
+      pickChar(bytes, offset++, CHARS_LOWER),
+    )
   }
-  return result
+
+  if (charsetTypes.value.includes('upper')) {
+    result.push(
+      pickChar(bytes, offset++, CHARS_UPPER),
+    )
+  }
+
+  if (charsetTypes.value.includes('digits')) {
+    result.push(
+      pickChar(bytes, offset++, CHARS_DIGITS),
+    )
+  }
+
+  if (charsetTypes.value.includes('symbols')) {
+    result.push(
+      pickChar(bytes, offset++, CHARS_SYMBOLS),
+    )
+  }
+
+  const charset = buildCharset()
+
+  // 填充剩余字符
+  while (result.length < len) {
+    result.push(
+      pickChar(bytes, offset, charset),
+    )
+
+    offset++
+  }
+
+  // Deterministic Fisher-Yates Shuffle
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = (
+      bytes[offset % bytes.length]
+      % (i + 1)
+    )
+
+    ;[result[i], result[j]] = [result[j], result[i]]
+
+    offset++
+  }
+
+  return result.join('')
 }
 
 async function generate() {
@@ -81,16 +181,25 @@ async function generate() {
     hash.value = ''
     return
   }
+
   try {
-    const hashLen = length.value * 2
+    // 提供更多 entropy
+    const hashLen = Math.max(
+      length.value * 4,
+      32,
+    )
+
     const { hash: rawHash } = await argon2.hash({
       pass: pwd.value,
       salt: `${alias.value}_${SALT}`,
       hashLen,
       type: argon2.ArgonType.Argon2id,
     })
-    const charset = buildCharset()
-    hash.value = bytesToPassword(rawHash, charset, length.value)
+
+    hash.value = bytesToPassword(
+      rawHash,
+      length.value,
+    )
   }
   catch (e) {
     console.error(e)
@@ -98,48 +207,60 @@ async function generate() {
   }
 }
 
-watch([pwd, alias, length, useLower, useUpper, useDigits, useSymbols], generate)
+watch(
+  [pwd, alias, length, charsetTypes],
+  generate,
+)
 </script>
 
 <template>
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <TextInput
-          v-model="pwd"
-          :label="t('password')"
-          :placeholder="t('password_placeholder')"
-          secret
-          :copyable="false"
-        />
-        <TextInput
-          v-model="alias"
-          :label="t('alias')"
-          :placeholder="t('alias_placeholder')"
-          :copyable="false"
-          :monospace="false"
-        />
+        <LabelField :label="t('password')">
+          <TextInput
+            v-model="pwd"
+            :placeholder="t('password_placeholder')"
+            secret
+            :copyable="false"
+          />
+        </LabelField>
+
+        <LabelField :label="t('alias')">
+          <TextInput
+            v-model="alias"
+            :placeholder="t('alias_placeholder')"
+            :copyable="false"
+            :monospace="false"
+          />
+        </LabelField>
       </div>
     </Panel>
 
     <Panel :title="t('settings_label')">
-      <div p-5 flex="~ gap-3 wrap" items-center>
-        <div flex="~ gap-2" items-center>
-          <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('length') }}</span>
-          <NumberInput v-model="length" :min="8" :max="64" />
-        </div>
-        <BaseButton :active="useLower" @click="useLower = !useLower">
-          {{ t('lowercase') }}
-        </BaseButton>
-        <BaseButton :active="useUpper" @click="useUpper = !useUpper">
-          {{ t('uppercase') }}
-        </BaseButton>
-        <BaseButton :active="useDigits" @click="useDigits = !useDigits">
-          {{ t('digits') }}
-        </BaseButton>
-        <BaseButton :active="useSymbols" @click="useSymbols = !useSymbols">
-          {{ t('symbols') }}
-        </BaseButton>
+      <div
+        p-5
+        flex="~ col gap-4"
+        items-start
+      >
+        <LabelField :label="t('length')">
+          <NumberInput
+            v-model="length"
+            :min="8"
+            :max="64"
+          />
+        </LabelField>
+
+        <LabelField
+          :label="t('charset')"
+          w-full
+        >
+          <ToggleButtonGroup
+            v-model="charsetTypes"
+            required
+            :options="charsetOptions"
+          />
+        </LabelField>
       </div>
     </Panel>
 

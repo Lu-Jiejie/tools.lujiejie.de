@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
 export interface ExplainerItem {
   title?: string
   description: string
@@ -15,68 +13,47 @@ withDefaults(defineProps<{
   title: 'How It Works',
   defaultOpen: false,
 })
-
-const open = ref(false)
 </script>
 
 <template>
-  <div border="~ c-border" rounded-xl bg-c-surface overflow-hidden>
-    <button
-      type="button"
-      flex="~ items-center justify-between"
-
-      text-sm font-medium px-4 py-3 w-full transition-colors hover:bg-c-raised
-      @click="open = !open"
+  <div border="~ c-border" rounded-2xl bg-c-surface panel-shadow overflow-hidden>
+    <div
+      p="x-4 y-2" border="b c-border" text-sm tracking-wide font-medium op-50 select-none uppercase
     >
-      <span flex="~ items-center gap-2">
-        <span class="i-carbon-information" op-70 />
-        {{ title }}
-      </span>
+      {{ title }}
+    </div>
 
-      <span
-        class="i-carbon-chevron-down"
-        op-70 transition-transform
-        :class="open ? 'rotate-180' : ''"
-      />
-    </button>
-
-    <div v-show="open" border="t~ c-border" p-4>
-      <div flex="~ col gap-4">
-        <div
+    <div p-4>
+      <ol flex="~ col gap-4" m-0 p-0 list-none>
+        <li
           v-for="(item, index) in items"
           :key="index"
           flex="~ items-start gap-3"
         >
-          <div
-
+          <span
             flex="~ items-center justify-center"
-            text-xs font-semibold rounded-full bg-c-raised op-80 shrink-0 h-6 w-6
+            text-xs font-medium rounded-md bg-c-raised op-65 shrink-0 size-6 select-none
           >
             {{ index + 1 }}
-          </div>
+          </span>
 
           <div min-w-0 flex="~ col gap-1">
             <div
               v-if="item.title"
               flex="~ items-center gap-1.5"
+              min-w-0
             >
-              <span
-                v-if="item.icon"
-                :class="item.icon"
-                op-70 shrink-0
-              />
-
-              <span text-sm font-medium>
+              <span text-sm font-medium op-85 truncate>
                 {{ item.title }}
               </span>
             </div>
 
-            <div text-sm leading-6 op-75>
+            <div text-sm leading-6 op-60>
               {{ item.description }}
             </div>
           </div>
-        </div>
-      </div>
+        </li>
+      </ol>
     </div>
   </div>
 </template>

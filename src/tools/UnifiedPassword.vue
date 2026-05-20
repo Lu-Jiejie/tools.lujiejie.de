@@ -40,51 +40,61 @@ const { t } = useI18n({
   length: ['Length', '长度'],
   charset: ['Character Set', '字符集'],
 
-  lowercase: ['a-z', '小写'],
-  uppercase: ['A-Z', '大写'],
-  digits: ['0-9', '数字'],
-  symbols: ['!@#', '符号'],
+  lowercase: ['Lower', '小写'],
+  uppercase: ['Upper', '大写'],
+  digits: ['Digits', '数字'],
+  symbols: ['Symbols', '符号'],
 
   how_it_works: ['How It Works', '工作原理'],
 
   how_1_title: [
-    'Input Combination',
-    '输入组合',
+    'Use one secret',
+    '使用一个主密钥',
   ],
 
   how_1_desc: [
-    'Your master password and platform alias are combined locally in your browser.',
-    '你的主密码与平台别名会在浏览器本地组合。',
+    'Your master password is the only secret you need to remember. Keep it strong and private.',
+    '主密码是唯一需要记住的秘密。请使用足够强的主密码，并妥善保管。',
   ],
 
   how_2_title: [
-    'Argon2id Hashing',
-    'Argon2id 哈希',
+    'Separate each site',
+    '区分每个网站',
   ],
 
   how_2_desc: [
-    'Argon2id derives a deterministic cryptographic hash from the combined input.',
-    'Argon2id 会从组合输入中推导确定性的加密哈希。',
+    'The platform alias is mixed into the derivation, so GitHub, Google, and other sites get different passwords.',
+    '平台别名会参与推导，因此 GitHub、Google 等不同网站会得到不同密码。',
   ],
 
   how_3_title: [
-    'Character Mapping',
-    '字符映射',
+    'Derive in your browser',
+    '在浏览器中推导',
   ],
 
   how_3_desc: [
-    'The generated hash is transformed into a password using your selected character sets.',
-    '生成的哈希会根据所选字符集转换为密码。',
+    'Argon2id runs locally on the master password and alias. The inputs are not sent to a server.',
+    'Argon2id 会在本地处理主密码和别名，这些输入不会发送到服务器。',
   ],
 
   how_4_title: [
-    'Deterministic Output',
-    '确定性输出',
+    'Format the password',
+    '格式化密码',
   ],
 
   how_4_desc: [
-    'The same master password and alias will always generate the same password.',
-    '相同主密码与别名永远生成相同密码。',
+    'The derived bytes are mapped to your selected length and character sets, with every enabled type included.',
+    '推导出的字节会映射为指定长度和字符集，并确保启用的字符类型都会出现。',
+  ],
+
+  how_5_title: [
+    'Regenerate when needed',
+    '需要时重新生成',
+  ],
+
+  how_5_desc: [
+    'The same master password, alias, length, and character sets reproduce the same site password.',
+    '使用相同主密码、别名、长度和字符集，就能复现同一个站点密码。',
   ],
 })
 
@@ -107,6 +117,11 @@ const explainItems = computed(() => [
   {
     title: t('how_4_title'),
     description: t('how_4_desc'),
+    icon: 'i-carbon-character-whole-number',
+  },
+  {
+    title: t('how_5_title'),
+    description: t('how_5_desc'),
     icon: 'i-carbon-checkmark-outline',
   },
 ])
@@ -132,10 +147,10 @@ const charsetTypes = useLocalStorage<string[]>(
 )
 
 const charsetOptions = computed(() => [
-  { label: t('lowercase'), value: 'lower' },
-  { label: t('uppercase'), value: 'upper' },
-  { label: t('digits'), value: 'digits' },
-  { label: t('symbols'), value: 'symbols' },
+  { label: t('lowercase'), subLabel: 'a-z', value: 'lower' },
+  { label: t('uppercase'), subLabel: 'A-Z', value: 'upper' },
+  { label: t('digits'), subLabel: '0-9', value: 'digits' },
+  { label: t('symbols'), subLabel: '!#$', value: 'symbols' },
 ])
 
 function buildCharset(): string {

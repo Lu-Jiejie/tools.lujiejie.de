@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -103,13 +104,13 @@ const parts = computed(() => {
 
     <Panel v-if="parsed" :title="t('result')">
       <div p-5 flex="~ col gap-3">
-        <TextInput
-          v-for="part in parts" :key="part.label"
-          :label="part.label"
-          :model-value="part.value"
-          readonly
-          :copyable="true"
-        />
+        <LabelField v-for="part in parts" :key="part.label" :label="part.label">
+          <TextInput
+            :model-value="part.value"
+            readonly
+            :copyable="true"
+          />
+        </LabelField>
       </div>
     </Panel>
 
@@ -119,18 +120,21 @@ const parts = computed(() => {
           v-for="(param, i) in queryParams" :key="i"
           flex="~ col gap-2" p-3 rounded-xl border="~ c-border" bg="c-raised"
         >
-          <TextInput
-            :label="t('key')"
-            :model-value="param.key"
-            readonly
-            :copyable="true"
-          />
-          <TextInput
-            :label="t('value')"
-            :model-value="decodeURIComponent(param.value)"
-            readonly
-            :copyable="true"
-          />
+          <LabelField :label="t('key')">
+            <TextInput
+
+              :model-value="param.key"
+              readonly
+              :copyable="true"
+            />
+          </LabelField>
+          <LabelField :label="t('value')">
+            <TextInput
+              :model-value="decodeURIComponent(param.value)"
+              readonly
+              :copyable="true"
+            />
+          </LabelField>
         </div>
       </div>
     </Panel>

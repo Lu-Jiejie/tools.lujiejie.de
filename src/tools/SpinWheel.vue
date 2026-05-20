@@ -1,4 +1,5 @@
 <script lang="ts">
+import TextInput from '~/components/TextInput.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -14,7 +15,8 @@ export const toolMeta = defineTool({
 
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { useLocalStorage, watchDebounced } from '@vueuse/core'
+import { computed, nextTick, onMounted, shallowRef, watch } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
 import { useI18n } from '~/composables/useI18n'
@@ -31,8 +33,6 @@ const { t } = useI18n({
   at_least_two: ['Add at least 2 options', '至少添加 2 个选项'],
 })
 
-const STORAGE_KEY = 'random-wheel-items'
-
 const COLORS = [
   '#FF6B6B',
   '#4ECDC4',
@@ -48,51 +48,50 @@ const COLORS = [
   '#82E0AA',
 ]
 
-function loadItems(): string[] {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      if (Array.isArray(parsed) && parsed.length > 0)
-        return parsed
-    }
-  }
-  catch {}
-  return ['选项 1', '选项 2', '选项 3', '选项 4']
-}
+const items = useLocalStorage<string[]>(
+  'random-wheel:items',
+  [
+    '选项 1',
+    '选项 2',
+    '选项 3',
+    '选项 4',
+  ],
+)
+const newItem = shallowRef('')
+const spinning = shallowRef(false)
+const resultText = shallowRef('')
+const rotation = shallowRef(0)
+const canvasRef = shallowRef<HTMLCanvasElement | null>(null)
 
-const items = ref<string[]>(loadItems())
-const newItem = ref('')
-const spinning = ref(false)
-const resultText = ref('')
-const rotation = ref(0)
-const canvasRef = ref<HTMLCanvasElement | null>(null)
+const canSpin = computed(() =>
+  items.value.length >= 2,
+)
 
-const canSpin = computed(() => items.value.length >= 2 && !spinning.value)
-
-function saveItems() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value))
-}
+const spinDisabled = computed(() =>
+  !canSpin.value || spinning.value,
+)
 
 function addItem() {
   const val = newItem.value.trim()
   if (!val)
     return
-  items.value.push(val)
+  items.value = [
+    ...items.value,
+    val,
+  ]
   newItem.value = ''
-  saveItems()
 }
 
 function removeItem(index: number) {
-  items.value.splice(index, 1)
-  saveItems()
+  items.value = items.value.filter(
+    (_, i) => i !== index,
+  )
 }
 
 function clearItems() {
   if (!confirm(t('clear_confirm')))
     return
   items.value = []
-  saveItems()
 }
 
 function drawWheel() {
@@ -110,7 +109,7 @@ function drawWheel() {
 
   ctx.clearRect(0, 0, size, size)
 
-  if (count === 0)
+  if (!count)
     return
 
   const arc = (2 * Math.PI) / count
@@ -145,7 +144,7 @@ function drawWheel() {
 }
 
 function spin() {
-  if (!canSpin.value)
+  if (spinDisabled.value)
     return
 
   spinning.value = true
@@ -163,7 +162,7 @@ function spin() {
     const eased = 1 - (1 - progress) ** 4
 
     rotation.value = startRotation + (targetAngle - startRotation) * eased
-    drawWheel()
+    // drawWheel()
 
     if (progress < 1) {
       requestAnimationFrame(animate)
@@ -181,14 +180,21 @@ function spin() {
   requestAnimationFrame(animate)
 }
 
-function onKeydown(e: KeyboardEvent) {
-  if (e.key === 'Enter')
-    addItem()
-}
+watchDebounced(
+  items,
+  async () => {
+    await nextTick()
 
-watch(items, () => {
-  nextTick(drawWheel)
-}, { deep: true })
+    drawWheel()
+  },
+  {
+    debounce: 80,
+    deep: true,
+    immediate: true,
+  },
+)
+
+watch(rotation, drawWheel)
 
 onMounted(() => {
   nextTick(drawWheel)
@@ -200,18 +206,20 @@ onMounted(() => {
     <Panel :title="t('options')">
       <div p-5 flex="~ col gap-3">
         <div flex="~ gap-2">
-          <input
+          <TextInput
             v-model="newItem"
             :placeholder="t('placeholder')"
-            border="~ c-border focus:c-border-strong" text-sm px-3 py-2 outline-none rounded-xl bg-c-input flex-1 transition-colors
-            @keydown="onKeydown"
-          >
-          <BaseButton icon="i-carbon-add" @click="addItem">
-            {{ t('add') }}
-          </BaseButton>
-          <BaseButton v-if="items.length > 0" icon="i-carbon-trash-can" @click="clearItems">
-            {{ t('clear') }}
-          </BaseButton>
+            :copyable="false"
+            :monospace="false"
+            flex-1
+            @enter="addItem"
+          />
+          <BaseButton
+            icon="i-carbon-add" :disabled="!newItem.trim()" icon-only @click="addItem"
+          />
+          <BaseButton
+            v-if="items.length > 0" icon="i-carbon-trash-can" icon-only @click="clearItems"
+          />
         </div>
         <div v-if="items.length > 0" flex="~ gap-2 wrap">
           <span
@@ -246,18 +254,27 @@ onMounted(() => {
             rounded-full shadow="[0_4px_20px_rgba(0,0,0,0.15)]"
           />
           <!-- 指针 -->
-          <div class="pointer" />
+          <div
+            border="b-(12px transparent) r-(20px [var(--c-accent)]) t-(12px transparent) solid" size-0 absolute
+            class="translate-y--50% right--8px top-[50%] drop-shadow-[-2px_0_2px_rgba(0,0,0,0.2)]"
+          />
           <!-- 中心按钮 -->
-          <button
-            type="button"
-            class="text-sm text-white font-bold border-3 border-white rounded-full h-12 w-12 cursor-pointer transition-opacity-150 transition-transform-150 left-1/2 top-1/2 absolute disabled:opacity-40 disabled:cursor-not-allowed -translate-x-1/2 -translate-y-1/2 hover:scale-110"
-            :class="{ spinning }"
-            :disabled="!canSpin"
-            :style="{ background: 'var(--c-accent, #4ecdc4)', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)' }"
-            @click="spin"
+          <div
+            absolute top="50%" left="50%" un-translate="-50%"
           >
-            GO
-          </button>
+            <button
+              type="button" text="sm white font-bold"
+              border="3 white" rounded-full size-12
+              cursor-pointer transition="transform opacity 150" hover:scale-110
+              un-disabled="cursor-not-allowed opacity-40"
+              :class="{ spinning }"
+              :disabled="spinDisabled"
+              :style="{ background: 'var(--c-accent)', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)' }"
+              @click="spin"
+            >
+              GO
+            </button>
+          </div>
         </div>
         <div v-if="!canSpin && !spinning" text-sm op-50>
           {{ t('at_least_two') }}
@@ -290,7 +307,7 @@ onMounted(() => {
   height: 0;
   border-top: 12px solid transparent;
   border-bottom: 12px solid transparent;
-  border-right: 20px solid var(--c-accent, #4ecdc4);
+  border-right: 20px solid var(--c-accent);
   filter: drop-shadow(-2px 0 2px rgba(0, 0, 0, 0.2));
 }
 .spinning {
@@ -299,10 +316,10 @@ onMounted(() => {
 @keyframes pulse {
   0%,
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
   50% {
-    transform: translate(-50%, -50%) scale(0.9);
+    transform: scale(0.9);
   }
 }
 </style>

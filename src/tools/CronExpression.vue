@@ -1,8 +1,9 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
-  id: 'cron-tool',
+  id: 'cron-expression',
   name: 'Cron Expression',
   nameZh: 'Cron 表达式',
   description: 'Parse, generate, and preview cron expressions with next execution times.',
@@ -21,6 +22,7 @@ import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
 import SelectInput from '~/components/SelectInput.vue'
+import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useLocale } from '~/composables/useLocale'
 
@@ -47,6 +49,7 @@ const { t } = useI18n({
 })
 
 const PRESET_PLACEHOLDER = '__none__'
+const CRON_ALLOWED_CHARS = /[0-9*/,\-\s]/
 
 const PRESETS = [
   { label: '--', value: PRESET_PLACEHOLDER },
@@ -167,16 +170,19 @@ const expression = computed(() => {
 
 const manualInput = reactive({ value: '', editing: false })
 
-function onManualInput(event: Event) {
-  const val = (event.target as HTMLInputElement).value
-  manualInput.value = val
-  const parts = val.trim().split(/\s+/)
-  if (parts.length === 5)
-    applyExpression(val.trim())
+const previewExpression = computed(() => manualInput.editing ? manualInput.value.trim() : expression.value)
+
+function onManualInput(value: string) {
+  manualInput.value = value
+  const expr = value.trim()
+  if (parseCron(expr))
+    applyExpression(expr)
 }
 
 function applyManualInput() {
   manualInput.editing = false
+  if (!parseCron(manualInput.value.trim()))
+    manualInput.value = expression.value
 }
 
 function applyExpression(expr: string) {
@@ -313,9 +319,9 @@ function getNextRuns(expr: string, count: number): Date[] {
 }
 
 const error = computed(() => {
-  if (!expression.value.trim())
+  if (!previewExpression.value)
     return ''
-  if (!parseCron(expression.value))
+  if (!parseCron(previewExpression.value))
     return 'Invalid cron expression'
   return ''
 })
@@ -327,10 +333,10 @@ const nextRuns = computed(() => {
 })
 
 const humanDescription = computed(() => {
-  if (error.value || !expression.value.trim())
+  if (error.value || !previewExpression.value)
     return ''
   try {
-    return cronstrue.toString(expression.value, {
+    return cronstrue.toString(previewExpression.value, {
       locale: locale.value === 'zh' ? 'zh_CN' : 'en',
       use24HourTimeFormat: true,
     })
@@ -356,28 +362,34 @@ manualInput.value = expression.value
   <div flex="~ col gap-4">
     <Panel :title="t('expression')">
       <div p-5 flex="~ col gap-4">
-        <div flex="~ gap-3 wrap" items-center>
-          <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('preset') }}</span>
-          <SelectInput
-            :model-value="presetValue"
-            :options="PRESETS"
-            @update:model-value="applyPreset"
-          />
+        <div flex="~ gap-3 wrap" items-end>
+          <LabelField :label="t('preset')">
+            <SelectInput
+              :model-value="presetValue"
+              :options="PRESETS"
+              @update:model-value="applyPreset"
+            />
+          </LabelField>
           <BaseButton icon="i-carbon-copy" @click="copyExpression">
             {{ t('copy') }}
           </BaseButton>
         </div>
         <div flex="~ gap-2" items-center>
-          <input
-            :value="manualInput.value"
+          <TextInput
+            :model-value="manualInput.value"
             :placeholder="t('placeholder')"
-            border="~ c-border focus:c-border-strong" text-lg tracking-widest font-mono px-4 py-3 text-center outline-none rounded-xl bg-c-input flex-1 transition-colors
-            spellcheck="false"
-            @input="onManualInput"
+            :allowed-chars="CRON_ALLOWED_CHARS"
+            :copyable="false"
+            autocomplete="off"
+            size="lg"
+            align="center"
+            tracking="widest"
+            class="flex-1"
             @focus="manualInput.editing = true"
             @blur="applyManualInput"
-            @keydown.enter="applyManualInput"
-          >
+            @enter="applyManualInput"
+            @update:model-value="onManualInput"
+          />
         </div>
         <div v-if="humanDescription && !error" text-sm text-center op-60>
           {{ humanDescription }}

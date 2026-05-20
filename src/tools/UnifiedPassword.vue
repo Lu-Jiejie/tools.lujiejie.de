@@ -1,4 +1,5 @@
 <script lang="ts">
+import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
@@ -18,7 +19,7 @@ export const toolMeta = defineTool({
 import { useLocalStorage } from '@vueuse/core'
 // @ts-expect-error no type definitions available
 import argon2 from 'argon2-browser/dist/argon2-bundled.min.js'
-import { watch } from 'vue'
+import { computed, shallowRef, watch } from 'vue'
 import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
 import TextInput from '~/components/TextInput.vue'
@@ -37,14 +38,78 @@ const { t } = useI18n({
   alias_placeholder: ['e.g. github, google', '如 github、google'],
 
   length: ['Length', '长度'],
-
   charset: ['Character Set', '字符集'],
 
   lowercase: ['a-z', '小写'],
   uppercase: ['A-Z', '大写'],
   digits: ['0-9', '数字'],
   symbols: ['!@#', '符号'],
+
+  how_it_works: ['How It Works', '工作原理'],
+
+  how_1_title: [
+    'Input Combination',
+    '输入组合',
+  ],
+
+  how_1_desc: [
+    'Your master password and platform alias are combined locally in your browser.',
+    '你的主密码与平台别名会在浏览器本地组合。',
+  ],
+
+  how_2_title: [
+    'Argon2id Hashing',
+    'Argon2id 哈希',
+  ],
+
+  how_2_desc: [
+    'Argon2id derives a deterministic cryptographic hash from the combined input.',
+    'Argon2id 会从组合输入中推导确定性的加密哈希。',
+  ],
+
+  how_3_title: [
+    'Character Mapping',
+    '字符映射',
+  ],
+
+  how_3_desc: [
+    'The generated hash is transformed into a password using your selected character sets.',
+    '生成的哈希会根据所选字符集转换为密码。',
+  ],
+
+  how_4_title: [
+    'Deterministic Output',
+    '确定性输出',
+  ],
+
+  how_4_desc: [
+    'The same master password and alias will always generate the same password.',
+    '相同主密码与别名永远生成相同密码。',
+  ],
 })
+
+const explainItems = computed(() => [
+  {
+    title: t('how_1_title'),
+    description: t('how_1_desc'),
+    icon: 'i-carbon-password',
+  },
+  {
+    title: t('how_2_title'),
+    description: t('how_2_desc'),
+    icon: 'i-carbon-data-enrichment',
+  },
+  {
+    title: t('how_3_title'),
+    description: t('how_3_desc'),
+    icon: 'i-carbon-character-whole-number',
+  },
+  {
+    title: t('how_4_title'),
+    description: t('how_4_desc'),
+    icon: 'i-carbon-checkmark-outline',
+  },
+])
 
 const SALT = 'Unified_Password'
 
@@ -53,41 +118,25 @@ const CHARS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const CHARS_DIGITS = '0123456789'
 const CHARS_SYMBOLS = '!@#$%^&*()-_=+[]{}|;:,.<>?'
 
-const pwd = useLocalStorage(
-  'unified-password:pwd',
-  '',
-)
+const pwd = shallowRef('')
 
-const alias = useLocalStorage(
-  'unified-password:alias',
-  '',
-)
+const alias = shallowRef('')
 
-const hash = useLocalStorage(
-  'unified-password:hash',
-  '',
-)
+const hash = shallowRef('')
 
-const length = useLocalStorage(
-  'unified-password:length',
-  16,
-)
+const length = shallowRef(16)
 
 const charsetTypes = useLocalStorage<string[]>(
   'unified-password:charset',
-  [
-    'lower',
-    'upper',
-    'digits',
-  ],
+  ['lower', 'upper', 'digits'],
 )
 
-const charsetOptions = [
+const charsetOptions = computed(() => [
   { label: t('lowercase'), value: 'lower' },
   { label: t('uppercase'), value: 'upper' },
   { label: t('digits'), value: 'digits' },
   { label: t('symbols'), value: 'symbols' },
-]
+])
 
 function buildCharset(): string {
   let charset = ''
@@ -168,7 +217,10 @@ function bytesToPassword(
       % (i + 1)
     )
 
-    ;[result[i], result[j]] = [result[j], result[i]]
+    ;[result[i], result[j]] = [
+      result[j],
+      result[i],
+    ]
 
     offset++
   }
@@ -183,7 +235,6 @@ async function generate() {
   }
 
   try {
-    // 提供更多 entropy
     const hashLen = Math.max(
       length.value * 4,
       32,
@@ -221,6 +272,7 @@ watch(
           <TextInput
             v-model="pwd"
             :placeholder="t('password_placeholder')"
+            autocomplete="new-password"
             secret
             :copyable="false"
           />
@@ -230,6 +282,7 @@ watch(
           <TextInput
             v-model="alias"
             :placeholder="t('alias_placeholder')"
+            autocomplete="off"
             :copyable="false"
             :monospace="false"
           />
@@ -273,5 +326,10 @@ watch(
         />
       </div>
     </Panel>
+
+    <CollapsibleExplainer
+      :title="t('how_it_works')"
+      :items="explainItems"
+    />
   </div>
 </template>

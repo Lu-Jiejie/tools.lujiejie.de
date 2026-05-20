@@ -2,7 +2,7 @@
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
-  id: 'word-counter',
+  id: 'text-statistics',
   name: 'Text Statistics',
   nameZh: '文本统计',
   description: 'Count characters, words, lines, sentences, paragraphs, and estimate reading time.',

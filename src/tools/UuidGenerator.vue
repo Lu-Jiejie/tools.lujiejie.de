@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -155,7 +156,7 @@ function md5(input: Uint8Array): Uint8Array {
 }
 
 async function sha1(input: Uint8Array): Promise<Uint8Array> {
-  const hash = await crypto.subtle.digest('SHA-1', input)
+  const hash = await crypto.subtle.digest('SHA-1', input as BufferSource)
   return new Uint8Array(hash)
 }
 
@@ -238,14 +239,12 @@ generate()
     <Panel :title="t('settings_label')">
       <div p-5 flex="~ col gap-4">
         <div flex="~ gap-3 wrap" items-end>
-          <div flex="~ col gap-1">
-            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('version') }}</label>
+          <LabelField :label="t('version')">
             <SelectInput v-model="version" :options="VERSION_OPTIONS" />
-          </div>
-          <div v-if="version !== 'nil'" flex="~ col gap-1">
-            <label text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('count') }}</label>
+          </LabelField>
+          <LabelField :label="t('count')">
             <NumberInput v-model="count" :min="1" :max="50" />
-          </div>
+          </LabelField>
           <BaseButton :active="uppercase" @click="uppercase = !uppercase">
             {{ t('uppercase') }}
           </BaseButton>

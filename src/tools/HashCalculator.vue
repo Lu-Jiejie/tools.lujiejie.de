@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -14,8 +15,33 @@ export const toolMeta = defineTool({
 
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
-import { blake2b, blake2s, blake3, crc32, md5, ripemd160, sha1, sha3, sha224, sha256, sha384, sha512, sm3, whirlpool } from 'hash-wasm'
-import { ref, watch } from 'vue'
+import {
+  useLocalStorage,
+  watchDebounced,
+} from '@vueuse/core'
+
+import {
+  blake2b,
+  blake2s,
+  blake3,
+  crc32,
+  md5,
+  ripemd160,
+  sha1,
+  sha3,
+  sha224,
+  sha256,
+  sha384,
+  sha512,
+  sm3,
+  whirlpool,
+} from 'hash-wasm'
+
+import {
+  computed,
+  shallowRef,
+} from 'vue'
+
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
 import TextInput from '~/components/TextInput.vue'
@@ -26,55 +52,61 @@ const { t } = useI18n({
   output: ['Hash Output', '哈希结果'],
   placeholder: ['Enter text to hash...', '输入要计算哈希的文本...'],
   algorithms: ['Algorithms', '算法'],
+  empty: ['Enter text to calculate hashes', '输入文本以计算哈希'],
 })
 
 const ALGORITHMS = [
-  { label: 'MD5', fn: (s: string) => md5(s) },
-  { label: 'SHA-1', fn: (s: string) => sha1(s) },
-  { label: 'SHA-224', fn: (s: string) => sha224(s) },
-  { label: 'SHA-256', fn: (s: string) => sha256(s) },
-  { label: 'SHA-384', fn: (s: string) => sha384(s) },
-  { label: 'SHA-512', fn: (s: string) => sha512(s) },
+  { label: 'MD5', fn: md5 },
+  { label: 'SHA-1', fn: sha1 },
+  { label: 'SHA-224', fn: sha224 },
+  { label: 'SHA-256', fn: sha256 },
+  { label: 'SHA-384', fn: sha384 },
+  { label: 'SHA-512', fn: sha512 },
   { label: 'SHA-3 (256)', fn: (s: string) => sha3(s, 256) },
   { label: 'SHA-3 (512)', fn: (s: string) => sha3(s, 512) },
-  { label: 'RIPEMD-160', fn: (s: string) => ripemd160(s) },
-  { label: 'BLAKE2b', fn: (s: string) => blake2b(s) },
-  { label: 'BLAKE2s', fn: (s: string) => blake2s(s) },
-  { label: 'BLAKE3', fn: (s: string) => blake3(s) },
-  { label: 'SM3', fn: (s: string) => sm3(s) },
-  { label: 'Whirlpool', fn: (s: string) => whirlpool(s) },
-  { label: 'CRC32', fn: (s: string) => crc32(s) },
+  { label: 'RIPEMD-160', fn: ripemd160 },
+  { label: 'BLAKE2b', fn: blake2b },
+  { label: 'BLAKE2s', fn: blake2s },
+  { label: 'BLAKE3', fn: blake3 },
+  { label: 'SM3', fn: sm3 },
+  { label: 'Whirlpool', fn: whirlpool },
+  { label: 'CRC32', fn: crc32 },
 ]
 
-const DEFAULT_ENABLED = ['MD5', 'SHA-1', 'SHA-256', 'SHA-512']
-const STORAGE_KEY = 'hash-calculator-enabled'
+const input = shallowRef('')
 
-function loadEnabled(): string[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      const parsed = JSON.parse(stored)
-      if (Array.isArray(parsed) && parsed.length > 0)
-        return parsed
-    }
-  }
-  catch {}
-  return DEFAULT_ENABLED
-}
+const results = shallowRef<Record<string, string>>({})
 
-const enabled = ref<string[]>(loadEnabled())
+const enabled = useLocalStorage<string[]>(
+  'hash-calculator-enabled',
+  ['MD5', 'SHA-1', 'SHA-256', 'SHA-512'],
+)
+
+const activeAlgorithms = computed(() =>
+  ALGORITHMS.filter(a =>
+    enabled.value.includes(a.label),
+  ),
+)
 
 function toggleAlgorithm(label: string) {
-  const idx = enabled.value.indexOf(label)
-  if (idx === -1)
-    enabled.value = [...enabled.value, label]
-  else if (enabled.value.length > 1)
-    enabled.value = enabled.value.filter(l => l !== label)
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(enabled.value))
-}
+  const exists = enabled.value.includes(label)
 
-const input = ref('')
-const results = ref<Record<string, string>>({})
+  if (exists) {
+    if (enabled.value.length <= 1)
+      return
+
+    enabled.value = enabled.value.filter(
+      l => l !== label,
+    )
+
+    return
+  }
+
+  enabled.value = [
+    ...enabled.value,
+    label,
+  ]
+}
 
 async function computeHashes() {
   if (!input.value) {
@@ -82,27 +114,40 @@ async function computeHashes() {
     return
   }
 
-  const active = ALGORITHMS.filter(a => enabled.value.includes(a.label))
-  const hashes = await Promise.all(active.map(a => a.fn(input.value)))
-  const newResults: Record<string, string> = {}
-  for (let i = 0; i < active.length; i++)
-    newResults[active[i].label] = hashes[i]
+  const hashes = await Promise.all(
+    activeAlgorithms.value.map(a =>
+      a.fn(input.value),
+    ),
+  )
 
-  results.value = newResults
+  results.value = Object.fromEntries(
+    activeAlgorithms.value.map((a, i) => [
+      a.label,
+      hashes[i],
+    ]),
+  )
 }
 
-watch([input, enabled], computeHashes, { immediate: true })
+watchDebounced(
+  [input, enabled],
+  computeHashes,
+  {
+    debounce: 120,
+    immediate: true,
+  },
+)
 </script>
 
 <template>
   <div flex="~ col gap-4">
     <Panel :title="t('input')">
-      <div p-5 flex="~ col gap-3">
+      <div p-5>
         <textarea
           v-model="input"
           :placeholder="t('placeholder')"
-          rows="4"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-y transition-colors
+          rows="4" border="~ c-border focus:c-border-strong"
+          text-sm font-mono p="x-3 y-2" outline-none rounded-xl bg-c-input w-full resize-y
+          transition-colors
         />
       </div>
     </Panel>
@@ -110,7 +155,8 @@ watch([input, enabled], computeHashes, { immediate: true })
     <Panel :title="t('algorithms')">
       <div p-5 flex="~ gap-2 wrap">
         <BaseButton
-          v-for="algo in ALGORITHMS" :key="algo.label"
+          v-for="algo in ALGORITHMS"
+          :key="algo.label"
           :active="enabled.includes(algo.label)"
           @click="toggleAlgorithm(algo.label)"
         >
@@ -121,13 +167,12 @@ watch([input, enabled], computeHashes, { immediate: true })
 
     <Panel :title="t('output')">
       <div p-5 flex="~ col gap-3">
-        <TextInput
-          v-for="algo in ALGORITHMS.filter(a => enabled.includes(a.label))" :key="algo.label"
-          :label="algo.label"
-          :model-value="results[algo.label] ?? ''"
-          readonly
-          :copyable="true"
-        />
+        <LabelField v-for="algo in activeAlgorithms" :key="algo.label" :label="algo.label">
+          <TextInput
+            :model-value="results[algo.label] ?? ''"
+            readonly copyable
+          />
+        </LabelField>
       </div>
     </Panel>
   </div>

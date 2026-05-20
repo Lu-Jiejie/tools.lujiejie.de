@@ -3,6 +3,8 @@ import { computed, shallowRef } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
+type InputMode = 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'
+
 const props = withDefaults(defineProps<{
   modelValue: string
   placeholder?: string
@@ -12,13 +14,29 @@ const props = withDefaults(defineProps<{
   backspaceable?: boolean
   monospace?: boolean
   secret?: boolean
+  allowedChars?: RegExp
+  normalize?: 'lowercase' | 'uppercase'
+  maxlength?: number
+  pattern?: string
+  inputmode?: InputMode
+  autocomplete?: string
+  size?: 'default' | 'lg'
+  align?: 'left' | 'center'
+  tracking?: 'normal' | 'wide' | 'widest'
+  tabular?: boolean
 }>(), {
   copyable: true,
   monospace: true,
+  size: 'default',
+  align: 'left',
+  tracking: 'normal',
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
+  'enter': []
+  'focus': []
+  'blur': []
 }>()
 
 const slots = defineSlots<{
@@ -67,11 +85,43 @@ function onBackspacePointerLeave() {
   }
 }
 
+function normalizeValue(value: string): string {
+  let next = value
+  if (props.normalize === 'lowercase')
+    next = next.toLowerCase()
+  if (props.normalize === 'uppercase')
+    next = next.toUpperCase()
+
+  if (props.allowedChars) {
+    next = Array.from(next).filter((char) => {
+      props.allowedChars!.lastIndex = 0
+      return props.allowedChars!.test(char)
+    }).join('')
+  }
+
+  if (typeof props.maxlength === 'number')
+    next = next.slice(0, props.maxlength)
+
+  return next
+}
+
+function handleInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  const next = normalizeValue(input.value)
+  input.value = next
+  emit('update:modelValue', next)
+}
+
 const fieldClass = computed(() => [
   props.error ? 'border-red-400' : 'border-c-border',
   props.monospace ? 'font-mono' : '',
   props.readonly ? 'bg-c-input-readonly op-70' : 'bg-c-input focus:border-c-border-strong',
   slots.prefix ? 'pl-8' : '',
+  props.size === 'lg' ? 'text-xl px-4 py-3' : 'text-sm px-3 py-2',
+  props.align === 'center' ? 'text-center' : '',
+  props.tracking === 'wide' ? 'tracking-wide' : '',
+  props.tracking === 'widest' ? 'tracking-widest' : '',
+  props.tabular ? 'tabular-nums' : '',
 ])
 </script>
 
@@ -83,16 +133,22 @@ const fieldClass = computed(() => [
         v-if="!readonly"
         :value="modelValue"
         :type="secret && !visible ? 'password' : 'text'"
-        :autocomplete="secret ? 'off' : undefined"
+        :autocomplete="autocomplete ?? (secret ? 'off' : undefined)"
+        :inputmode="inputmode"
+        :maxlength="maxlength"
+        :pattern="pattern"
         :placeholder="placeholder"
         :class="fieldClass"
-        text-sm px-3 py-2 outline-none border rounded-xl w-full transition-colors
-        @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        outline-none border rounded-xl w-full transition-colors
+        @input="handleInput"
+        @keydown.enter="emit('enter')"
+        @focus="emit('focus')"
+        @blur="emit('blur')"
       >
       <div
         v-else
         :class="fieldClass"
-        text-sm px-3 py-2 border rounded-xl min-h-9 w-full select-none whitespace-nowrap overflow-x-auto
+        border rounded-xl min-h-9 w-full select-none whitespace-nowrap overflow-x-auto
       >
         {{ secret && !visible ? '•'.repeat(modelValue.length) : modelValue }}&nbsp;
       </div>

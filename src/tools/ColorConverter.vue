@@ -1,4 +1,5 @@
 <script lang="ts">
+import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -454,13 +455,13 @@ const eyeDropperSupported = 'EyeDropper' in window
 
     <Panel :title="t('output_label')">
       <div p-5 flex="~ col gap-3">
-        <TextInput
+        <LabelField
           v-for="out in outputs"
           :key="out.key"
-          :model-value="out.value"
           :label="out.label"
-          readonly
-        />
+        >
+          <TextInput :model-value="out.value" readonly />
+        </LabelField>
       </div>
     </Panel>
   </div>

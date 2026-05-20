@@ -16,8 +16,10 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
+import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
+import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -110,6 +112,7 @@ const presetValue = computed(() => {
 })
 
 const manualInput = reactive({ value: '', editing: false })
+const symbolicInput = reactive({ value: '', editing: false })
 
 function applyOctal(str: string) {
   if (!/^[0-7]{3}$/.test(str))
@@ -118,6 +121,43 @@ function applyOctal(str: string) {
   Object.assign(perms.owner, octalToRole(o))
   Object.assign(perms.group, octalToRole(g))
   Object.assign(perms.others, octalToRole(ot))
+}
+
+function applySymbolic(str: string) {
+  if (!/^(?:[r-][w-][x-]){3}$/.test(str))
+    return
+
+  const toRole = (chunk: string) => ({
+    read: chunk[0] === 'r',
+    write: chunk[1] === 'w',
+    execute: chunk[2] === 'x',
+  })
+
+  Object.assign(perms.owner, toRole(str.slice(0, 3)))
+  Object.assign(perms.group, toRole(str.slice(3, 6)))
+  Object.assign(perms.others, toRole(str.slice(6, 9)))
+}
+
+function updateManualOctal(value: string) {
+  manualInput.value = value
+  if (manualInput.value.length === 3)
+    applyOctal(manualInput.value)
+}
+
+function updateManualSymbolic(value: string) {
+  symbolicInput.value = value
+  if (symbolicInput.value.length === 9)
+    applySymbolic(symbolicInput.value)
+}
+
+function stopManualEdit() {
+  manualInput.editing = false
+  manualInput.value = octal.value
+}
+
+function stopSymbolicEdit() {
+  symbolicInput.editing = false
+  symbolicInput.value = symbolic.value
 }
 
 function applyPreset(value: string | undefined) {
@@ -130,10 +170,6 @@ function togglePerm(role: typeof ROLES[number], perm: typeof PERM_BITS[number]) 
   perms[role][perm] = !perms[role][perm]
 }
 
-function copyOctal() {
-  navigator.clipboard.writeText(octal.value)
-}
-
 function copyCommand() {
   navigator.clipboard.writeText(command.value)
 }
@@ -143,49 +179,79 @@ watch(octal, (val) => {
     manualInput.value = val
 })
 
+watch(symbolic, (val) => {
+  if (!symbolicInput.editing)
+    symbolicInput.value = val
+})
+
 manualInput.value = octal.value
+symbolicInput.value = symbolic.value
 </script>
 
 <template>
   <div flex="~ col gap-4">
     <Panel :title="t('permission')">
       <div p-5 flex="~ col gap-4">
-        <div flex="~ gap-3 wrap" items-center>
-          <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('preset') }}</span>
-          <SelectInput
-            :model-value="presetValue"
-            :options="PRESETS"
-            @update:model-value="applyPreset"
-          />
-          <BaseButton icon="i-carbon-copy" @click="copyOctal">
+        <div flex="~ gap-3 wrap" items-end>
+          <LabelField :label="t('preset')">
+            <SelectInput
+              :model-value="presetValue"
+              :options="PRESETS"
+              @update:model-value="applyPreset"
+            />
+          </LabelField>
+          <!-- <BaseButton icon="i-carbon-copy" @click="copyOctal">
             {{ t('copy') }}
-          </BaseButton>
+          </BaseButton> -->
         </div>
         <div flex="~ gap-4 justify-center wrap">
-          <div flex="~ col gap-1.5" flex-1 min-w-0>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('octal') }}</span>
-            <div border="~ c-border" text-xl tracking-widest font-mono px-4 py-3 text-center rounded-xl bg-c-input>
-              {{ octal }}
-            </div>
+          <div flex="[1_1_10rem]" min-w-0>
+            <LabelField :label="t('octal')">
+              <TextInput
+                :model-value="manualInput.value"
+                :allowed-chars="/[0-7]/"
+                :maxlength="3"
+                pattern="[0-7]{3}"
+                :copyable="false"
+                inputmode="numeric"
+                autocomplete="off"
+                size="lg"
+                align="center"
+                tracking="widest"
+                tabular
+                @focus="manualInput.editing = true"
+                @blur="stopManualEdit"
+                @update:model-value="updateManualOctal"
+              />
+            </LabelField>
           </div>
-          <div flex="~ col gap-1.5" flex-1 min-w-0>
-            <span text-xs tracking-wide font-medium op-60 select-none uppercase>{{ t('symbolic') }}</span>
-            <div border="~ c-border" text-xl tracking-widest font-mono px-4 py-3 text-center rounded-xl bg-c-input>
-              {{ symbolic }}
-            </div>
+          <div flex="[2_1_16rem]" min-w-0>
+            <LabelField :label="t('symbolic')">
+              <TextInput
+                :model-value="symbolicInput.value"
+                :allowed-chars="/[rwx-]/"
+                :maxlength="9"
+                pattern="[rwx-]{9}"
+                :copyable="false"
+                normalize="lowercase"
+                autocomplete="off"
+                size="lg"
+                align="center"
+                tracking="widest"
+                @focus="symbolicInput.editing = true"
+                @blur="stopSymbolicEdit"
+                @update:model-value="updateManualSymbolic"
+              />
+            </LabelField>
           </div>
         </div>
         <div text-sm text-center op-60>
           {{ humanDescription }}
         </div>
         <div flex justify-center>
-          <button
-            type="button"
-            border="~ c-border hover:c-border-strong" px-3 py-1.5 rounded-lg bg-c-raised cursor-pointer transition-all-150
-            @click="copyCommand"
-          >
-            <span text-sm font-mono>{{ command }}</span>
-          </button>
+          <BaseButton icon="i-carbon-copy" @click="copyCommand">
+            {{ command }}
+          </BaseButton>
         </div>
       </div>
     </Panel>
@@ -196,16 +262,16 @@ manualInput.value = octal.value
           <div flex="~ gap-3" items-center>
             <span shrink-0 w-16 />
             <div flex="~ gap-2">
-              <span v-for="perm in PERM_BITS" :key="perm" text-xs tracking-wide font-medium text-center op-60 w-9.5 select-none uppercase>
+              <span v-for="perm in PERM_BITS" :key="perm" text-xs tracking-wide font-medium text-center op-60 select-none uppercase>
                 {{ t(perm) }}
               </span>
             </div>
           </div>
           <div
             v-for="role in ROLES" :key="role"
-            flex="~ gap-3" items-center
+            flex="~ gap-2" items-center
           >
-            <span text-xs tracking-wide font-medium op-60 shrink-0 w-16 select-none uppercase>{{ t(role) }}</span>
+            <span text-xs tracking-wide font-medium text-right op-60 shrink-0 w-16 select-none uppercase>{{ t(role) }}</span>
             <div flex="~ gap-2">
               <BaseButton
                 v-for="perm in PERM_BITS" :key="perm"

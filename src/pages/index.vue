@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import ToolCard from '~/components/ToolCard.vue'
+import ToolCard from '~/components/container/ToolCard.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useTools } from '~/composables/useTools'
 

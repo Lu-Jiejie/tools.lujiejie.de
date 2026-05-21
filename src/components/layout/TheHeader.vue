@@ -26,17 +26,17 @@ const currentTool = computed(() => {
 <template>
   <header px-4 border-b border-c-border header-blur flex gap-3 h-14 items-center top-0 sticky z-10>
     <!-- Logo / 面包屑 -->
-    <div flex flex-1 gap-2 min-w-0 items-center>
+    <div flex flex-1 gap-2 min-w-0 items-end>
       <RouterLink
         to="/"
         text-3xl tracking-tight font-bold op-90 shrink-0 select-none transition-opacity hover:op-70
       >
         Tools<span text-c-accent>.</span>
       </RouterLink>
-      <template v-if="currentTool">
+      <span v-if="currentTool" flex gap-2 translate-y--0.6 items-end>
         <span text-sm op-30 shrink-0 select-none>/</span>
         <span text-sm op-60 select-none truncate>{{ currentTool.name }}</span>
-      </template>
+      </span>
     </div>
 
     <!-- 右侧操作区 -->

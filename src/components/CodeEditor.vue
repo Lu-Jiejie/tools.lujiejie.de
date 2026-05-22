@@ -11,12 +11,14 @@ const props = withDefaults(defineProps<{
   placeholder?: string
   rows?: number
   readonly?: boolean
+  copyable?: boolean
   langs?: string[]
 }>(), {
   language: 'json',
   placeholder: '',
   rows: 25,
   readonly: false,
+  copyable: true,
 })
 
 const emit = defineEmits<{
@@ -162,6 +164,7 @@ defineExpose({ rootRef })
       />
 
       <button
+        v-if="copyable"
         flex="~ items-center justify-center"
         hover="op-100 bg-[var(--c-border)]"
         rounded border-none bg-transparent op-50 h-6 w-6 cursor-pointer transition-colors transition-opacity duration-200

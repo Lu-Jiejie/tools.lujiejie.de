@@ -1,29 +1,39 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-  type?: 'warning' | 'error' | 'info' | 'success'
+import { computed } from 'vue'
+
+type AlertTipType = 'neutral' | 'warning' | 'error' | 'info' | 'success'
+
+const props = withDefaults(defineProps<{
+  type?: AlertTipType
 }>(), {
   type: 'warning',
 })
+
+const iconClass = computed(() => ({
+  neutral: 'i-carbon-information',
+  warning: 'i-carbon-warning',
+  error: 'i-carbon-close-outline',
+  info: 'i-carbon-information',
+  success: 'i-carbon-checkmark-outline',
+}[props.type]))
+
+const toneClass = computed(() => ({
+  neutral: 'text-[var(--c-text-muted)]',
+  warning: 'text-yellow-500',
+  error: 'text-red-400',
+  info: 'text-blue-400',
+  success: 'text-green-500',
+}[props.type]))
 </script>
 
 <template>
   <div
-    flex="~ gap-1.5" px-3 py-2 border rounded-lg select-none items-center
-    :class="{
-      'text-yellow-500 bg-yellow-400/10 border-yellow-400': type === 'warning',
-      'text-red-400 bg-red-400/10 border-red-400': type === 'error',
-      'text-blue-400 bg-blue-400/10 border-blue-400': type === 'info',
-      'text-green-500 bg-green-400/10 border-green-400': type === 'success',
-    }"
+    flex="~ gap-2" px-3 py-2 border="~ c-border" rounded-lg bg-c-raised select-none items-start
+    :class="toneClass"
   >
     <div
-      shrink-0
-      :class="{
-        'i-carbon-warning-filled': type === 'warning',
-        'i-carbon-close-filled': type === 'error',
-        'i-carbon-information-filled': type === 'info',
-        'i-carbon-checkmark-filled': type === 'success',
-      }"
+      text-sm mt-0.5 shrink-0
+      :class="iconClass"
     />
     <slot />
   </div>

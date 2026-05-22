@@ -21,8 +21,8 @@ import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import DevToolbar from '~/components/DevToolbar.vue'
 import TextInput from '~/components/TextInput.vue'
-import { isDev } from '~/composables/useDevMode'
 import { useI18n } from '~/composables/useI18n'
 
 interface PresetExpression {
@@ -212,21 +212,19 @@ type JSONPathJson = null | boolean | number | string | object | unknown[]
 
 <template>
   <div flex="~ col gap-4">
+    <DevToolbar>
+      <BaseButton
+        v-for="preset in PRESETS"
+        :key="preset.expression"
+        :active="expression === preset.expression"
+        @click="applyPreset(preset)"
+      >
+        {{ preset.label }}
+      </BaseButton>
+    </DevToolbar>
+
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <LabelField v-if="isDev" :label="t('presets')">
-          <div flex="~ gap-2 wrap">
-            <BaseButton
-              v-for="preset in PRESETS"
-              :key="preset.expression"
-              :active="expression === preset.expression"
-              @click="applyPreset(preset)"
-            >
-              {{ preset.label }}
-            </BaseButton>
-          </div>
-        </LabelField>
-
         <LabelField :label="t('expression')">
           <TextInput
             v-model="expression"

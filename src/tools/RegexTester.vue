@@ -20,9 +20,9 @@ import { computed, onBeforeUnmount, onMounted, shallowRef, watchEffect } from 'v
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
+import DevToolbar from '~/components/DevToolbar.vue'
 import TextInput from '~/components/TextInput.vue'
 import { isDark } from '~/composables/dark'
-import { isDev } from '~/composables/useDevMode'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -345,6 +345,16 @@ function applyExample(ex: Example) {
 
 <template>
   <div flex="~ col gap-4">
+    <DevToolbar>
+      <BaseButton
+        v-for="ex in EXAMPLES"
+        :key="ex.label"
+        @click="applyExample(ex)"
+      >
+        {{ ex.labelZh }}
+      </BaseButton>
+    </DevToolbar>
+
     <Panel :title="t('pattern_label')">
       <div p-5 flex="~ col gap-3">
         <TextInput
@@ -403,15 +413,6 @@ function applyExample(ex: Example) {
 
     <Panel :title="t('test_label')">
       <div p-5 flex="~ col gap-3">
-        <div v-if="isDev" flex="~ gap-2 wrap">
-          <BaseButton
-            v-for="ex in EXAMPLES"
-            :key="ex.label"
-            @click="applyExample(ex)"
-          >
-            {{ ex.labelZh }}
-          </BaseButton>
-        </div>
         <textarea
           v-model="testText"
           :placeholder="t('test_placeholder')"

@@ -21,6 +21,7 @@ import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import DevToolbar from '~/components/DevToolbar.vue'
 import TextInput from '~/components/TextInput.vue'
 import ToggleButton from '~/components/ToggleButton.vue'
 import { useI18n } from '~/composables/useI18n'
@@ -51,6 +52,9 @@ const { t } = useI18n({
   sample_placeholder: ['Paste JSON data to infer a schema...', '粘贴 JSON 数据来推断 Schema...'],
   test_placeholder: ['Paste JSON data to validate against the schema...', '粘贴需要用 Schema 验证的 JSON 数据...'],
   generate: ['Generate Schema', '生成 Schema'],
+  fill_demo: ['Fill Demo', '填充示例'],
+  preview_production: ['Preview Production', '预览上线模式'],
+  exit_preview: ['Exit Production Preview', '退出上线预览'],
   include_examples: ['Examples', '示例值'],
   strict_object: ['Strict Objects', '严格对象'],
   invalid: ['Invalid', '验证失败'],
@@ -79,10 +83,10 @@ const DEFAULT_SAMPLE = `{
   }
 }`
 
-const sampleJson = shallowRef(DEFAULT_SAMPLE)
-const testJson = shallowRef(DEFAULT_SAMPLE)
+const sampleJson = shallowRef('')
+const testJson = shallowRef('')
 const schemaText = shallowRef('')
-const schemaTitle = shallowRef('User')
+const schemaTitle = shallowRef('')
 const includeExamples = shallowRef(true)
 const strictObjects = shallowRef(true)
 
@@ -114,8 +118,6 @@ const validationTip = computed<{ type: 'info' | 'success' | 'error', message: st
   return { type: 'error', message: `${t('invalid')} · ${issueText.value}` }
 })
 
-createSchema()
-
 function parseSchema(text: string): { schema?: JsonSchemaNode, error: string } {
   const parsed = parseJsonDocument(text)
   if (parsed.error)
@@ -138,10 +140,26 @@ function createSchema() {
   })
   schemaText.value = JSON.stringify(schema, null, 2)
 }
+
+function fillDemo() {
+  schemaTitle.value = 'User'
+  sampleJson.value = DEFAULT_SAMPLE
+  testJson.value = DEFAULT_SAMPLE
+  createSchema()
+}
 </script>
 
 <template>
   <div flex="~ col gap-4">
+    <DevToolbar
+      :preview-label="t('preview_production')"
+      :exit-label="t('exit_preview')"
+    >
+      <BaseButton icon="i-carbon-test-tool" @click="fillDemo">
+        {{ t('fill_demo') }}
+      </BaseButton>
+    </DevToolbar>
+
     <Panel :title="t('schema_title')">
       <div p-5 flex="~ col gap-4">
         <AlertTip type="neutral">

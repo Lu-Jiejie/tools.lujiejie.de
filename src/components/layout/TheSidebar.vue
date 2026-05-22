@@ -38,7 +38,7 @@ function toggleCategory(cat: ToolCategory) {
             mb-0.5 px-3 py-1.5 rounded-lg flex w-full select-none items-center justify-between
             @click="toggleCategory(group.category)"
           >
-            <span text-xs tracking-widest font-semibold op-50 select-none uppercase>
+            <span font text-sm tracking-widest op-50 select-none uppercase>
               {{ t(`category.${group.category}`) }}
             </span>
             <div

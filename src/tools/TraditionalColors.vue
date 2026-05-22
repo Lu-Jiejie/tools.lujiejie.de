@@ -7,7 +7,7 @@ export const toolMeta = defineTool({
   nameZh: '传统色盘',
   description: 'Browse Chinese traditional colors and Nippon Colors with color details.',
   descriptionZh: '浏览中国传统色与 Nippon Colors，并查看颜色详情。',
-  category: 'convert',
+  category: 'design',
   keywords: ['color', 'palette', 'traditional', 'china', 'chinese', 'nippon', 'japan', 'hex', '颜色', '传统色'],
 })
 </script>

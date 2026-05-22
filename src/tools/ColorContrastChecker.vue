@@ -7,7 +7,7 @@ export const toolMeta = defineTool({
   nameZh: '颜色对比度检查',
   description: 'Check foreground and background color contrast against WCAG AA and AAA.',
   descriptionZh: '检查前景色和背景色的 WCAG AA/AAA 对比度。',
-  category: 'dev',
+  category: 'design',
   keywords: ['color', 'contrast', 'wcag', 'accessibility', 'a11y', 'foreground', 'background'],
 })
 </script>

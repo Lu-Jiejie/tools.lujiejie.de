@@ -47,7 +47,7 @@ export function useTools() {
     const list: { category: ToolCategory, tools: Tool[] }[] = CATEGORY_ORDER.map(cat => ({
       category: cat,
       tools: localizedTools.value.filter(t => t.category === cat),
-    }))
+    })).filter(group => group.tools.length > 0)
 
     if (favorites.value.length > 0) {
       const favTools = favorites.value

@@ -8,7 +8,7 @@ export const toolMeta = defineTool({
   nameZh: '颜色转换',
   description: 'Convert colors between HEX, RGB, HSL, and other formats.',
   descriptionZh: '在 HEX、RGB、HSL 等颜色格式之间互相转换。',
-  category: 'convert',
+  category: 'design',
   keywords: ['color', 'hex', 'rgb', 'hsl', 'convert'],
 })
 </script>

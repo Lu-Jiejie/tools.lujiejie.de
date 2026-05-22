@@ -11,6 +11,16 @@ const { toolsByCategory, isFavorite } = useTools()
 
 const collapsed = useLocalStorage<ToolCategory[]>('tools-sidebar-collapsed', [])
 
+const categoryAccentClasses: Record<ToolCategory, string> = {
+  favorites: 'bg-amber-400/80',
+  convert: 'bg-teal-500/75',
+  generate: 'bg-sky-500/70',
+  dev: 'bg-zinc-500/70 dark:bg-zinc-300/55',
+  text: 'bg-violet-500/65',
+  design: 'bg-rose-500/65',
+  utility: 'bg-cyan-600/65',
+}
+
 function isCollapsed(cat: ToolCategory) {
   return collapsed.value.includes(cat)
 }
@@ -26,25 +36,33 @@ function toggleCategory(cat: ToolCategory) {
 
 <template>
   <aside border="r c-border" bg-c-surface flex="~ col" h-full>
-    <nav px-2 py-4 flex-1 overflow-y-auto>
+    <nav px-3 py-5 flex-1 overflow-y-auto>
       <TransitionGroup name="list" tag="div">
         <div
           v-for="group in toolsByCategory"
           :key="group.category"
-          mb-2
+          mb-5
         >
           <!-- 分类标题（可折叠） -->
           <button
-            mb-0.5 px-3 py-1.5 rounded-lg flex w-full select-none items-center justify-between
+            class="group/category"
+            mb-2.5 py-1.5 flex w-full select-none items-center justify-between
             @click="toggleCategory(group.category)"
           >
-            <span font text-sm tracking-widest op-50 select-none uppercase>
-              {{ t(`category.${group.category}`) }}
+            <span flex gap-2.5 min-w-0 items-center>
+              <span :class="categoryAccentClasses[group.category]" rounded-full shrink-0 h-5 w-1 />
+              <span text-base leading-none font-normal font-serif op-84 truncate>
+                {{ t(`category.${group.category}`) }}
+              </span>
             </span>
-            <div
-              i-carbon-chevron-down text-xs op-30 transition-transform duration-200
-              :class="{ '-rotate-90': isCollapsed(group.category) }"
-            />
+            <span flex shrink-0 gap-2 items-center>
+              <span text-xs font-mono op-34>{{ group.tools.length }}</span>
+              <div
+                class="group-hover/category:op-55"
+                i-carbon-chevron-down text-xs op-28 transition-all duration-200
+                :class="{ '-rotate-90': isCollapsed(group.category) }"
+              />
+            </span>
           </button>
 
           <!-- 工具列表：用 grid-template-rows 实现流畅高度动画 -->
@@ -52,16 +70,16 @@ function toggleCategory(cat: ToolCategory) {
             grid transition-all-200
             :style="{ gridTemplateRows: isCollapsed(group.category) ? '0fr' : '1fr' }"
           >
-            <div ml-2 overflow-hidden border="l c-border">
+            <div ml-0 pl-3 overflow-hidden border="l c-border">
               <RouterLink
                 v-for="tool in group.tools"
                 :key="tool.id" :to="`/${tool.id}`"
-                m="b-0.5 l-2" p="x-2 y-1.5" text-sm rounded-lg op-85 flex transition-colors duration-150 items-center hover:(bg-c-raised) !hover:op-90
-                active-class="!bg-c-soft !text-c-accent !op-100"
+                m="b-0.5" p="x-2 y-1.5" border="l-2 transparent" text-sm leading-snug rounded-lg op-70 flex transition-colors duration-150 items-center hover:(border-c-border-strong op-100)
+                active-class="!border-c-accent !text-c-accent !op-100"
                 @click="$emit('close')"
               >
-                <span>{{ tool.name }}</span>
-                <div v-if="group.category !== 'favorites' && isFavorite(tool.id)" i-carbon-star-filled text="[12px] amber-500" ml-1 shrink-0 />
+                <span min-w-0 truncate>{{ tool.name }}</span>
+                <div v-if="group.category !== 'favorites' && isFavorite(tool.id)" i-carbon-star-filled text="[12px] amber-500" ml-1 op-55 shrink-0 />
               </RouterLink>
             </div>
           </div>

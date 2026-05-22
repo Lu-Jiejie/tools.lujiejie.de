@@ -10,16 +10,19 @@ defineOptions({ name: 'IndexPage' })
 
 const { t } = useI18n({
   allCategories: ['All', '全部'],
+  browseByCategory: ['browse by category', '按分类浏览'],
   description: [
     'A collection of tools I find useful.',
     '一个我觉得有用的工具集合。',
   ],
+  groupsLabel: ['Groups', '分组'],
+  toolsLabel: ['Tools', '工具'],
+  toolboxLabel: ['personal toolbox', '个人工具箱'],
 })
 const { tools, filteredTools, toolsByCategory, searchQuery, activeCategory } = useTools()
 const isFiltering = computed(() => searchQuery.value.trim().length > 0 || activeCategory.value !== 'all')
 const totalTools = computed(() => tools.value.length)
 const totalCategories = computed(() => CATEGORY_ORDER.length)
-const currentYear = new Date().getFullYear()
 const categoryAccentClasses: Record<ToolCategory, string> = {
   favorites: 'bg-amber-400/80',
   convert: 'bg-teal-500/75',
@@ -49,7 +52,9 @@ const categoryFilters = computed<{ id: ToolCategory | 'all', label: string, coun
     <div mb-10 pb-8>
       <div mb-6 flex gap-3 select-none items-center>
         <span bg-c-border h-px w-10 />
-        <span text-xs tracking-widest font-mono op-38 uppercase>utility index</span>
+        <span text-xs tracking-widest font-mono op-38 uppercase>{{ t('toolboxLabel') }}</span>
+        <span text-xs font-mono op-28>/</span>
+        <span text-xs font-mono op-38>LuJiejie</span>
         <span bg-c-border flex-1 h-px />
       </div>
       <div flex="~ col gap-6 md:row md:items-end md:justify-between">
@@ -61,11 +66,11 @@ const categoryFilters = computed<{ id: ToolCategory | 'all', label: string, coun
             {{ t('description') }}
           </p>
         </div>
-        <div border="t b c-border" py-3 min-w-48>
+        <div border="t b c-border" py-4 min-w-44>
           <div flex gap-8 items-end justify-between>
             <div>
               <div text-xs font-mono op-38 uppercase>
-                Tools
+                {{ t('toolsLabel') }}
               </div>
               <div text-4xl leading-none font-serif mt-1>
                 {{ totalTools }}
@@ -73,17 +78,12 @@ const categoryFilters = computed<{ id: ToolCategory | 'all', label: string, coun
             </div>
             <div text-right>
               <div text-xs font-mono op-38 uppercase>
-                Groups
+                {{ t('groupsLabel') }}
               </div>
               <div text-4xl leading-none font-serif mt-1>
                 {{ totalCategories }}
               </div>
             </div>
-          </div>
-          <div mt-3 bg-c-border h-px />
-          <div text-xs mt-3 op-45 flex gap-8 justify-between>
-            <span>Curated utilities</span>
-            <span font-mono>{{ currentYear }}</span>
           </div>
         </div>
       </div>
@@ -93,7 +93,7 @@ const categoryFilters = computed<{ id: ToolCategory | 'all', label: string, coun
       <!-- 搜索与分类 -->
       <div border="t b c-border" py-4 flex="~ col gap-3">
         <div flex gap-3 items-center justify-between>
-          <span text-xs tracking-widest font-mono op-38 select-none uppercase>browse by category</span>
+          <span text-xs tracking-widest font-mono op-38 select-none uppercase>{{ t('browseByCategory') }}</span>
           <span bg-c-border flex-1 h-px />
         </div>
 

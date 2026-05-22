@@ -1,7 +1,6 @@
 <script setup lang="ts">
+import type { ToolCategory } from '~/tools'
 import { computed } from 'vue'
-import BaseButton from '~/components/BaseButton.vue'
-import Panel from '~/components/container/Panel.vue'
 import ToolCard from '~/components/container/ToolCard.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useTools } from '~/composables/useTools'
@@ -16,41 +15,104 @@ const { t } = useI18n({
     '一个我觉得有用的工具集合。',
   ],
 })
-const { filteredTools, toolsByCategory, searchQuery, activeCategory } = useTools()
+const { tools, filteredTools, toolsByCategory, searchQuery, activeCategory } = useTools()
 const isFiltering = computed(() => searchQuery.value.trim().length > 0 || activeCategory.value !== 'all')
+const totalTools = computed(() => tools.value.length)
+const totalCategories = computed(() => CATEGORY_ORDER.length)
+const currentYear = new Date().getFullYear()
+const categoryAccentClasses: Record<ToolCategory, string> = {
+  favorites: 'bg-amber-400/80',
+  convert: 'bg-teal-500/75',
+  generate: 'bg-sky-500/70',
+  dev: 'bg-zinc-500/70 dark:bg-zinc-300/55',
+  text: 'bg-violet-500/65',
+  design: 'bg-rose-500/65',
+  utility: 'bg-cyan-600/65',
+}
+const categoryFilters = computed<{ id: ToolCategory | 'all', label: string, count: number }[]>(() => [
+  {
+    id: 'all',
+    label: t('allCategories'),
+    count: totalTools.value,
+  },
+  ...CATEGORY_ORDER.map(category => ({
+    id: category,
+    label: t(`category.${category}`),
+    count: tools.value.filter(tool => tool.category === category).length,
+  })),
+])
 </script>
 
 <template>
-  s\
-  <div page-container>
+  <div page-container max-w-5xl>
     <!-- 标题区 -->
-    <div mb-4>
-      <h1 text-5xl leading-none tracking-tight font-bold mb-3 op-90 select-none>
-        Tools<span text-c-accent>.</span>
-      </h1>
-      <p text-base leading-relaxed op-60>
-        {{ t('description') }}
-      </p>
+    <div mb-10 pb-8>
+      <div mb-6 flex gap-3 select-none items-center>
+        <span bg-c-border h-px w-10 />
+        <span text-xs tracking-widest font-mono op-38 uppercase>utility index</span>
+        <span bg-c-border flex-1 h-px />
+      </div>
+      <div flex="~ col gap-6 md:row md:items-end md:justify-between">
+        <div>
+          <h1 text="7xl md:9xl" leading="[0.82]" font-normal font-serif mb-5 op-92 select-none>
+            Tools<span text-c-accent>.</span>
+          </h1>
+          <p text-base leading-relaxed op-58 max-w-xl>
+            {{ t('description') }}
+          </p>
+        </div>
+        <div border="t b c-border" py-3 min-w-48>
+          <div flex gap-8 items-end justify-between>
+            <div>
+              <div text-xs font-mono op-38 uppercase>
+                Tools
+              </div>
+              <div text-4xl leading-none font-serif mt-1>
+                {{ totalTools }}
+              </div>
+            </div>
+            <div text-right>
+              <div text-xs font-mono op-38 uppercase>
+                Groups
+              </div>
+              <div text-4xl leading-none font-serif mt-1>
+                {{ totalCategories }}
+              </div>
+            </div>
+          </div>
+          <div mt-3 bg-c-border h-px />
+          <div text-xs mt-3 op-45 flex gap-8 justify-between>
+            <span>Curated utilities</span>
+            <span font-mono>{{ currentYear }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <Panel mb-10>
+    <div mb-12>
       <!-- 搜索与分类 -->
-      <div p-4 flex="~ col gap-3">
-        <div flex="~ gap-2 wrap">
-          <BaseButton :active="activeCategory === 'all'" @click="activeCategory = 'all'">
-            {{ t('allCategories') }}
-          </BaseButton>
-          <BaseButton
-            v-for="category in CATEGORY_ORDER"
-            :key="category"
-            :active="activeCategory === category"
-            @click="activeCategory = category"
-          >
-            {{ t(`category.${category}`) }}
-          </BaseButton>
+      <div border="t b c-border" py-4 flex="~ col gap-3">
+        <div flex gap-3 items-center justify-between>
+          <span text-xs tracking-widest font-mono op-38 select-none uppercase>browse by category</span>
+          <span bg-c-border flex-1 h-px />
         </div>
 
-        <div border="~ c-border" px-3.5 py-2 rounded-xl bg-c-input flex gap-2.5 transition-colors duration-200 items-center focus-within:border-c-border-strong hover:border-c-border-strong>
+        <div grid="~ cols-2 sm:cols-3 lg:cols-7 gap-1.5">
+          <button
+            v-for="filter in categoryFilters"
+            :key="filter.id"
+            :class="activeCategory === filter.id ? 'border-c-accent text-c-accent bg-c-soft' : 'border-c-border bg-c-surface op-74 hover:op-100 hover:border-c-border-strong hover:bg-c-raised'"
+            border="~" px-3 py-2.5 text-left rounded-xl min-w-0 transition-colors duration-200
+            @click="activeCategory = filter.id"
+          >
+            <span flex gap-2 min-w-0 items-baseline justify-between>
+              <span text-sm font-medium whitespace-nowrap>{{ filter.label }}</span>
+              <span text-xs font-mono op-48 shrink-0>{{ filter.count }}</span>
+            </span>
+          </button>
+        </div>
+
+        <div border="~ c-border" px-3.5 py-2.5 rounded-xl bg-c-surface flex gap-2.5 transition-colors duration-200 items-center focus-within:border-c-accent hover:border-c-border-strong>
           <div i-carbon-search text-base op-30 shrink-0 />
           <input
             v-model="searchQuery"
@@ -68,7 +130,7 @@ const isFiltering = computed(() => searchQuery.value.trim().length > 0 || active
           </button>
         </div>
       </div>
-    </Panel>
+    </div>
 
     <!-- 搜索结果 -->
     <template v-if="isFiltering">
@@ -89,25 +151,25 @@ const isFiltering = computed(() => searchQuery.value.trim().length > 0 || active
         <div
           v-for="group in toolsByCategory"
           :key="group.category"
-          mb-12
+          mb-14
         >
-          <Panel>
-            <div p="x-4 y-2.5" border="b c-border" flex gap-3 select-none items-center>
-              <div flex gap-2 min-w-0 items-center>
-                <span rounded-full bg-c-accent h-1.5 w-1.5 shadow="[0_0_0_4px_var(--c-accent-soft)]" />
-                <h2 text-sm op-78 truncate>
+          <section>
+            <div grid-cols="[auto_1fr_auto]" mb-5 gap-4 grid select-none items-end>
+              <span :class="categoryAccentClasses[group.category]" rounded-full h-8 w-1.5 translate-y--0.5 />
+              <div min-w-0>
+                <h2 text="2xl md:3xl" leading-none font-normal font-serif op-88 truncate>
                   {{ t(`category.${group.category}`) }}
                 </h2>
+                <div mt-3 bg-c-border h-px />
               </div>
-              <div flex-1 h-px bg="[linear-gradient(to_right,var(--c-border),transparent)]" />
-              <span text-xs font-mono px-2 py-0.5 rounded-full bg-c-raised op-55 border="~ c-border">
+              <span border="~ c-border" text-xs font-mono px-2.5 py-1 rounded-full bg-c-surface op-48>
                 {{ group.tools.length }}
               </span>
             </div>
-            <div p-4 class="tools-grid">
+            <div class="tools-grid">
               <ToolCard v-for="tool in group.tools" :key="tool.id" :tool="tool" />
             </div>
-          </Panel>
+          </section>
         </div>
       </TransitionGroup>
     </template>

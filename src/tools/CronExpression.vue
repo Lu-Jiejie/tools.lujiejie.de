@@ -19,6 +19,7 @@ import cronstrue from 'cronstrue/i18n'
 import { computed, reactive, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
+import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
 import SelectInput from '~/components/SelectInput.vue'
@@ -46,6 +47,27 @@ const { t } = useI18n({
   to: ['To', '到'],
   preset: ['Preset', '预设'],
   copy: ['Copy', '复制'],
+  how_it_works: ['How It Works', '工作原理'],
+  how_1_title: ['Cron fields', 'Cron 字段'],
+  how_1_desc: [
+    'Cron here has five parts, in this order: minute, hour, day of month, month, day of week.',
+    '这里用的是五段 Cron，顺序是：分钟、小时、日期、月份、星期。',
+  ],
+  how_2_title: ['Cron symbols', 'Cron 符号'],
+  how_2_desc: [
+    '* means every value. Commas list values, hyphens make ranges, and slash adds an interval, such as */5.',
+    '* 表示每个值；逗号写多个值；连字符写范围；斜杠写间隔，比如 */5。',
+  ],
+  how_3_title: ['Edit expression', '编辑表达式'],
+  how_3_desc: [
+    'You can use the controls, or type the expression directly. When the text is valid, the controls follow it.',
+    '你可以用下面的控件，也可以直接输入表达式。输入有效时，控件会跟着同步。',
+  ],
+  how_4_title: ['Run times', '执行时间'],
+  how_4_desc: [
+    'The next times are counted from now and displayed in your local timezone.',
+    '后续时间从当前时刻开始算，并按你的本地时区显示。',
+  ],
 })
 
 const PRESET_PLACEHOLDER = '__none__'
@@ -70,6 +92,13 @@ const PRESETS = [
 const presetValue = computed(() => {
   return PRESETS.find(p => p.value === expression.value)?.value || PRESET_PLACEHOLDER
 })
+
+const explainItems = computed(() => [
+  { title: t('how_1_title'), description: t('how_1_desc') },
+  { title: t('how_2_title'), description: t('how_2_desc') },
+  { title: t('how_3_title'), description: t('how_3_desc') },
+  { title: t('how_4_title'), description: t('how_4_desc') },
+])
 
 const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -512,5 +541,10 @@ manualInput.value = expression.value
         </ul>
       </div>
     </Panel>
+
+    <CollapsibleExplainer
+      :title="t('how_it_works')"
+      :items="explainItems"
+    />
   </div>
 </template>

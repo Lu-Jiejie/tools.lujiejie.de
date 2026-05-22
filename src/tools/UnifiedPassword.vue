@@ -48,53 +48,53 @@ const { t } = useI18n({
   how_it_works: ['How It Works', '工作原理'],
 
   how_1_title: [
-    'Use one secret',
-    '使用一个主密钥',
+    'Master password',
+    '主密码',
   ],
 
   how_1_desc: [
-    'Your master password is the only secret you need to remember. Keep it strong and private.',
-    '主密码是唯一需要记住的秘密。请使用足够强的主密码，并妥善保管。',
+    'You remember one master password. Make it strong; every generated password depends on it.',
+    '你只需要记住一个主密码。它要足够强，因为后面生成的密码都依赖它。',
   ],
 
   how_2_title: [
-    'Separate each site',
-    '区分每个网站',
+    'Platform alias',
+    '平台别名',
   ],
 
   how_2_desc: [
-    'The platform alias is mixed into the derivation, so GitHub, Google, and other sites get different passwords.',
-    '平台别名会参与推导，因此 GitHub、Google 等不同网站会得到不同密码。',
+    'The alias changes the result. For example, github and google produce different passwords.',
+    '别名会改变结果。比如 github 和 google 会生成不同的密码。',
   ],
 
   how_3_title: [
-    'Derive in your browser',
-    '在浏览器中推导',
+    'Local derivation',
+    '本地推导',
   ],
 
   how_3_desc: [
-    'Argon2id runs locally on the master password and alias. The inputs are not sent to a server.',
-    'Argon2id 会在本地处理主密码和别名，这些输入不会发送到服务器。',
+    'Argon2id runs in the browser. The master password and alias are not sent to a server.',
+    'Argon2id 在浏览器里运行。主密码和别名不会发到服务器。',
   ],
 
   how_4_title: [
-    'Format the password',
+    'Format password',
     '格式化密码',
   ],
 
   how_4_desc: [
-    'The derived bytes are mapped to your selected length and character sets, with every enabled type included.',
-    '推导出的字节会映射为指定长度和字符集，并确保启用的字符类型都会出现。',
+    'The result is shaped by your length and character-set settings. Enabled character types are included at least once.',
+    '结果会按你设置的长度和字符集生成。启用的字符类型至少会出现一次。',
   ],
 
   how_5_title: [
-    'Regenerate when needed',
-    '需要时重新生成',
+    'Repeat result',
+    '复现结果',
   ],
 
   how_5_desc: [
-    'The same master password, alias, length, and character sets reproduce the same site password.',
-    '使用相同主密码、别名、长度和字符集，就能复现同一个站点密码。',
+    'Use the same master password, alias, length, and character sets to get the same password again.',
+    '主密码、别名、长度和字符集都一样时，就会再次得到同一个密码。',
   ],
 })
 

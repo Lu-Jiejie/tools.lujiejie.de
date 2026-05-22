@@ -19,6 +19,7 @@ import { computed, shallowRef } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
+import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
 import DevToolbar from '~/components/DevToolbar.vue'
@@ -49,6 +50,7 @@ const { t } = useI18n({
     'Paste JSON data here to validate it against the current Schema automatically.',
     '在这里粘贴 JSON 数据，会自动使用当前 Schema 进行验证。',
   ],
+  schema_placeholder: ['Paste or write JSON Schema here...', '在这里粘贴或编写 JSON Schema...'],
   sample_placeholder: ['Paste JSON data to infer a schema...', '粘贴 JSON 数据来推断 Schema...'],
   test_placeholder: ['Paste JSON data to validate against the schema...', '粘贴需要用 Schema 验证的 JSON 数据...'],
   generate: ['Generate Schema', '生成 Schema'],
@@ -68,6 +70,27 @@ const { t } = useI18n({
   issue_count: [
     (count: string) => `${count} issue(s)`,
     (count: string) => `${count} 个问题`,
+  ],
+  how_it_works: ['How It Works', '工作原理'],
+  how_1_title: ['Validate JSON', '验证 JSON'],
+  how_1_desc: [
+    'The schema in the first editor is used to check the JSON in the validation section.',
+    '第一个编辑器里的 Schema，会用来检查验证区里的 JSON。',
+  ],
+  how_2_title: ['Generate schema', '生成 Schema'],
+  how_2_desc: [
+    'The generator looks at the sample JSON and writes a basic schema from its fields, types, arrays, and objects.',
+    '生成器会读取样例 JSON，再按字段、类型、数组和对象写出一份基础 Schema。',
+  ],
+  how_3_title: ['Review schema', '检查 Schema'],
+  how_3_desc: [
+    'A sample cannot tell the tool every rule. Add limits, formats, enum values, or conditional rules yourself when you need them.',
+    '单个样例不能说明所有规则。长度限制、格式、枚举值、条件规则这些，通常需要你自己补。',
+  ],
+  how_4_title: ['Strict objects', '严格对象'],
+  how_4_desc: [
+    'When Strict Objects is on, generated object schemas reject extra keys that were not in the sample.',
+    '打开“严格对象”后，生成出来的对象 Schema 会拒绝样例里没有出现过的字段。',
   ],
 })
 
@@ -102,6 +125,12 @@ const validationState = computed(() => {
 })
 
 const issueText = computed(() => t('issue_count', String(validationState.value.issues.length)))
+const explainItems = computed(() => [
+  { title: t('how_1_title'), description: t('how_1_desc') },
+  { title: t('how_2_title'), description: t('how_2_desc') },
+  { title: t('how_3_title'), description: t('how_3_desc') },
+  { title: t('how_4_title'), description: t('how_4_desc') },
+])
 const validationTip = computed<{ type: 'info' | 'success' | 'error', message: string }>(() => {
   if (schemaState.value.error)
     return { type: 'error', message: `${t('validation_blocked_schema')}: ${schemaState.value.error}` }
@@ -169,6 +198,8 @@ function fillDemo() {
         <CodeEditor
           v-model="schemaText"
           language="json"
+          :placeholder="t('schema_placeholder')"
+
           :rows="16"
           :langs="['json']"
         />
@@ -244,5 +275,10 @@ function fillDemo() {
         </div>
       </div>
     </Panel>
+
+    <CollapsibleExplainer
+      :title="t('how_it_works')"
+      :items="explainItems"
+    />
   </div>
 </template>

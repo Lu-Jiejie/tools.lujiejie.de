@@ -64,25 +64,25 @@ const { t } = useI18n({
   sample_link: ['Inline link', '行内链接'],
   sample_icon_label: ['Icon / border', '图标 / 边框'],
   how_it_works: ['How It Works', '工作原理'],
-  how_1_title: ['Relative luminance', '相对亮度'],
+  how_1_title: ['Calculate brightness', '计算亮度'],
   how_1_desc: [
-    'Each sRGB channel is converted to linear light, then combined as 0.2126 R + 0.7152 G + 0.0722 B.',
-    '先把 sRGB 通道转换为线性光，再按 0.2126 R + 0.7152 G + 0.0722 B 合成亮度。',
+    'The tool converts the sRGB color to linear light, then calculates brightness from red, green, and blue.',
+    '工具会先把 sRGB 颜色转成线性光，再用红、绿、蓝三个通道算出亮度。',
   ],
-  how_2_title: ['Contrast ratio', '对比度公式'],
+  how_2_title: ['Compare colors', '对比颜色'],
   how_2_desc: [
-    'The ratio is (lighter luminance + 0.05) / (darker luminance + 0.05), producing a value from 1:1 to 21:1.',
-    '公式是（较亮亮度 + 0.05）/（较暗亮度 + 0.05），结果范围为 1:1 到 21:1。',
+    'Contrast is the lighter brightness divided by the darker brightness, with 0.05 added to both sides.',
+    '对比度就是较亮的亮度除以较暗的亮度，两边都会先加上 0.05。',
   ],
-  how_3_title: ['WCAG thresholds', 'WCAG 阈值'],
+  how_3_title: ['WCAG levels', 'WCAG 等级'],
   how_3_desc: [
-    'WCAG AA requires 4.5:1 for normal text and 3:1 for large text or non-text UI. AAA raises normal text to 7:1 and large text to 4.5:1.',
-    'WCAG AA 要求普通文本 4.5:1，大号文本或非文本 UI 3:1；AAA 要求普通文本 7:1，大号文本 4.5:1。',
+    'AA uses 4.5:1 for normal text and 3:1 for large text or UI graphics. AAA is stricter: 7:1 and 4.5:1.',
+    'AA 对普通文本要求 4.5:1，对大号文本和 UI 图形要求 3:1。AAA 更严格，分别是 7:1 和 4.5:1。',
   ],
   how_4_title: ['Recommendations', '推荐颜色'],
   how_4_desc: [
-    'When the current foreground fails, the tool moves it toward black or white, whichever direction can reach the target ratio with the smallest visible change.',
-    '当前前景色不达标时，工具会把它朝黑色或白色方向调整，选择能以更小视觉变化达到目标对比度的方向。',
+    'Recommended colors keep the background unchanged and move the foreground toward black or white until it passes.',
+    '推荐颜色会保持背景不变，只把前景色往黑色或白色方向调整，直到达到要求。',
   ],
 })
 

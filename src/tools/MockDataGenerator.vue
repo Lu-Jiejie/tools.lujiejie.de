@@ -15,10 +15,11 @@ export const toolMeta = defineTool({
 
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
-import { ref, shallowRef, watch } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
+import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
 import NumberInput from '~/components/NumberInput.vue'
 import SelectInput from '~/components/SelectInput.vue'
@@ -46,6 +47,22 @@ const { t } = useI18n({
   parse_success: [
     (n: string) => `Parsed ${n} fields successfully.`,
     (n: string) => `成功解析 ${n} 个字段。`,
+  ],
+  how_it_works: ['How It Works', '工作原理'],
+  how_1_title: ['Parse fields', '解析字段'],
+  how_1_desc: [
+    'The parser reads field names and rough types from JSON, SQL, TypeScript, Java, XML, or Go code.',
+    '解析器会从 JSON、SQL、TypeScript、Java、XML 或 Go 代码里读取字段名和大致类型。',
+  ],
+  how_2_title: ['Guess types', '猜测类型'],
+  how_2_desc: [
+    'Names like email, phone, date, id, and image are mapped to matching mock types. Other fields may need manual changes.',
+    'email、phone、date、id、image 这类字段名会匹配到对应的 Mock 类型。其他字段可能需要手动改。',
+  ],
+  how_3_title: ['Adjust fields', '调整字段'],
+  how_3_desc: [
+    'Before generating data, check the field list. Enum values are taken from the Options column, separated by commas.',
+    '生成前看一下字段列表。枚举值从 Options 里读取，用逗号分隔。',
   ],
 })
 
@@ -186,6 +203,11 @@ const outputJson = shallowRef('')
 const copied = shallowRef(false)
 const parseMessage = shallowRef('')
 const parseMessageType = shallowRef<'success' | 'error'>('success')
+const explainItems = computed(() => [
+  { title: t('how_1_title'), description: t('how_1_desc') },
+  { title: t('how_2_title'), description: t('how_2_desc') },
+  { title: t('how_3_title'), description: t('how_3_desc') },
+])
 
 // --- Drag state ---
 const dragState = ref<'idle' | 'pressing' | 'dragging'>('idle')
@@ -731,5 +753,10 @@ function downloadOutput() {
         />
       </div>
     </Panel>
+
+    <CollapsibleExplainer
+      :title="t('how_it_works')"
+      :items="explainItems"
+    />
   </div>
 </template>

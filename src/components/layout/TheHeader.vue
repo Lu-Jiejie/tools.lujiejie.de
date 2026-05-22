@@ -33,9 +33,9 @@ const currentTool = computed(() => {
       >
         Tools<span text-c-accent>.</span>
       </RouterLink>
-      <span v-if="currentTool" flex gap-2 translate-y--0.6 items-end>
+      <span v-if="currentTool" flex flex-1 gap-2 min-w-0 translate-y--0.6 items-end>
         <span text-sm op-30 shrink-0 select-none>/</span>
-        <span text-sm op-60 select-none truncate>{{ currentTool.name }}</span>
+        <span text-sm op-60 min-w-0 select-none truncate :title="currentTool.name">{{ currentTool.name }}</span>
       </span>
     </div>
 

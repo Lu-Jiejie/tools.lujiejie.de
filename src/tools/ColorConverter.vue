@@ -15,22 +15,20 @@ export const toolMeta = defineTool({
 
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
-import { onClickOutside } from '@vueuse/core'
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, shallowRef, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
+import ColorPickerInput from '~/components/ColorPickerInput.vue'
 import Panel from '~/components/container/Panel.vue'
 import SelectInput from '~/components/SelectInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
-import 'vanilla-colorful/hex-alpha-color-picker.js'
 
 const { t } = useI18n({
   input_label: ['Input', '输入'],
   output_label: ['Output', '输出'],
   invalid: ['Invalid color', '无效颜色'],
   pick: ['Screen Pick', '屏幕取色'],
-  color_picker: ['Color Picker', '颜色选择器'],
   hex: ['HEX', 'HEX'],
   rgb: ['RGB', 'RGB'],
   hsl: ['HSL', 'HSL'],
@@ -263,13 +261,6 @@ const previewTextColor = computed(() => {
   return luminance > 0.5 ? 'rgba(0,0,0,0.75)' : 'rgba(255,255,255,0.85)'
 })
 
-// 棋盘格背景（透明度预览用）
-const checkerStyle = {
-  backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
-  backgroundSize: '8px 8px',
-  backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0px',
-}
-
 const outputs = computed(() => [
   { key: 'hex', label: t('hex'), value: outHex.value },
   { key: 'rgb', label: t('rgb'), value: outRgb.value },
@@ -298,70 +289,21 @@ function onInput(val: string) {
   }
   error.value = false
   color.value = parsed
-  syncPicker()
+}
+
+function onPickerInput(val: string) {
+  const parsed = parseColor(val)
+  if (!parsed)
+    return
+  error.value = false
+  color.value = parsed
+  inputValue.value = formatByKey(inputFormat.value)
 }
 
 // 切换格式时把当前颜色转成新格式填入输入框
 watch(inputFormat, (fmt) => {
   inputValue.value = formatByKey(fmt)
   error.value = false
-})
-
-// ── vanilla-colorful picker 同步 ──
-const pickerOpen = shallowRef(false)
-const pickerAnchorRef = ref<HTMLElement | null>(null)
-const pickerRef = ref<HTMLElement | null>(null)
-const pickerPopupRef = ref<HTMLElement | null>(null)
-const pickerStyle = shallowRef({ top: '0px', left: '0px', width: '0px' })
-
-function syncPicker() {
-  const el = pickerRef.value as any
-  if (el)
-    el.color = outHexa.value
-}
-
-function updatePickerPosition() {
-  const anchor = pickerAnchorRef.value
-  if (!anchor)
-    return
-  const rect = anchor.getBoundingClientRect()
-  pickerStyle.value = {
-    top: `${rect.bottom + window.scrollY + 8}px`,
-    left: `${rect.left + window.scrollX}px`,
-    width: `${rect.width}px`,
-  }
-}
-
-function togglePicker() {
-  pickerOpen.value = !pickerOpen.value
-  if (pickerOpen.value) {
-    updatePickerPosition()
-    nextTick(() => syncPicker())
-  }
-}
-
-onClickOutside(pickerPopupRef, () => {
-  pickerOpen.value = false
-}, { ignore: [pickerAnchorRef] })
-
-watch(pickerRef, (el) => {
-  if (!el) {
-    return
-  }
-  (el as any).addEventListener('color-changed', (e: CustomEvent) => {
-    const hex8: string = e.detail.value
-    const parsed = parseColor(hex8)
-    if (parsed) {
-      color.value = parsed
-      inputValue.value = formatByKey(inputFormat.value)
-      error.value = false
-    }
-  })
-})
-
-watch(color, () => {
-  if (pickerOpen.value)
-    syncPicker()
 })
 
 // ── EyeDropper 取色 ──
@@ -384,67 +326,32 @@ const eyeDropperSupported = 'EyeDropper' in window
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <!-- 颜色长条 + 取色按钮 -->
-        <div flex="~ gap-2" items-center>
-          <div ref="pickerAnchorRef" flex-1 relative>
-            <div
-              border="~ c-border" rounded-xl h-12 w-full cursor-pointer relative overflow-hidden
-              @click="togglePicker"
-            >
-              <div inset-0 absolute :style="checkerStyle" />
-              <div transition-colors duration-300 inset-0 absolute :style="{ backgroundColor: previewColor }" />
-              <!-- hex 文字 -->
-              <div
-                text-xs tracking-wider font-medium font-mono flex select-none transition-colors duration-300 items-center inset-0 justify-center absolute
-                :style="{ color: previewTextColor }"
-              >
-                {{ outHex.toUpperCase() }}
-              </div>
-            </div>
-          </div>
-          <BaseButton
-            v-if="eyeDropperSupported"
-            icon="i-carbon-eyedropper"
-            @click="pickColor"
-          >
-            {{ t('pick') }}
-          </BaseButton>
-        </div>
-
-        <!-- Teleport picker 到 body，避免被 Panel overflow 裁剪 -->
-        <Teleport to="body">
-          <Transition name="picker">
-            <div
-              v-if="pickerOpen"
-              ref="pickerPopupRef"
-
-              :style="pickerStyle"
-              border="~ c-border" p-3 rounded-2xl bg-c-surface fixed z-50
-              style="box-shadow: 0 8px 24px rgba(0,0,0,0.12);"
-            >
-              <div text-xs tracking-wide font-medium mb-2 op-50 select-none uppercase>
-                {{ t('color_picker') }}
-              </div>
-              <hex-alpha-color-picker ref="pickerRef" style="width: 100%; --cp-border-radius: 10px;" />
-            </div>
-          </Transition>
-        </Teleport>
-
-        <!-- 文字输入 -->
-        <TextInput
+        <ColorPickerInput
           :model-value="inputValue"
+          :preview-color="previewColor"
+          :picker-color="outHexa"
+          :text-color="previewTextColor"
+          :swatch-label="outHex.toUpperCase()"
           :error="error"
-          :copyable="false"
           placeholder="#2dd4bfff / rgb(45, 212, 191, 1) / hsl(172, 66%, 50%, 1)"
           @update:model-value="onInput"
+          @pick="onPickerInput"
         >
           <template #append>
             <SelectInput
               v-model="inputFormat"
               :options="FORMAT_OPTIONS"
             />
+            <BaseButton
+              v-if="eyeDropperSupported"
+              icon="i-carbon-eyedropper"
+              @click="pickColor"
+            >
+              {{ t('pick') }}
+            </BaseButton>
           </template>
-        </TextInput>
+        </ColorPickerInput>
+
         <Transition name="warn">
           <AlertTip v-if="error" type="error">
             {{ t('invalid') }}
@@ -466,18 +373,3 @@ const eyeDropperSupported = 'EyeDropper' in window
     </Panel>
   </div>
 </template>
-
-<style scoped>
-/* Vue <Transition> classes — UnoCSS cannot express transition enter/leave states */
-.picker-enter-active,
-.picker-leave-active {
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-.picker-enter-from,
-.picker-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-</style>

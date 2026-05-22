@@ -17,6 +17,11 @@ export default defineConfig({
       script: {
         propsDestructure: true,
       },
+      template: {
+        compilerOptions: {
+          isCustomElement: tag => tag === 'hex-alpha-color-picker',
+        },
+      },
     }),
 
     VueRouter(),

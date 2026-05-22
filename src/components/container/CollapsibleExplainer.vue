@@ -3,6 +3,10 @@ export interface ExplainerItem {
   title?: string
   description: string
   icon?: string
+  links?: {
+    label: string
+    href: string
+  }[]
 }
 
 withDefaults(defineProps<{
@@ -50,6 +54,19 @@ withDefaults(defineProps<{
 
             <div text-sm leading-6 op-60>
               {{ item.description }}
+            </div>
+
+            <div v-if="item.links?.length" flex="~ gap-2 wrap" text-sm>
+              <a
+                v-for="link in item.links"
+                :key="link.href"
+                :href="link.href"
+                target="_blank"
+                rel="noreferrer"
+                text-c-accent underline-offset-3 hover:underline
+              >
+                {{ link.label }}
+              </a>
             </div>
           </div>
         </li>

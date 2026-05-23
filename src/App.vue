@@ -13,7 +13,7 @@ const { mobileOpen, closeMobile } = useSidebar()
 
     <div flex flex-1>
       <!-- 桌面端侧边栏（始终显示） -->
-      <div shrink-0 w-56 class="hidden md:block">
+      <div shrink-0 w-64 class="hidden md:block">
         <div h="[calc(100vh-3.5rem)]" top-14 sticky overflow-y-auto>
           <TheSidebar />
         </div>
@@ -31,7 +31,7 @@ const { mobileOpen, closeMobile } = useSidebar()
 
       <!-- 移动端侧边栏抽屉（从左侧滑入） -->
       <div
-        w-56 transition-transform duration-200 inset-y-0 left-0 fixed z-30 md:hidden
+        w-64 transition-transform duration-200 inset-y-0 left-0 fixed z-30 md:hidden
         :class="mobileOpen ? 'translate-x-0' : '-translate-x-full'"
       >
         <TheSidebar @close="closeMobile()" />

@@ -2,7 +2,7 @@
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
-  id: 'data-format-converter',
+  id: 'json-like-format-converter',
   name: 'JSON-like Format Converter',
   nameZh: '类JSON格式互转',
   description: 'Convert between JSON, YAML, TOML, and XML formats with syntax highlighting.',

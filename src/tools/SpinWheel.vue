@@ -29,6 +29,7 @@ const { t } = useI18n({
   clear_confirm: ['Clear all options?', '确定清空所有选项？'],
   placeholder: ['Enter an option...', '输入一个选项...'],
   selected: ['Selected', '选中'],
+  spinning: ['Spinning', '转动中'],
   waiting: ['Spin to pick', '转一转试试'],
   at_least_two: ['Add at least 2 options', '至少添加 2 个选项'],
 })
@@ -224,17 +225,24 @@ onMounted(() => {
         <div v-if="items.length > 0" flex="~ gap-2 wrap">
           <span
             v-for="(item, i) in items" :key="i"
-            flex="~ gap-1.5"
-            border="~ c-border" text-sm px-2 py-1 rounded-lg bg-c-raised items-center
+            flex="~ items-center gap-2"
+            border="~ c-border" p="x-2.5 y-1.5"
+            transition="colors duration-200"
+            hover="border-c-border-strong bg-c-surface"
+            text-sm rounded-xl bg-c-input max-w-full
           >
             <span
-              rounded-full shrink-0 h-3 w-3
+              rounded-full shrink-0 h-3.5 w-1
               :style="{ background: COLORS[i % COLORS.length] }"
             />
-            <span>{{ item }}</span>
+            <span text-c-text pl-1 max-w-42 select-none truncate>{{ item }}</span>
             <button
               type="button"
-              ml-0.5 op-40 cursor-pointer transition-opacity hover:op-100
+              flex="~ items-center justify-center"
+              text-c-text-faint rounded-md size-5
+              cursor-pointer transition="colors duration-200"
+              hover="text-c-text bg-c-raised"
+              :aria-label="`Remove ${item}`"
               @click="removeItem(i)"
             >
               <div i-carbon-close text-xs />
@@ -280,16 +288,31 @@ onMounted(() => {
           {{ t('at_least_two') }}
         </div>
         <div
-          flex="~ col gap-1"
-          border="~" p-4 rounded-xl w-full items-center justify-center
+          flex="~ items-center justify-center"
+          border="~" p="x-4 y-3" rounded-xl w-full relative
           style="height: 82px"
-          :class="resultText ? 'border-c-accent bg-c-accent/8' : 'border-c-border bg-c-input'"
+          :class="resultText ? 'border-c-border-strong bg-c-surface' : 'border-c-border bg-c-input'"
         >
-          <template v-if="resultText">
-            <span text-xs tracking-wide op-60 uppercase>{{ t('selected') }}</span>
-            <span text-lg text-c-accent font-bold>{{ resultText }}</span>
-          </template>
-          <span v-else text-lg tracking-widest op-60 select-none>...</span>
+          <div flex="~ col items-center gap-1.5" text-center max-w-full min-w-0>
+            <span
+              rounded-full h-0.75 w-8
+              :class="resultText ? 'bg-c-accent' : 'bg-c-border-strong op-55'"
+            />
+            <span text="[0.6875rem] c-text-muted" leading-none font-mono uppercase>
+              {{ t('selected') }}
+            </span>
+            <span
+              text="2xl center"
+              font="serif normal" leading-tight max-w-full truncate
+              :class="resultText ? 'text-c-text' : 'text-c-text-muted select-none'"
+            >
+              {{ resultText || (spinning ? t('spinning') : t('waiting')) }}
+            </span>
+          </div>
+          <span
+            text-xl right-4 absolute
+            :class="resultText ? 'text-c-accent op-70 i-carbon-checkmark-outline' : 'text-c-text-faint i-carbon-circle-dash'"
+          />
         </div>
       </div>
     </Panel>

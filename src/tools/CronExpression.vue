@@ -148,6 +148,8 @@ const MODE_OPTIONS: { key: string, value: FieldMode }[] = [
   { key: 'step', value: 'step' },
 ]
 
+const FIELD_NAMES = ['minute', 'hour', 'day', 'month', 'weekday'] as const
+
 function fieldToExpr(field: FieldConfig): string {
   switch (field.mode) {
     case 'every':
@@ -430,113 +432,182 @@ manualInput.value = expression.value
     </Panel>
 
     <Panel :title="t('generator')">
-      <div p-5 flex="~ col gap-5">
-        <div
-          v-for="fieldName in (['minute', 'hour', 'day', 'month', 'weekday'] as const)" :key="fieldName"
-          flex="~ col gap-2"
-        >
-          <div flex="~ gap-3" items-center>
-            <span text-sm font-medium shrink-0 w-18>{{ t(fieldName) }}</span>
-            <div flex="~ gap-1.5 wrap">
+      <div p-5>
+        <div mx-auto max-w-5xl flex="~ col">
+          <section
+            v-for="(fieldName, fieldIndex) in FIELD_NAMES"
+            :key="fieldName"
+            grid="~ cols-1 xl:cols-[13rem_19rem_minmax(0,1fr)] gap-4"
+            border="t c-border first:t-0"
+            p="y-5 first:pt-0 last:pb-0"
+            items-start
+          >
+            <div flex="~ items-start gap-3" min-w-0 select-none>
+              <span text-xs text-c-text-faint leading-none font-mono pt-1.25 w-6>
+                {{ (fieldIndex + 1).toString().padStart(2, '0') }}
+              </span>
+              <div min-w-0>
+                <div text="xl c-text" leading-snug font="serif normal" op-92>
+                  {{ t(fieldName) }}
+                </div>
+                <div text-xs text-c-text-muted leading-none font-mono mt-2>
+                  {{ FIELD_RANGES[fieldName].min }}-{{ FIELD_RANGES[fieldName].max }}
+                </div>
+              </div>
+            </div>
+
+            <div
+              border="~ c-border"
+
+              grid="~ cols-4 gap-1"
+              p-1 rounded-xl bg-c-input min-w-0
+            >
               <button
-                v-for="mode in MODE_OPTIONS" :key="mode.value"
+                v-for="mode in MODE_OPTIONS"
+                :key="mode.value"
                 type="button"
-                btn-chip
-                :class="fieldConfigs[fieldName].mode === mode.value ? 'btn-chip-active' : 'hover:border-c-border-strong'"
+
+                border="~ transparent"
+                p="x-2 y-1.75"
+
+                flex="~ items-center justify-center"
+                text="xs center"
+
+                font-medium rounded-lg min-h-8 min-w-0 cursor-pointer whitespace-nowrap
+                transition="colors duration-200"
+                :class="fieldConfigs[fieldName].mode === mode.value ? 'bg-c-surface border-c-border-strong text-c-accent' : 'text-c-text-muted hover:text-c-text hover:bg-c-surface hover:border-c-border'"
                 @click="fieldConfigs[fieldName].mode = mode.value"
               >
                 {{ t(mode.key) }}
               </button>
             </div>
-          </div>
 
-          <div v-if="fieldConfigs[fieldName].mode === 'specific'" flex="~ gap-1.5 wrap" pl-21>
-            <button
-              v-for="item in getSpecificValues(fieldName)" :key="item.value"
-              type="button"
-              btn-chip font-mono px-1.5 text-center min-w-8
-              :class="fieldConfigs[fieldName].specific.includes(item.value) ? 'btn-chip-active' : 'hover:border-c-border-strong'"
-              @click="toggleSpecific(fieldName, item.value)"
+            <div
+              border="~ c-border"
+              rounded-xl bg-c-surface
+              min-h-15
+              p="x-3 y-3"
+              flex="~ items-center"
             >
-              {{ item.label }}
-            </button>
-          </div>
+              <div
+                v-if="fieldConfigs[fieldName].mode === 'every'"
 
-          <div v-if="fieldConfigs[fieldName].mode === 'range'" flex="~ gap-2" pl-21 items-center>
-            <span text-xs op-50>{{ t('from') }}</span>
-            <NumberInput
-              :model-value="fieldConfigs[fieldName].rangeFrom"
-              :min="FIELD_RANGES[fieldName].min"
-              :max="FIELD_RANGES[fieldName].max"
-              size="sm"
-              @update:model-value="fieldConfigs[fieldName].rangeFrom = $event"
-            />
-            <span text-xs op-50>{{ t('to') }}</span>
-            <NumberInput
-              :model-value="fieldConfigs[fieldName].rangeTo"
-              :min="FIELD_RANGES[fieldName].min"
-              :max="FIELD_RANGES[fieldName].max"
-              size="sm"
-              @update:model-value="fieldConfigs[fieldName].rangeTo = $event"
-            />
-          </div>
+                text-sm text-c-text-muted leading-relaxed font-mono text-center w-full
+              >
+                *
+              </div>
 
-          <div v-if="fieldConfigs[fieldName].mode === 'step'" flex="~ gap-2" pl-21 items-center>
-            <template v-if="locale === 'zh'">
-              <span text-xs op-50>从</span>
-              <NumberInput
-                :model-value="fieldConfigs[fieldName].stepFrom"
-                :min="FIELD_RANGES[fieldName].min"
-                :max="FIELD_RANGES[fieldName].max"
-                size="sm"
-                @update:model-value="fieldConfigs[fieldName].stepFrom = $event"
-              />
-              <span text-xs op-50>开始，每</span>
-              <NumberInput
-                :model-value="fieldConfigs[fieldName].stepValue"
-                :min="1"
-                :max="FIELD_RANGES[fieldName].max"
-                size="sm"
-                @update:model-value="fieldConfigs[fieldName].stepValue = $event"
-              />
-            </template>
-            <template v-else>
-              <span text-xs op-50>{{ t('every') }}</span>
-              <NumberInput
-                :model-value="fieldConfigs[fieldName].stepValue"
-                :min="1"
-                :max="FIELD_RANGES[fieldName].max"
-                size="sm"
-                @update:model-value="fieldConfigs[fieldName].stepValue = $event"
-              />
-              <span text-xs op-50>{{ t('from') }}</span>
-              <NumberInput
-                :model-value="fieldConfigs[fieldName].stepFrom"
-                :min="FIELD_RANGES[fieldName].min"
-                :max="FIELD_RANGES[fieldName].max"
-                size="sm"
-                @update:model-value="fieldConfigs[fieldName].stepFrom = $event"
-              />
-            </template>
-          </div>
+              <div
+                v-else-if="fieldConfigs[fieldName].mode === 'specific'"
+                flex="~ gap-1.5 wrap"
+              >
+                <button
+                  v-for="item in getSpecificValues(fieldName)"
+                  :key="item.value"
+                  type="button"
+
+                  border="~"
+
+                  text-xs font-mono px-1.5 py-1 text-center rounded-md min-w-8 cursor-pointer
+                  transition="colors duration-200"
+                  :class="fieldConfigs[fieldName].specific.includes(item.value) ? 'border-c-accent bg-c-soft text-c-accent' : 'border-c-border bg-c-input text-c-text hover:border-c-border-strong hover:bg-c-raised'"
+                  @click="toggleSpecific(fieldName, item.value)"
+                >
+                  {{ item.label }}
+                </button>
+              </div>
+
+              <div
+                v-else-if="fieldConfigs[fieldName].mode === 'range'"
+                flex="~ gap-2 wrap"
+                items-center
+              >
+                <span text-xs text-c-text-muted font-mono>{{ t('from') }}</span>
+                <NumberInput
+                  :model-value="fieldConfigs[fieldName].rangeFrom"
+                  :min="FIELD_RANGES[fieldName].min"
+                  :max="FIELD_RANGES[fieldName].max"
+                  size="sm"
+                  @update:model-value="fieldConfigs[fieldName].rangeFrom = $event"
+                />
+                <span text-xs text-c-text-muted font-mono>{{ t('to') }}</span>
+                <NumberInput
+                  :model-value="fieldConfigs[fieldName].rangeTo"
+                  :min="FIELD_RANGES[fieldName].min"
+                  :max="FIELD_RANGES[fieldName].max"
+                  size="sm"
+                  @update:model-value="fieldConfigs[fieldName].rangeTo = $event"
+                />
+              </div>
+
+              <div
+                v-else-if="fieldConfigs[fieldName].mode === 'step'"
+                flex="~ gap-2 wrap"
+                items-center
+              >
+                <template v-if="locale === 'zh'">
+                  <span text-xs text-c-text-muted font-mono>从</span>
+                  <NumberInput
+                    :model-value="fieldConfigs[fieldName].stepFrom"
+                    :min="FIELD_RANGES[fieldName].min"
+                    :max="FIELD_RANGES[fieldName].max"
+                    size="sm"
+                    @update:model-value="fieldConfigs[fieldName].stepFrom = $event"
+                  />
+                  <span text-xs text-c-text-muted font-mono>开始，每</span>
+                  <NumberInput
+                    :model-value="fieldConfigs[fieldName].stepValue"
+                    :min="1"
+                    :max="FIELD_RANGES[fieldName].max"
+                    size="sm"
+                    @update:model-value="fieldConfigs[fieldName].stepValue = $event"
+                  />
+                </template>
+                <template v-else>
+                  <span text-xs text-c-text-muted font-mono>{{ t('every') }}</span>
+                  <NumberInput
+                    :model-value="fieldConfigs[fieldName].stepValue"
+                    :min="1"
+                    :max="FIELD_RANGES[fieldName].max"
+                    size="sm"
+                    @update:model-value="fieldConfigs[fieldName].stepValue = $event"
+                  />
+                  <span text-xs text-c-text-muted font-mono>{{ t('from') }}</span>
+                  <NumberInput
+                    :model-value="fieldConfigs[fieldName].stepFrom"
+                    :min="FIELD_RANGES[fieldName].min"
+                    :max="FIELD_RANGES[fieldName].max"
+                    size="sm"
+                    @update:model-value="fieldConfigs[fieldName].stepFrom = $event"
+                  />
+                </template>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </Panel>
 
     <Panel v-if="nextRuns.length > 0" :title="t('next_runs')">
       <div p-5>
-        <ul flex="~ col gap-2" m-0 p-0 list-none>
+        <ul grid="~ cols-1 md:cols-2 gap-x-6 gap-y-2" m-0 p-0 list-none>
           <li
-            v-for="(run, i) in nextRuns" :key="i"
-            flex="~ gap-3" items-center
+            v-for="(run, i) in nextRuns"
+            :key="i"
+            flex="~ gap-3"
+
+            py-2.5 items-center
+            border="t c-border"
           >
             <span
-              bg="c-accent/15"
-              text-xs text-c-accent font-medium rounded-full flex shrink-0 h-6 w-6 items-center justify-center
+              bg="c-accent/12"
+              text-xs text-c-accent font-mono rounded-full
+              flex="~ items-center justify-center"
+              shrink-0 size-6
             >
               {{ i + 1 }}
             </span>
-            <span text-sm font-mono>{{ run.toLocaleString() }}</span>
+            <span text-sm text-c-text-muted font-mono>{{ run.toLocaleString() }}</span>
           </li>
         </ul>
       </div>

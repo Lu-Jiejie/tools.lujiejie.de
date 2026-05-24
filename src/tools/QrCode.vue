@@ -1,6 +1,6 @@
 <script lang="ts">
 import LabelField from '~/components/container/LabelField.vue'
-import RadioButtonGroup from '~/components/RadioButtonGroup.vue'
+import ToggleButtonGroup from '~/components/ToggleButtonGroup.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -136,8 +136,11 @@ function downloadBlob(blob: Blob, filename: string) {
         </LabelField>
 
         <LabelField :label="t('ecc')">
-          <RadioButtonGroup
-            v-model="eccLevel" :options="ECC_OPTIONS"
+          <ToggleButtonGroup
+            v-model="eccLevel"
+            :options="ECC_OPTIONS"
+            :multiple="false"
+            required
           />
         </LabelField>
 

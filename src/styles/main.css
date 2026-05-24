@@ -12,7 +12,7 @@ body,
   --c-surface: #ffffff;
   --c-surface-raised: #f4f4f5;
   --c-input: #f7f7f8;
-  --c-input-readonly: #e6e6e8;
+  --c-input-readonly: #f0f0f1;
   --c-border: rgba(0, 0, 0, 0.08);
   --c-border-strong: rgba(0, 0, 0, 0.18);
   --c-text: rgba(0, 0, 0, 0.9);
@@ -29,7 +29,7 @@ html.dark {
   --c-surface: #18181b;
   --c-surface-raised: #27272a;
   --c-input: #222225;
-  --c-input-readonly: #2e2e32;
+  --c-input-readonly: #1f1f22;
   --c-border: rgba(255, 255, 255, 0.1);
   --c-border-strong: rgba(255, 255, 255, 0.2);
   --c-text: rgba(255, 255, 255, 0.9);

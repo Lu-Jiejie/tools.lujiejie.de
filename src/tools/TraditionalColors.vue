@@ -323,16 +323,13 @@ function readableTextColor([r, g, b]: [number, number, number]) {
       >
         <div
           flex="~ col gap-2" p-5 min-h-42 justify-between relative overflow-hidden isolate
-          shadow="[inset_0_1px_0_rgb(255_255_255_/_20%),inset_0_-22px_42px_rgb(0_0_0_/_10%)]"
           :style="{
             backgroundColor: color.hex,
             color: readableTextColor(color.rgb),
           }"
         >
-          <div min-w-0 class="[text-shadow:0_1px_2px_rgb(0_0_0_/_14%)]">
-            <div
-              text-3xl font-semibold font-serif truncate
-            >
+          <div min-w-0>
+            <div text-3xl font-semibold font-serif truncate>
               {{ color.name }}
             </div>
             <div text-sm mt-1 op-75 truncate>
@@ -343,11 +340,10 @@ function readableTextColor([r, g, b]: [number, number, number]) {
         <div p-3 flex="~ col gap-2">
           <div grid="~ cols-2 gap-2" text-xs>
             <button
-              v-for="format in colorFormats"
-              :key="format"
+              v-for="format in colorFormats" :key="format"
               type="button"
               border="~ c-border"
-              font-mono px-2 py-1.5 rounded-lg bg-c-raised truncate hover:border-c-border-strong
+              font-mono px-2 py-1.5 rounded-lg bg-c-raised select-none truncate hover:border-c-border-strong
               :title="colorFormatText(color, format)"
               @click="copyColor(color, format)"
             >

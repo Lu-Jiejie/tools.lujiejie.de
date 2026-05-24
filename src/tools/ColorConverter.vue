@@ -326,31 +326,43 @@ const eyeDropperSupported = 'EyeDropper' in window
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <ColorPickerInput
-          :model-value="inputValue"
-          :preview-color="previewColor"
-          :picker-color="outHexa"
-          :text-color="previewTextColor"
-          :swatch-label="outHex.toUpperCase()"
-          :error="error"
-          placeholder="#2dd4bfff / rgb(45, 212, 191, 1) / hsl(172, 66%, 50%, 1)"
-          @update:model-value="onInput"
-          @pick="onPickerInput"
-        >
-          <template #append>
-            <SelectInput
-              v-model="inputFormat"
-              :options="FORMAT_OPTIONS"
-            />
-            <BaseButton
-              v-if="eyeDropperSupported"
-              icon="i-carbon-eyedropper"
-              @click="pickColor"
-            >
-              {{ t('pick') }}
-            </BaseButton>
-          </template>
-        </ColorPickerInput>
+        <div flex="~ col gap-2">
+          <ColorPickerInput
+            :model-value="inputValue"
+            :preview-color="previewColor"
+            :picker-color="outHexa"
+            :text-color="previewTextColor"
+            :swatch-label="outHex.toUpperCase()"
+            :error="error"
+            placeholder="#2dd4bfff / rgb(45, 212, 191, 1) / hsl(172, 66%, 50%, 1)"
+            @update:model-value="onInput"
+            @pick="onPickerInput"
+          >
+            <template #append>
+              <SelectInput
+                v-model="inputFormat"
+                :options="FORMAT_OPTIONS"
+              />
+              <div v-if="eyeDropperSupported" class="hidden sm:block">
+                <BaseButton
+                  icon="i-carbon-eyedropper"
+                  @click="pickColor"
+                >
+                  {{ t('pick') }}
+                </BaseButton>
+              </div>
+            </template>
+          </ColorPickerInput>
+
+          <BaseButton
+            v-if="eyeDropperSupported"
+            icon="i-carbon-eyedropper"
+            class="w-full sm:hidden"
+            @click="pickColor"
+          >
+            {{ t('pick') }}
+          </BaseButton>
+        </div>
 
         <Transition name="warn">
           <AlertTip v-if="error" type="error">
@@ -362,11 +374,7 @@ const eyeDropperSupported = 'EyeDropper' in window
 
     <Panel :title="t('output_label')">
       <div p-5 flex="~ col gap-3">
-        <LabelField
-          v-for="out in outputs"
-          :key="out.key"
-          :label="out.label"
-        >
+        <LabelField v-for="out in outputs" :key="out.key" :label="out.label">
           <TextInput :model-value="out.value" readonly />
         </LabelField>
       </div>

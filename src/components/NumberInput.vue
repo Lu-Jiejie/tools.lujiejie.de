@@ -35,7 +35,11 @@ function step(delta: number) {
 
 <template>
   <div
-    flex="~ gap-1" border="~ c-border" bg-c-input shrink-0 items-center overflow-hidden
+    flex="~ items-center"
+    border="~ transparent"
+
+    transition="colors duration-200"
+    bg-c-input shrink-0 overflow-hidden focus-within:border-c-border-strong hover:border-c-border focus-within:bg-c-surface hover:bg-c-surface
     :class="size === 'sm' ? 'rounded-lg' : 'rounded-xl'"
   >
     <input
@@ -44,21 +48,26 @@ function step(delta: number) {
       :min="min"
       :max="max"
       class="no-spinner"
-      :class="size === 'sm' ? 'px-2 py-1 w-10 text-xs' : 'px-3 py-2 w-14 text-sm'"
-      font-mono text-center outline-none bg-transparent
+      :class="size === 'sm' ? 'px-2 py-1 w-10 text-xs' : 'min-h-10 px-3.5 py-2.5 w-16 text-sm'"
+      text-c-text font-mono text-center outline-none bg-transparent
       @change="onInput"
     >
     <div flex="~ col" border-l border-c-border self-stretch>
       <button
-        border-b border-c-border op-40 flex flex-1 transition-opacity items-center justify-center hover:op-100
-        :class="size === 'sm' ? 'px-1' : 'px-1.5'"
+
+        flex="~ 1 items-center justify-center"
+        text-c-text-muted border-b border-c-border hover:text-c-text hover:bg-c-raised
+        transition="colors duration-200"
+        :class="size === 'sm' ? 'px-1' : 'px-2'"
         @click="step(1)"
       >
         <div i-carbon-chevron-up text-xs />
       </button>
       <button
-        op-40 flex flex-1 transition-opacity items-center justify-center hover:op-100
-        :class="size === 'sm' ? 'px-1' : 'px-1.5'"
+        flex="~ 1 items-center justify-center"
+        text-c-text-muted hover:text-c-text hover:bg-c-raised
+        transition="colors duration-200"
+        :class="size === 'sm' ? 'px-1' : 'px-2'"
         @click="step(-1)"
       >
         <div i-carbon-chevron-down text-xs />

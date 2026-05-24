@@ -22,13 +22,16 @@ watchEffect(() => {
     <select
       v-model="model"
       :class="selectClass"
-      border="~ c-border hover:c-border-strong rounded-xl" p="l-3 r-8 y-2"
-      select-base outline-none bg-c-input shrink-0 cursor-pointer transition-colors
+      border="~ transparent rounded-xl"
+      p="l-3.5 r-8 y-2.5"
+
+      transition="colors duration-200"
+      text-c-text select-base outline-none bg-c-input shrink-0 min-h-10 cursor-pointer hover:text-c-text focus:border-c-border-strong hover:border-c-border focus:bg-c-surface hover:bg-c-surface
     >
       <option v-for="opt in options" :key="opt.value" :value="opt.value" bg-c-surface>
         {{ opt.label }}
       </option>
     </select>
-    <span class="i-carbon-chevron-down" op-60 pointer-events-none right-2 absolute aria-hidden="true" />
+    <span class="i-carbon-chevron-down" text-xs text-c-text-muted pointer-events-none right-3.5 absolute aria-hidden="true" />
   </div>
 </template>

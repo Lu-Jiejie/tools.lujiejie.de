@@ -18,21 +18,24 @@ const iconClass = computed(() => ({
 }[props.type]))
 
 const toneClass = computed(() => ({
-  neutral: 'text-[var(--c-text-muted)]',
-  warning: 'text-yellow-500',
-  error: 'text-red-400',
-  info: 'text-blue-400',
-  success: 'text-green-500',
+  neutral: 'border-c-border text-c-text-muted bg-c-surface',
+  warning: 'border-yellow-500/30 text-yellow-600 bg-yellow-500/8',
+  error: 'border-red-500/30 text-red-500 bg-red-500/8',
+  info: 'border-sky-500/30 text-sky-500 bg-sky-500/8',
+  success: 'border-emerald-500/30 text-emerald-500 bg-emerald-500/8',
 }[props.type]))
 </script>
 
 <template>
   <div
-    flex="~ gap-2" px-3 py-2 border="~ c-border" rounded-lg bg-c-raised select-none items-start
+    flex="~ gap-2.5 items-start"
+    border="~"
+
+    text-sm leading-relaxed px-3.5 py-3 rounded-xl select-none
     :class="toneClass"
   >
     <div
-      text-sm mt-0.5 shrink-0
+      text-base mt-0.5 shrink-0
       :class="iconClass"
     />
     <slot />

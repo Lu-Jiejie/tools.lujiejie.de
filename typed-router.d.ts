@@ -44,11 +44,25 @@ declare module 'vue-router/auto-routes' {
       { tool: ParamValue<false> },
       | never
     >,
+    '/component-readonly-options': RouteRecordInfo<
+      '/component-readonly-options',
+      '/component-readonly-options',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/hi/[name]': RouteRecordInfo<
       '/hi/[name]',
       '/hi/:name',
       { name: ParamValue<true> },
       { name: ParamValue<false> },
+      | never
+    >,
+    '/panel-title-options': RouteRecordInfo<
+      '/panel-title-options',
+      '/panel-title-options',
+      Record<never, never>,
+      Record<never, never>,
       | never
     >,
   }
@@ -82,9 +96,21 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/component-readonly-options.vue': {
+      routes:
+        | '/component-readonly-options'
+      views:
+        | never
+    }
     'src/pages/hi/[name].vue': {
       routes:
         | '/hi/[name]'
+      views:
+        | never
+    }
+    'src/pages/panel-title-options.vue': {
+      routes:
+        | '/panel-title-options'
       views:
         | never
     }

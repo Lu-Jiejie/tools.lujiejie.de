@@ -5,10 +5,12 @@ defineProps<{
 </script>
 
 <template>
-  <div flex="~ col gap-1.5" min-w-0>
+  <div flex="~ col gap-2" min-w-0>
     <label
       v-if="label"
-      text-xs tracking-wide font-medium op-60 w-auto select-none uppercase
+      text="[0.8125rem] c-text-muted"
+      leading-snug font-medium
+      select-none
     >
       {{ label }}
     </label>

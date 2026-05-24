@@ -290,6 +290,7 @@ watch(
             autocomplete="new-password"
             secret
             :copyable="false"
+            :monospace="false"
           />
         </LabelField>
 

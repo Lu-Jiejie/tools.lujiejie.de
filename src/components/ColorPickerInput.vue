@@ -109,18 +109,22 @@ watch(() => [props.previewColor, props.pickerColor], () => {
 <template>
   <div flex="~ col gap-2">
     <button
-      ref="anchorRef"
-      type="button"
-      border="~ c-border" rounded-xl h-12 w-full cursor-pointer relative overflow-hidden
+      ref="anchorRef" type="button"
+      border="~ c-border"
+      rounded-xl h-12 w-full cursor-pointer relative overflow-hidden
+      transition="colors duration-200"
+      hover:border-c-border-strong
       @click="togglePicker"
     >
       <div inset-0 absolute :style="checkerStyle" />
       <div transition-colors duration-300 inset-0 absolute :style="{ backgroundColor: previewColor }" />
       <div
-        text-xs tracking-wider font-medium font-mono flex select-none transition-colors duration-300 items-center inset-0 justify-center absolute
+        text-xs tracking-wider font-mono flex select-none transition-colors duration-300 items-center inset-0 justify-center absolute
         :style="{ color: textColor }"
       >
-        {{ swatchLabel || modelValue }}
+        <span p="x-2 y-1" text-base>
+          {{ swatchLabel || modelValue }}
+        </span>
       </div>
     </button>
 
@@ -143,7 +147,8 @@ watch(() => [props.previewColor, props.pickerColor], () => {
           v-if="pickerOpen"
           ref="popupRef"
           :style="popupStyle"
-          border="~ c-border" p-3 rounded-2xl bg-c-surface fixed z-50
+          border="~ c-border"
+          p-3 rounded-2xl bg-c-surface fixed z-50
           class="color-picker-popup"
         >
           <hex-alpha-color-picker
@@ -171,6 +176,12 @@ watch(() => [props.previewColor, props.pickerColor], () => {
   transform: translateY(-4px);
 }
 .color-picker-popup {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.swatch-label {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  background: color-mix(in srgb, currentColor 10%, transparent);
 }
 </style>

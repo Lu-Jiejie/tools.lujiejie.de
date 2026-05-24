@@ -466,10 +466,10 @@ void generate()
 
     <Panel :title="t('output_label')">
       <div p-5 flex="~ col gap-3">
-        <div flex="~ gap-2 wrap" items-center justify-between>
-          <div text-sm op-60>
+        <div flex="~ gap-2 wrap" items-center justify-end>
+          <!-- <div text-sm op-60>
             {{ results.length }} {{ t('count') }}
-          </div>
+          </div> -->
 
           <BaseButton icon="i-carbon-copy" :disabled="!outputText" @click="copyAll">
             {{ copiedAll ? t('copied') : t('copy_all') }}

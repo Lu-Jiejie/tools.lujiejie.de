@@ -1,46 +1,67 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
+type OptionValue = string | number
+
 const props = withDefaults(defineProps<{
   options: {
     label: string
     subLabel?: string
-    value: string | number
+    value: OptionValue
   }[]
-
+  multiple?: boolean
   required?: boolean
-
   columns?: number
 }>(), {
+  multiple: true,
   required: false,
-  columns: 4,
 })
 
-const model = defineModel<(string | number)[]>({
+const model = defineModel<OptionValue | OptionValue[] | undefined>({
   required: true,
 })
 
-function toggle(value: string | number) {
-  const exists = model.value.includes(value)
+const columnCount = computed(() => props.columns ?? props.options.length)
+const groupRole = computed(() => props.multiple ? 'group' : 'radiogroup')
 
-  // 已选中 -> 取消
+function isSelected(value: OptionValue) {
+  return props.multiple
+    ? Array.isArray(model.value) && model.value.includes(value)
+    : model.value === value
+}
+
+function toggle(value: OptionValue) {
+  if (!props.multiple) {
+    if (model.value === value) {
+      if (!props.required)
+        model.value = undefined
+      return
+    }
+
+    model.value = value
+    return
+  }
+
+  const current = Array.isArray(model.value) ? model.value : []
+  const exists = current.includes(value)
+
   if (exists) {
-    // required 时至少保留一个
     if (
       props.required
-      && model.value.length <= 1
+      && current.length <= 1
     ) {
       return
     }
 
-    model.value = model.value.filter(
+    model.value = current.filter(
       v => v !== value,
     )
 
     return
   }
 
-  // 未选中 -> 添加
   model.value = [
-    ...model.value,
+    ...current,
     value,
   ]
 }
@@ -48,33 +69,34 @@ function toggle(value: string | number) {
 
 <template>
   <div
-    role="group"
+    :role="groupRole"
     border="~ c-border"
-    p-1 rounded-lg bg-c-input gap-1 grid w-full
+    p-1 rounded-xl bg-c-input gap-1 grid w-full
     :style="{
       gridTemplateColumns:
-        `repeat(${columns}, minmax(0, 1fr))`,
+        `repeat(${columnCount}, minmax(0, 1fr))`,
     }"
   >
     <button
       v-for="o in options" :key="o.value" type="button"
-      :aria-pressed="model.includes(o.value)"
-      p="x-2 y-3" flex="~ col gap-0.5"
-      text-center rounded-md op-90 min-w-0 transition-colors
+      :aria-pressed="isSelected(o.value)"
+      p="x-2.5 y-2.75" flex="~ col gap-0.75"
+      border="~ transparent"
+      text-center rounded-lg min-h-11 min-w-0 transition="colors duration-200"
       :class="
-        model.includes(o.value)
-          ? 'bg-c-accent text-white dark:text-black shadow-sm'
-          : 'hover:bg-c-raised hover:op-100'
+        isSelected(o.value)
+          ? 'bg-c-surface border-c-border-strong text-c-accent'
+          : 'text-c-text-muted hover:text-c-text hover:bg-c-surface hover:border-c-border'
       "
       @click="toggle(o.value)"
     >
-      <span text-xs font-semibold truncate>
+      <span text-sm font-semibold truncate>
         {{ o.label }}
       </span>
 
       <span
         v-if="o.subLabel"
-        text-xs op-60 block truncate
+        text-xs text-c-text-faint op-70 block truncate
       >
         {{ o.subLabel }}
       </span>

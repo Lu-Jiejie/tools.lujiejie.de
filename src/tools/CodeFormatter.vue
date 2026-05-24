@@ -14,16 +14,6 @@ export const toolMeta = defineTool({
 
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
-import { toPng } from 'html-to-image'
-import babelPlugin from 'prettier/plugins/babel'
-import estreePlugin from 'prettier/plugins/estree'
-import graphqlPlugin from 'prettier/plugins/graphql'
-import htmlPlugin from 'prettier/plugins/html'
-import markdownPlugin from 'prettier/plugins/markdown'
-import postcssPlugin from 'prettier/plugins/postcss'
-import typescriptPlugin from 'prettier/plugins/typescript'
-import yamlPlugin from 'prettier/plugins/yaml'
-import * as prettier from 'prettier/standalone'
 import { computed, shallowRef } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
@@ -107,8 +97,6 @@ const LANG_OPTIONS: LangOption[] = [
   { label: 'Zig', value: 'zig', shikiLang: 'zig' },
 ]
 
-const ALL_SHIKI_LANGS = LANG_OPTIONS.map(l => l.shikiLang)
-
 const INDENT_OPTIONS = [
   { label: '2', value: '2' },
   { label: '4', value: '4' },
@@ -127,6 +115,67 @@ const currentLang = computed(() => LANG_OPTIONS.find(l => l.value === language.v
 const canFormat = computed(() => !!currentLang.value.parser)
 const currentShikiLang = computed(() => currentLang.value.shikiLang)
 
+let prettierModulePromise: Promise<typeof import('prettier/standalone')> | null = null
+const prettierPluginPromises = new Map<string, Promise<unknown>>()
+
+function loadPrettierModule() {
+  prettierModulePromise ||= import('prettier/standalone')
+  return prettierModulePromise
+}
+
+async function loadPrettierPlugin(name: string) {
+  if (!prettierPluginPromises.has(name)) {
+    const promise = (async () => {
+      const mod = await ({
+        babel: () => import('prettier/plugins/babel'),
+        estree: () => import('prettier/plugins/estree'),
+        graphql: () => import('prettier/plugins/graphql'),
+        html: () => import('prettier/plugins/html'),
+        markdown: () => import('prettier/plugins/markdown'),
+        postcss: () => import('prettier/plugins/postcss'),
+        typescript: () => import('prettier/plugins/typescript'),
+        yaml: () => import('prettier/plugins/yaml'),
+      } as Record<string, () => Promise<unknown>>)[name]()
+
+      return (mod as { default?: unknown }).default ?? mod
+    })()
+
+    prettierPluginPromises.set(name, promise)
+  }
+
+  return prettierPluginPromises.get(name)!
+}
+
+async function loadParserPlugins(parser: string) {
+  const pluginNames = new Set<string>()
+
+  if (parser === 'babel' || parser === 'json') {
+    pluginNames.add('babel')
+    pluginNames.add('estree')
+  }
+  else if (parser === 'typescript') {
+    pluginNames.add('typescript')
+    pluginNames.add('estree')
+  }
+  else if (parser === 'css' || parser === 'scss' || parser === 'less') {
+    pluginNames.add('postcss')
+  }
+  else if (parser === 'html' || parser === 'vue' || parser === 'angular') {
+    pluginNames.add('html')
+  }
+  else if (parser === 'markdown' || parser === 'mdx') {
+    pluginNames.add('markdown')
+  }
+  else if (parser === 'yaml') {
+    pluginNames.add('yaml')
+  }
+  else if (parser === 'graphql') {
+    pluginNames.add('graphql')
+  }
+
+  return Promise.all([...pluginNames].map(loadPrettierPlugin))
+}
+
 async function formatCode() {
   if (!inputText.value.trim()) {
     error.value = ''
@@ -139,10 +188,15 @@ async function formatCode() {
     return
   }
   try {
+    const parser = currentLang.value.parser
+    const [prettier, plugins] = await Promise.all([
+      loadPrettierModule(),
+      parser ? loadParserPlugins(parser) : Promise.resolve([]),
+    ])
     const indentVal = indent.value === 'tab' ? undefined : Number(indent.value)
     const result = await prettier.format(inputText.value, {
-      parser: currentLang.value.parser,
-      plugins: [babelPlugin, estreePlugin, postcssPlugin, htmlPlugin, markdownPlugin, typescriptPlugin, yamlPlugin, graphqlPlugin],
+      parser,
+      plugins,
       tabWidth: indentVal ?? 2,
       useTabs: indent.value === 'tab',
       semi: true,
@@ -175,6 +229,7 @@ async function takeScreenshot() {
   el.style.height = 'auto'
   el.style.overflow = 'visible'
   try {
+    const { toPng } = await import('html-to-image')
     const dataUrl = await toPng(el, {
       pixelRatio: 2,
       backgroundColor: isDark.value ? '#1e1e1e' : '#ffffff',
@@ -214,7 +269,6 @@ async function takeScreenshot() {
           :language="currentShikiLang"
           :placeholder="t('placeholder')"
           :rows="15"
-          :langs="ALL_SHIKI_LANGS"
         />
       </div>
     </Panel>
@@ -237,7 +291,6 @@ async function takeScreenshot() {
           :model-value="outputText"
           :language="currentShikiLang"
           :rows="15"
-          :langs="ALL_SHIKI_LANGS"
           readonly
         />
       </div>

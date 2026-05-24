@@ -113,11 +113,11 @@ function handleInput(event: Event) {
 }
 
 const fieldClass = computed(() => [
-  props.error ? 'border-red-400' : 'border-c-border',
+  props.error ? 'border-red-400 text-red-500 focus:border-red-400' : 'border-transparent text-c-text',
   props.monospace ? 'font-mono' : '',
-  props.readonly ? 'bg-c-input-readonly op-70' : 'bg-c-input focus:border-c-border-strong',
+  props.readonly ? 'bg-c-input-readonly text-c-text-muted' : 'bg-c-input hover:bg-c-surface hover:border-c-border focus:border-c-border-strong focus:bg-c-surface',
   slots.prefix ? 'pl-8' : '',
-  props.size === 'lg' ? 'text-xl px-4 py-3' : 'text-sm px-3 py-2',
+  props.size === 'lg' ? 'min-h-12 text-xl px-4 py-3' : 'min-h-10 text-sm px-3.5 py-2.5',
   props.align === 'center' ? 'text-center' : '',
   props.tracking === 'wide' ? 'tracking-wide' : '',
   props.tracking === 'widest' ? 'tracking-widest' : '',
@@ -126,8 +126,8 @@ const fieldClass = computed(() => [
 </script>
 
 <template>
-  <div flex="~ gap-2" items-center>
-    <div flex="~ 1" min-w-0 items-center relative>
+  <div flex="~ items-center gap-2">
+    <div flex="~ 1 items-center" min-w-0 relative>
       <slot name="prefix" />
       <input
         v-if="!readonly"
@@ -139,7 +139,9 @@ const fieldClass = computed(() => [
         :pattern="pattern"
         :placeholder="placeholder"
         :class="fieldClass"
-        outline-none border rounded-xl w-full transition-colors
+        outline-none border rounded-xl w-full
+        transition="colors duration-200"
+        placeholder-op-38
         @input="handleInput"
         @keydown.enter="emit('enter')"
         @focus="emit('focus')"
@@ -148,7 +150,7 @@ const fieldClass = computed(() => [
       <div
         v-else
         :class="fieldClass"
-        border rounded-xl min-h-9 w-full select-none whitespace-nowrap overflow-x-auto
+        border rounded-xl min-h-10 w-full select-none whitespace-nowrap overflow-x-auto
       >
         {{ secret && !visible ? '•'.repeat(modelValue.length) : modelValue }}&nbsp;
       </div>

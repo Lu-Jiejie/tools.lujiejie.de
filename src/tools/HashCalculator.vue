@@ -3,7 +3,7 @@ import LabelField from '~/components/container/LabelField.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
-  id: 'hash-generator',
+  id: 'hash-calculator',
   name: 'Hash Calculator',
   nameZh: '哈希计算',
   description: 'Calculate MD5, SHA-1/224/256/384/512, SHA-3, RIPEMD-160, BLAKE2/3, SM3, Whirlpool, CRC32 hashes from text.',

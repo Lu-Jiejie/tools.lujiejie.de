@@ -32,7 +32,7 @@ export default defineConfig({
     ['place-center', 'flex items-center justify-center'],
     ['page-container', 'mx-auto px-6 py-12 max-w-4xl md:px-12'],
     // tools grid (used in two places)
-    ['tools-grid', 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'],
+    ['tools-grid', 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3'],
     // icon button (header icons + search clear button)
     ['icon-btn', 'place-center rounded-lg op-60 hover:op-90 hover:bg-c-raised transition-150'],
     // favorite buttons (ToolCard + [tool].vue)

@@ -27,9 +27,9 @@ const keywordTags = computed(() => props.tool.keywords?.slice(0, 2) ?? [])
 <template>
   <RouterLink
     :to="`/${tool.id}`"
-    border="~ c-border" rows="[auto_1fr_auto]" h="[178px]" group p-5 rounded-2xl bg-c-surface gap-3.5 grid cursor-pointer transition-colors duration-200 relative overflow-hidden hover:border-c-border-strong hover:bg-[color-mix(in_srgb,var(--c-surface-raised)_58%,var(--c-surface))]
+    border="~ c-border" rows="[auto_1fr_auto]" min-h="[178px]" group p-5 rounded-2xl bg-c-surface gap-3.5 grid cursor-pointer transition-colors duration-200 relative hover:border-c-border-strong hover:bg-[color-mix(in_srgb,var(--c-surface-raised)_58%,var(--c-surface))]
   >
-    <div flex gap-3 min-w-0 items-start justify-between>
+    <div grid-cols="[minmax(0,1fr)_auto]" gap-3 grid min-w-0 items-start>
       <span text="xl md:2xl" leading="[1.02]" font-normal font-serif flex-1 min-w-0 break-words transition-colors line-clamp-2 group-hover:text-c-accent>
         {{ tool.name }}
       </span>
@@ -41,7 +41,7 @@ const keywordTags = computed(() => props.tool.keywords?.slice(0, 2) ?? [])
         <div :class="isFavorite(tool.id) ? 'i-carbon-star-filled' : 'i-carbon-star'" text-base />
       </button>
     </div>
-    <div min-h-0 relative z-10 overflow-hidden>
+    <div min-h-0 relative z-10>
       <p text-sm leading="[1.55]" op-50 break-words line-clamp-3>
         {{ tool.description }}
       </p>
@@ -58,10 +58,6 @@ const keywordTags = computed(() => props.tool.keywords?.slice(0, 2) ?? [])
             {{ keyword }}
           </span>
         </span>
-      </span>
-      <span flex shrink-0 h-3 w-12 items-center justify-end relative>
-        <span bg-c-border op-70 h-px w-12 right-0 absolute />
-        <span bg-c-accent op-90 h-px w-4 right-0 absolute />
       </span>
     </div>
   </RouterLink>

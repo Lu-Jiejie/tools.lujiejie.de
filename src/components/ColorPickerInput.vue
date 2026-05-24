@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onClickOutside, useEventListener } from '@vueuse/core'
-import { nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import TextInput from './TextInput.vue'
 import 'vanilla-colorful/hex-alpha-color-picker.js'
+
+type ColorPickerSize = 'default' | 'small'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -14,6 +16,7 @@ const props = withDefaults(defineProps<{
   error?: boolean
   copyable?: boolean
   readonly?: boolean
+  size?: ColorPickerSize
 }>(), {
   textColor: 'currentColor',
   swatchLabel: '',
@@ -21,6 +24,7 @@ const props = withDefaults(defineProps<{
   error: false,
   copyable: false,
   readonly: false,
+  size: 'default',
 })
 
 const emit = defineEmits<{
@@ -37,6 +41,12 @@ const anchorRef = ref<HTMLElement | null>(null)
 const pickerRef = ref<HTMLElement | null>(null)
 const popupRef = ref<HTMLElement | null>(null)
 const popupStyle = shallowRef({ top: '0px', left: '0px', width: '0px' })
+const isSmall = computed(() => props.size === 'small')
+const pickerButtonClass = computed(() => (
+  isSmall.value
+    ? 'size-10 shrink-0'
+    : 'h-12 w-full'
+))
 
 const checkerStyle = {
   backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
@@ -53,10 +63,15 @@ function updatePopupPosition() {
     return
 
   const rect = anchor.getBoundingClientRect()
+  const popupWidth = isSmall.value ? Math.min(280, window.innerWidth - 24) : rect.width
+  const left = isSmall.value
+    ? Math.min(Math.max(rect.left, 12), window.innerWidth - popupWidth - 12)
+    : rect.left
+
   popupStyle.value = {
     top: `${rect.bottom + 8}px`,
-    left: `${rect.left}px`,
-    width: `${rect.width}px`,
+    left: `${left}px`,
+    width: `${popupWidth}px`,
   }
 }
 
@@ -111,14 +126,16 @@ watch(() => [props.previewColor, props.pickerColor], () => {
     <button
       ref="anchorRef" type="button"
       border="~ c-border"
-      rounded-xl h-12 w-full cursor-pointer relative overflow-hidden
+      rounded-xl cursor-pointer relative overflow-hidden
       transition="colors duration-200"
       hover:border-c-border-strong
+      :class="pickerButtonClass"
       @click="togglePicker"
     >
       <div inset-0 absolute :style="checkerStyle" />
       <div transition-colors duration-300 inset-0 absolute :style="{ backgroundColor: previewColor }" />
       <div
+        v-if="!isSmall"
         text-xs tracking-wider font-mono flex select-none transition-colors duration-300 items-center inset-0 justify-center absolute
         :style="{ color: textColor }"
       >
@@ -129,6 +146,7 @@ watch(() => [props.previewColor, props.pickerColor], () => {
     </button>
 
     <TextInput
+      v-if="!isSmall"
       :model-value="modelValue"
       :error="error"
       :copyable="copyable"

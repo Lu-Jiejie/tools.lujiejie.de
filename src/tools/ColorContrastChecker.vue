@@ -21,6 +21,7 @@ import ColorPickerInput from '~/components/ColorPickerInput.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 interface Rgba {
@@ -55,14 +56,14 @@ const { t } = useI18n({
   best_readable: ['Most readable text color', '最易读文字色'],
   aa_recommendation: ['Nearest AA foreground', '最近 AA 前景色'],
   aaa_recommendation: ['Nearest AAA foreground', '最近 AAA 前景色'],
-  sample_title: ['Readable interface text', '可读的界面文字'],
-  sample_body: ['Use this preview to judge body text, buttons, labels, and status badges.', '用这个预览判断正文、按钮、标签和状态徽标的可读性。'],
-  sample_meta: ['Updated 2 minutes ago', '2 分钟前更新'],
+  sample_title: ['Readable heading', '可读的标题'],
+  sample_body: ['Short body text for contrast checking.', '用于检查对比度的短正文。'],
+  sample_meta: ['Just now', '刚刚更新'],
   sample_badge: ['Active', '启用中'],
-  sample_button: ['Primary action', '主要操作'],
-  sample_secondary: ['Secondary text is often lighter, smaller, and easier to miss.', '次要文字通常更浅、更小，也更容易看不清。'],
-  sample_link: ['Inline link', '行内链接'],
-  sample_icon_label: ['Icon / border', '图标 / 边框'],
+  sample_button: ['Continue', '继续'],
+  sample_secondary: ['Secondary note', '辅助说明'],
+  sample_link: ['Learn more', '了解更多'],
+  sample_icon_label: ['Notice', '提示'],
   how_it_works: ['How It Works', '工作原理'],
   how_1_title: ['Calculate brightness', '计算亮度'],
   how_1_desc: [
@@ -96,6 +97,8 @@ const CHECKS = computed<CheckItem[]>(() => [
   { label: t('large_aaa'), required: 4.5 },
   { label: t('ui_aa'), required: 3 },
 ])
+
+const passedChecks = computed(() => CHECKS.value.filter(check => ratio.value >= check.required).length)
 const explainItems = computed(() => [
   {
     title: t('how_1_title'),
@@ -139,9 +142,6 @@ const bestTextColor = computed(() => {
 })
 const aaRecommendation = computed(() => recommendForeground(4.5))
 const aaaRecommendation = computed(() => recommendForeground(7))
-const bestTextColorLabelColor = computed(() => readableTextColor(bestTextColor.value))
-const aaRecommendationLabelColor = computed(() => readableTextColor(aaRecommendation.value))
-const aaaRecommendationLabelColor = computed(() => readableTextColor(aaaRecommendation.value))
 const previewStyle = computed(() => ({
   color: foregroundHex.value || '#666666',
   backgroundColor: backgroundHex.value || '#ffffff',
@@ -284,15 +284,6 @@ function recommendForeground(target: number): string {
   return toHex(mix(compositedForeground.value, endpoint, high))
 }
 
-function readableTextColor(hex: string): string {
-  const color = parseColor(hex)
-  if (!color)
-    return '#000000'
-  const blackRatio = contrastRatio({ r: 0, g: 0, b: 0, a: 1 }, color)
-  const whiteRatio = contrastRatio({ r: 255, g: 255, b: 255, a: 1 }, color)
-  return blackRatio >= whiteRatio ? '#000000' : '#ffffff'
-}
-
 function swapColors() {
   const currentForeground = foregroundInput.value
   foregroundInput.value = backgroundInput.value
@@ -304,29 +295,47 @@ function swapColors() {
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <div grid="~ cols-1 md:cols-[1fr_auto_1fr] gap-3" items-end>
+        <div grid="~ cols-1 md:cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-4" items-end>
           <LabelField :label="t('foreground')">
-            <ColorPickerInput
-              v-model="foregroundInput"
-              :preview-color="foregroundHex || '#000000'"
-              :picker-color="foregroundPickerHex || '#000000ff'"
-              :text-color="backgroundHex || '#ffffff'"
-              :error="foreground === null"
-              placeholder="#111827 / rgb(17, 24, 39) / hsl(221, 39%, 11%)"
-            />
+            <div flex="~ items-center gap-2">
+              <TextInput
+                v-model="foregroundInput"
+                :error="foreground === null"
+                placeholder="#111827 / rgb(17, 24, 39) / hsl(221, 39%, 11%)"
+                :copyable="false"
+                class="flex-1"
+              />
+              <ColorPickerInput
+                v-model="foregroundInput"
+                size="small"
+                :preview-color="foregroundHex || '#000000'"
+                :picker-color="foregroundPickerHex || '#000000ff'"
+                :text-color="backgroundHex || '#ffffff'"
+              />
+            </div>
           </LabelField>
 
-          <BaseButton icon="i-carbon-arrows-horizontal" icon-only @click="swapColors" />
+          <div flex="~ justify-center" class="md:pb-0.5">
+            <BaseButton icon="i-carbon-arrows-horizontal" icon-only @click="swapColors" />
+          </div>
 
           <LabelField :label="t('background')">
-            <ColorPickerInput
-              v-model="backgroundInput"
-              :preview-color="backgroundHex || '#ffffff'"
-              :picker-color="backgroundPickerHex || '#ffffffff'"
-              :text-color="foregroundHex || '#111827'"
-              :error="background === null"
-              placeholder="#ffffff / rgb(255, 255, 255)"
-            />
+            <div flex="~ items-center gap-2">
+              <TextInput
+                v-model="backgroundInput"
+                :error="background === null"
+                placeholder="#ffffff / rgb(255, 255, 255)"
+                :copyable="false"
+                class="flex-1"
+              />
+              <ColorPickerInput
+                v-model="backgroundInput"
+                size="small"
+                :preview-color="backgroundHex || '#ffffff'"
+                :picker-color="backgroundPickerHex || '#ffffffff'"
+                :text-color="foregroundHex || '#111827'"
+              />
+            </div>
           </LabelField>
         </div>
 
@@ -338,41 +347,44 @@ function swapColors() {
 
     <Panel :title="t('preview_label')">
       <div p-5>
-        <div border="~ c-border" p-5 rounded-xl pointer-events-none select-none transition-colors :style="previewStyle">
-          <div flex="~ col md:row gap-4" justify-between>
-            <div min-w-0>
+        <div
+          pointer-events-none select-none transition-colors
+          :style="previewStyle"
+        >
+          <div>
+            <div max-w-170>
               <div flex="~ gap-2 wrap" mb-3 items-center>
-                <span border="~ current/35" text-xs font-medium px-2 py-1 rounded>
+                <span border="~ current/35" text-xs font-medium px-2.5 py-1 rounded-lg>
                   {{ t('sample_badge') }}
                 </span>
                 <span text-xs op-65>{{ t('sample_meta') }}</span>
               </div>
 
-              <div text-2xl leading-tight font-semibold mb-2>
+              <div text="3xl md:4xl" leading-tight font="serif normal">
                 {{ t('sample_title') }}
               </div>
-              <div text-sm leading-relaxed max-w-160>
+
+              <div text-sm leading-relaxed mt-3 op-82 max-w-145>
                 {{ t('sample_body') }}
-                <span underline underline-offset-3>{{ t('sample_link') }}</span>
+                <span underline underline-offset-3 inline-block whitespace-nowrap>{{ t('sample_link') }}</span>
               </div>
             </div>
 
-            <div border="~ current/45" text-sm font-medium px-4 rounded-lg flex shrink-0 h-10 items-center self-start>
-              {{ t('sample_button') }}
-            </div>
-          </div>
-
-          <div mt-5 grid="~ cols-1 md:cols-2 gap-3">
-            <div border="~ current/25" p-3 rounded-lg flex="~ col gap-2">
-              <div flex="~ gap-2" items-center>
-                <span border="~ current/35" i-carbon-information p-2 rounded-full />
-                <span text-sm>{{ t('sample_icon_label') }}</span>
+            <div border="t current/16" mt-6 pt-4 flex="~ col sm:row gap-3 sm:items-center sm:justify-between">
+              <div flex="~ items-center gap-2" min-w-0>
+                <span border="~ current/35" i-carbon-information p-2 rounded-full shrink-0 />
+                <div min-w-0>
+                  <div text-sm font-medium truncate>
+                    {{ t('sample_icon_label') }}
+                  </div>
+                  <div text-xs op-62 truncate>
+                    {{ t('sample_secondary') }}
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div border="~ current/25" p-3 rounded-lg flex items-center>
-              <div text-xs leading-relaxed op-65>
-                {{ t('sample_secondary') }}
+              <div border="~ current/35" text-sm font-medium px-4 rounded-xl flex shrink-0 h-10 items-center justify-center>
+                {{ t('sample_button') }}
               </div>
             </div>
           </div>
@@ -382,12 +394,22 @@ function swapColors() {
 
     <Panel :title="t('result_label')">
       <div p-5 flex="~ col gap-4">
-        <div flex="~ col gap-1" items-start>
-          <div text-sm op-60>
-            {{ t('contrast_ratio') }}
+        <div flex="~ col sm:row gap-3 sm:items-end sm:justify-between">
+          <div min-w-0>
+            <div text="5xl c-text" leading-none font-mono font-semibold>
+              {{ ratioText }}
+            </div>
+            <div mt-2 flex="~ items-center gap-2">
+              <span rounded-full bg-c-accent h-0.75 w-8 />
+              <span text-xs text-c-text-muted leading-none font-mono uppercase>
+                {{ t('contrast_ratio') }}
+              </span>
+            </div>
           </div>
-          <div text-3xl font-mono font-semibold>
-            {{ ratioText }}
+
+          <div text-sm text-c-text-muted>
+            <span text-c-text font-mono>{{ passedChecks }}/{{ CHECKS.length }}</span>
+            {{ t('pass') }}
           </div>
         </div>
 
@@ -395,7 +417,10 @@ function swapColors() {
           <div
             v-for="check in CHECKS"
             :key="check.label"
-            border="~ c-border" p-3 rounded-lg bg-c-raised flex gap-3 items-center justify-between
+            border="~ c-border"
+            p="x-3.5 y-3"
+            rounded-xl bg-c-surface
+            flex gap-3 items-center justify-between
           >
             <div>
               <div text-sm font-medium>
@@ -406,8 +431,8 @@ function swapColors() {
               </div>
             </div>
             <div
-              text-xs font-medium px-2 py-1 rounded
-              :class="ratio >= check.required ? 'text-green-500 bg-green-400/10' : 'text-red-400 bg-red-400/10'"
+              border="~" text-xs font-medium px-2 py-1 rounded-lg select-none
+              :class="ratio >= check.required ? 'text-c-accent bg-c-soft border-c-accent/30' : 'text-red-500 bg-red-500/8 border-red-500/40'"
             >
               {{ ratio >= check.required ? t('pass') : t('fail') }}
             </div>
@@ -417,41 +442,17 @@ function swapColors() {
     </Panel>
 
     <Panel :title="t('recommendation_label')">
-      <div p-5 grid="~ cols-1 md:cols-3 gap-3">
+      <div p-5 grid="~ cols-1 md:cols-3 gap-4">
         <LabelField :label="t('best_readable')">
-          <ColorPickerInput
-            :model-value="bestTextColor"
-            :preview-color="bestTextColor || '#000000'"
-            :picker-color="bestTextColor || '#000000'"
-            :text-color="bestTextColorLabelColor"
-            :swatch-label="bestTextColor"
-            copyable
-            readonly
-          />
+          <TextInput :model-value="bestTextColor" readonly copyable class="flex-1" />
         </LabelField>
 
         <LabelField :label="t('aa_recommendation')">
-          <ColorPickerInput
-            :model-value="aaRecommendation"
-            :preview-color="aaRecommendation || '#000000'"
-            :picker-color="aaRecommendation || '#000000'"
-            :text-color="aaRecommendationLabelColor"
-            :swatch-label="aaRecommendation"
-            copyable
-            readonly
-          />
+          <TextInput :model-value="aaRecommendation" readonly copyable class="flex-1" />
         </LabelField>
 
         <LabelField :label="t('aaa_recommendation')">
-          <ColorPickerInput
-            :model-value="aaaRecommendation"
-            :preview-color="aaaRecommendation || '#000000'"
-            :picker-color="aaaRecommendation || '#000000'"
-            :text-color="aaaRecommendationLabelColor"
-            :swatch-label="aaaRecommendation"
-            copyable
-            readonly
-          />
+          <TextInput :model-value="aaaRecommendation" readonly copyable class="flex-1" />
         </LabelField>
       </div>
     </Panel>

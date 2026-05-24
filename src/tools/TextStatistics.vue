@@ -63,6 +63,14 @@ const statItems = computed(() => [
   { key: 'sentences', value: stats.value.sentences },
   { key: 'paragraphs', value: stats.value.paragraphs },
 ] as const)
+
+const readTimeText = computed(() =>
+  stats.value.totalReadUnits === 0
+    ? '—'
+    : stats.value.readMinutes === 0
+      ? t('read_time_sec')
+      : `${stats.value.readMinutes} ${t('read_time_unit')}`,
+)
 </script>
 
 <template>
@@ -79,19 +87,20 @@ const statItems = computed(() => [
     </Panel>
 
     <Panel :title="t('stats_label')">
-      <div p-5 flex="~ col gap-0">
+      <div p-5 flex="~ col">
         <div
           v-for="item in statItems"
           :key="item.key"
-          py-2.5 flex items-center justify-between border-b="~ c-border last:border-none"
+          py-3 flex gap-4 items-center justify-between border-b="~ c-border"
         >
-          <span text-sm op-60>{{ t(item.key) }}</span>
-          <span text-sm font-medium font-mono>{{ item.value.toLocaleString() }}</span>
+          <span text-sm text-c-text-muted leading-snug min-w-0>{{ t(item.key) }}</span>
+          <span text-sm text-c-text font-medium font-mono shrink-0 tabular-nums>{{ item.value.toLocaleString() }}</span>
         </div>
-        <div py-2.5 flex items-center justify-between>
-          <span text-sm op-60>{{ t('read_time') }}</span>
-          <span text-sm font-medium font-mono>
-            {{ stats.totalReadUnits === 0 ? '—' : stats.readMinutes === 0 ? t('read_time_sec') : `${stats.readMinutes} ${t('read_time_unit')}` }}
+
+        <div py-3 flex gap-4 items-center justify-between>
+          <span text-sm text-c-text-muted leading-snug min-w-0>{{ t('read_time') }}</span>
+          <span text-sm text-c-text font-medium font-mono shrink-0 tabular-nums>
+            {{ readTimeText }}
           </span>
         </div>
       </div>

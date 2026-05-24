@@ -24,7 +24,6 @@ import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
 import DevToolbar from '~/components/DevToolbar.vue'
 import TextInput from '~/components/TextInput.vue'
-import ToggleButton from '~/components/ToggleButton.vue'
 import { useI18n } from '~/composables/useI18n'
 import {
   generateJsonSchema,
@@ -220,12 +219,20 @@ function fillDemo() {
           <LabelField :label="t('schema_title_field')">
             <TextInput v-model="schemaTitle" :placeholder="t('title_placeholder')" />
           </LabelField>
-          <ToggleButton v-model="includeExamples" icon="i-carbon-list-boxes" active-icon="i-carbon-list-boxes">
+          <BaseButton
+            icon="i-carbon-list-boxes"
+            :active="includeExamples"
+            @click="includeExamples = !includeExamples"
+          >
             {{ t('include_examples') }}
-          </ToggleButton>
-          <ToggleButton v-model="strictObjects" icon="i-carbon-locked" active-icon="i-carbon-locked">
+          </BaseButton>
+          <BaseButton
+            icon="i-carbon-locked"
+            :active="strictObjects"
+            @click="strictObjects = !strictObjects"
+          >
             {{ t('strict_object') }}
-          </ToggleButton>
+          </BaseButton>
           <BaseButton icon="i-carbon-data-structured" :disabled="!!sampleState.error || sampleState.data === undefined" @click="createSchema">
             {{ t('generate') }}
           </BaseButton>

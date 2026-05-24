@@ -2,7 +2,6 @@
 import { isDev } from '~/composables/useDevMode'
 import { isPreviewProduction, showDevTools } from '~/composables/useDevPreview'
 import BaseButton from './BaseButton.vue'
-import ToggleButton from './ToggleButton.vue'
 
 withDefaults(defineProps<{
   label?: string
@@ -35,14 +34,13 @@ function setPreviewProduction(value: boolean) {
         <slot />
       </div>
 
-      <ToggleButton
-        :model-value="isPreviewProduction"
-        icon="i-carbon-view"
-        active-icon="i-carbon-view-off"
-        @update:model-value="setPreviewProduction"
+      <BaseButton
+        :active="isPreviewProduction"
+        :icon="isPreviewProduction ? 'i-carbon-view-off' : 'i-carbon-view'"
+        @click="setPreviewProduction(!isPreviewProduction)"
       >
         {{ previewLabel }}
-      </ToggleButton>
+      </BaseButton>
     </div>
 
     <div v-else bottom-4 right-4 fixed z-50>

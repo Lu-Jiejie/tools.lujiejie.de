@@ -346,7 +346,7 @@ function swapColors() {
     </Panel>
 
     <Panel :title="t('preview_label')">
-      <div p-5>
+      <div p-5 :style="{ backgroundColor: backgroundHex || '#ffffff' }">
         <div
           pointer-events-none select-none transition-colors
           :style="previewStyle"

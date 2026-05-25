@@ -27,7 +27,7 @@ const currentTool = computed(() => {
   <header
 
     flex="~ items-center gap-4"
-    px-4 header-blur h-15 top-0 sticky z-40 md:px-6
+    px-4 header-blur h-15 top-0 sticky z-1000 md:px-6
     border="b c-border"
   >
     <!-- Logo / 面包屑 -->

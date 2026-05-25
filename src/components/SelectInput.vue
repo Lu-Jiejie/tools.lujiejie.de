@@ -24,7 +24,6 @@ watchEffect(() => {
       :class="selectClass"
       border="~ transparent rounded-xl"
       p="l-3.5 r-8 y-2.5"
-
       transition="colors duration-200"
       text-c-text select-base outline-none bg-c-input shrink-0 min-h-10 cursor-pointer hover:text-c-text focus:border-c-border-strong hover:border-c-border focus:bg-c-surface hover:bg-c-surface
     >

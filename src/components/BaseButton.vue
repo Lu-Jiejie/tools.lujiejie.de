@@ -33,9 +33,8 @@ function handleClick() {
     ]"
     border="~"
     flex="~ items-center justify-center gap-1.5"
-
     transition="colors duration-200"
-    text-sm font-medium outline-none rounded-xl focus-visible:border-c-border-strong focus-visible:bg-c-surface
+    text-sm font-medium outline-none rounded-xl select-none focus-visible:border-c-border-strong focus-visible:bg-c-surface
     @click="!disabled && handleClick()"
   >
     <div v-if="icon" :class="[icon, iconOnly ? '' : 'op-70']" text-sm />

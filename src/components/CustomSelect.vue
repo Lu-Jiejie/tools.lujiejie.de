@@ -10,7 +10,10 @@ import {
 import {
   computed,
   nextTick,
+  onMounted,
   ref,
+  useSlots,
+  watch,
 } from 'vue'
 
 /**
@@ -60,12 +63,51 @@ const model = defineModel<string>({
  * =========================================================
  */
 
+const slots = useSlots()
 const open = ref(false)
 const triggerRef = ref<HTMLElement>()
 const dropdownRef = ref<HTMLElement>()
 const dropdownRect = ref<DOMRect | null>(null)
 const measureRef = ref<HTMLElement>()
-const contentWidth = ref<number | null>(null)
+const triggerWidth = ref<number | null>(null)
+
+const hasTriggerSlot = computed(() => !!slots.trigger)
+
+/**
+ * =========================================================
+ * Measure max content width (text mode only)
+ * =========================================================
+ */
+
+function measureMaxWidth() {
+  const container = measureRef.value
+  if (!container)
+    return
+
+  let max = 0
+  const texts = [props.placeholder, ...props.options.map(o => o.label)]
+
+  for (const text of texts) {
+    container.textContent = text
+    max = Math.max(max, container.scrollWidth)
+  }
+
+  triggerWidth.value = max + 60
+}
+
+onMounted(() => {
+  if (!hasTriggerSlot.value) {
+    requestAnimationFrame(() => {
+      measureMaxWidth()
+    })
+  }
+})
+
+watch(() => props.options, () => {
+  if (!hasTriggerSlot.value) {
+    nextTick(measureMaxWidth)
+  }
+}, { deep: true })
 /**
  * =========================================================
  * Selected
@@ -103,8 +145,8 @@ const dropdownStyle = computed<CSSProperties>(() => {
     left: `${rect.left}px`,
     width: typeof props.width === 'number'
       ? `${props.width}px`
-      : contentWidth.value
-        ? `${contentWidth.value}px`
+      : triggerWidth.value
+        ? `${triggerWidth.value}px`
         : `${rect.width}px`,
 
     top: shouldFlip
@@ -115,6 +157,17 @@ const dropdownStyle = computed<CSSProperties>(() => {
       ? `${window.innerHeight - rect.top + 2}px`
       : undefined,
   }
+})
+
+/**
+ * Trigger min-width style — prevents width from jumping
+ * when switching between different-length options
+ */
+
+const triggerStyle = computed<CSSProperties>(() => {
+  if (hasTriggerSlot.value || !triggerWidth.value)
+    return {}
+  return { width: `${triggerWidth.value}px` }
 })
 
 /**
@@ -131,20 +184,6 @@ async function toggleDropdown() {
     const el = triggerRef.value
     if (el) {
       dropdownRect.value = el.getBoundingClientRect()
-    }
-
-    await nextTick()
-
-    const container = measureRef.value
-    if (container) {
-      let max = 0
-
-      for (const opt of props.options) {
-        container.textContent = opt.label
-        max = Math.max(max, container.scrollWidth)
-      }
-
-      contentWidth.value = max + 32 // padding buffer
     }
   }
 
@@ -177,15 +216,13 @@ onClickOutside(dropdownRef, closeDropdown, { ignore: [triggerRef] })
  */
 
 useEventListener(window, 'resize', closeDropdown)
-useEventListener(window, 'scroll', (e) => {
+useEventListener(window, 'scroll', () => {
   if (!open.value)
     return
-
-  const target = e.target as Node | null
-  if (dropdownRef.value?.contains(target)) {
-    return
+  const el = triggerRef.value
+  if (el) {
+    dropdownRect.value = el.getBoundingClientRect()
   }
-  closeDropdown()
 }, {
   capture: true,
   passive: true,
@@ -193,7 +230,7 @@ useEventListener(window, 'scroll', (e) => {
 </script>
 
 <template>
-  <div inline-flex w-full relative>
+  <div :style="triggerStyle" inline-flex relative>
     <!-- Trigger -->
 
     <button
@@ -271,6 +308,7 @@ useEventListener(window, 'scroll', (e) => {
   </div>
   <div
     ref="measureRef"
+    text-sm
     style="
     position: fixed;
     visibility: hidden;

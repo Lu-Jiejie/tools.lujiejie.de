@@ -18,7 +18,7 @@ import { computed, shallowRef } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
-import SelectInput from '~/components/SelectInput.vue'
+import CustomSelect from '~/components/CustomSelect.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useLocale } from '~/composables/useLocale'
@@ -291,7 +291,7 @@ function readableTextColor([r, g, b]: [number, number, number]) {
         <div grid="~ cols-1 md:cols-[auto_minmax(0,1fr)] gap-3" items-end>
           <LabelField :label="t('sort')">
             <div flex="~ gap-2" items-center>
-              <SelectInput v-model="sortBy" :options="sortOptions" select-class="min-w-34" />
+              <CustomSelect v-model="sortBy" :options="sortOptions" />
               <BaseButton
                 :icon="sortDirection === 'asc' ? 'i-carbon-sort-ascending' : 'i-carbon-sort-descending'"
                 icon-only

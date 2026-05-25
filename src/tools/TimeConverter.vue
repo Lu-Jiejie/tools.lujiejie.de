@@ -19,7 +19,7 @@ import { computed, onUnmounted, shallowRef, watch } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
-import SelectInput from '~/components/SelectInput.vue'
+import CustomSelect from '~/components/CustomSelect.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -210,7 +210,7 @@ const outputs = computed(() => [
           @update:model-value="onInput"
         >
           <template #append>
-            <SelectInput
+            <CustomSelect
               v-model="inputFormat"
               :options="FORMAT_OPTIONS"
             />

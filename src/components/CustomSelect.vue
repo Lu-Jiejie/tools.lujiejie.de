@@ -5,12 +5,11 @@ import type {
 
 import {
   onClickOutside,
-  useElementBounding,
   useEventListener,
-  useWindowSize,
 } from '@vueuse/core'
 import {
   computed,
+  nextTick,
   ref,
 } from 'vue'
 
@@ -64,7 +63,9 @@ const model = defineModel<string>({
 const open = ref(false)
 const triggerRef = ref<HTMLElement>()
 const dropdownRef = ref<HTMLElement>()
-
+const dropdownRect = ref<DOMRect | null>(null)
+const measureRef = ref<HTMLElement>()
+const contentWidth = ref<number | null>(null)
 /**
  * =========================================================
  * Selected
@@ -81,10 +82,6 @@ const selectedOption = computed(() =>
  * =========================================================
  */
 
-const { left, top, bottom, width } = useElementBounding(triggerRef)
-
-const { height: windowHeight } = useWindowSize()
-
 /**
  * =========================================================
  * Dropdown Position
@@ -92,32 +89,30 @@ const { height: windowHeight } = useWindowSize()
  */
 
 const dropdownStyle = computed<CSSProperties>(() => {
+  const rect = dropdownRect.value
+  if (!rect)
+    return {}
+
   const dropdownMaxHeight = 320
-  const space = 2
 
   const shouldFlip
-    = windowHeight.value
-      - bottom.value
-      < dropdownMaxHeight
+    = window.innerHeight - rect.bottom < dropdownMaxHeight
 
   return {
     position: 'fixed',
-
-    left: `${left.value}px`,
-
-    width:
-      typeof props.width === 'number'
-        ? `${props.width}px`
-        : props.width === 'auto'
-          ? `${width.value}px`
-          : props.width,
+    left: `${rect.left}px`,
+    width: typeof props.width === 'number'
+      ? `${props.width}px`
+      : contentWidth.value
+        ? `${contentWidth.value}px`
+        : `${rect.width}px`,
 
     top: shouldFlip
       ? undefined
-      : `${bottom.value + space}px`,
+      : `${rect.bottom + 2}px`,
 
     bottom: shouldFlip
-      ? `${windowHeight.value - top.value + space}px`
+      ? `${window.innerHeight - rect.top + 2}px`
       : undefined,
   }
 })
@@ -128,9 +123,31 @@ const dropdownStyle = computed<CSSProperties>(() => {
  * =========================================================
  */
 
-function toggleDropdown() {
+async function toggleDropdown() {
   if (props.disabled)
     return
+
+  if (!open.value) {
+    const el = triggerRef.value
+    if (el) {
+      dropdownRect.value = el.getBoundingClientRect()
+    }
+
+    await nextTick()
+
+    const container = measureRef.value
+    if (container) {
+      let max = 0
+
+      for (const opt of props.options) {
+        container.textContent = opt.label
+        max = Math.max(max, container.scrollWidth)
+      }
+
+      contentWidth.value = max + 32 // padding buffer
+    }
+  }
+
   open.value = !open.value
 }
 
@@ -252,6 +269,16 @@ useEventListener(window, 'scroll', (e) => {
       </Transition>
     </Teleport>
   </div>
+  <div
+    ref="measureRef"
+    style="
+    position: fixed;
+    visibility: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+    height: auto;
+  "
+  />
 </template>
 
 <style scoped>

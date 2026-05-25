@@ -21,8 +21,8 @@ import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
+import CustomSelect from '~/components/CustomSelect.vue'
 import NumberInput from '~/components/NumberInput.vue'
-import SelectInput from '~/components/SelectInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -642,7 +642,7 @@ function downloadOutput() {
       <div p-5 flex="~ col gap-4">
         <div flex="~ gap-3 wrap" items-end>
           <LabelField :label="t('language')">
-            <SelectInput v-model="language" :options="LANG_OPTIONS" />
+            <CustomSelect v-model="language" :options="LANG_OPTIONS" />
           </LabelField>
           <BaseButton icon="i-carbon-data-structured" @click="parseModel">
             {{ t('parse') }}

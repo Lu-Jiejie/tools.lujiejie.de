@@ -21,8 +21,8 @@ import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
+import CustomSelect from '~/components/CustomSelect.vue'
 import NumberInput from '~/components/NumberInput.vue'
-import SelectInput from '~/components/SelectInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useLocale } from '~/composables/useLocale'
@@ -395,7 +395,7 @@ manualInput.value = expression.value
       <div p-5 flex="~ col gap-4">
         <div flex="~ gap-3 wrap" items-end>
           <LabelField :label="t('preset')">
-            <SelectInput
+            <CustomSelect
               :model-value="presetValue"
               :options="PRESETS"
               @update:model-value="applyPreset"

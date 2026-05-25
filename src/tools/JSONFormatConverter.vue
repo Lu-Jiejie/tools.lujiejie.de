@@ -23,7 +23,7 @@ import BaseButton from '~/components/BaseButton.vue'
 import CodeEditor from '~/components/CodeEditor.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
-import SelectInput from '~/components/SelectInput.vue'
+import CustomSelect from '~/components/CustomSelect.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -138,13 +138,13 @@ async function copyOutput() {
       <div p-5 flex="~ col gap-4">
         <div flex="~ gap-3 wrap" items-center>
           <LabelField :label="t('from')">
-            <SelectInput v-model="fromFormat" :options="FORMAT_OPTIONS" />
+            <CustomSelect v-model="fromFormat" :options="FORMAT_OPTIONS" />
           </LabelField>
           <LabelField :label="t('to')">
-            <SelectInput v-model="toFormat" :options="FORMAT_OPTIONS" />
+            <CustomSelect v-model="toFormat" :options="FORMAT_OPTIONS" />
           </LabelField>
           <LabelField :label="t('indent')">
-            <SelectInput v-model="indent" :options="INDENT_OPTIONS" />
+            <CustomSelect v-model="indent" :options="INDENT_OPTIONS" />
           </LabelField>
         </div>
         <CodeEditor

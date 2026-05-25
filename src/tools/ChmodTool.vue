@@ -18,7 +18,7 @@ import { computed, reactive, watch } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
-import SelectInput from '~/components/SelectInput.vue'
+import CustomSelect from '~/components/CustomSelect.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -194,7 +194,7 @@ symbolicInput.value = symbolic.value
       <div p-5 flex="~ col gap-4">
         <div flex="~ gap-3 wrap" items-end>
           <LabelField :label="t('preset')">
-            <SelectInput
+            <CustomSelect
               :model-value="presetValue"
               :options="PRESETS"
               @update:model-value="applyPreset"

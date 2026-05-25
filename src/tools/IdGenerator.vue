@@ -19,8 +19,8 @@ import BaseButton from '~/components/BaseButton.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import CustomSelect from '~/components/CustomSelect.vue'
 import NumberInput from '~/components/NumberInput.vue'
-import SelectInput from '~/components/SelectInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -404,11 +404,11 @@ void generate()
       <div p-5 flex="~ col gap-4">
         <div flex="~ gap-3 wrap" items-end>
           <LabelField :label="t('type')">
-            <SelectInput v-model="idType" :options="TYPE_OPTIONS" />
+            <CustomSelect v-model="idType" :options="TYPE_OPTIONS" />
           </LabelField>
 
           <LabelField v-if="idType === 'uuid'" :label="t('version')">
-            <SelectInput v-model="uuidVersion" :options="UUID_VERSION_OPTIONS" />
+            <CustomSelect v-model="uuidVersion" :options="UUID_VERSION_OPTIONS" />
           </LabelField>
 
           <LabelField :label="t('count')">
@@ -450,7 +450,7 @@ void generate()
 
         <template v-if="needsNameInput">
           <LabelField :label="t('namespace')">
-            <SelectInput v-model="namespace" :options="NS_OPTIONS" />
+            <CustomSelect v-model="namespace" :options="NS_OPTIONS" />
           </LabelField>
 
           <LabelField :label="t('name_input')">

@@ -78,7 +78,7 @@ async function loadShikiLangs(highlighter: CodeHighlighter, langs: string[]) {
   if (missing.length === 0)
     return
 
-  await highlighter.loadLanguage(...missing)
+  await highlighter.loadLanguage(...(missing as Parameters<typeof highlighter.loadLanguage>))
   missing.forEach(lang => loadedShikiLangs.add(lang))
 }
 

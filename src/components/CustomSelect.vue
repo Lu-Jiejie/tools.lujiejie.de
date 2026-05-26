@@ -67,6 +67,7 @@ const slots = useSlots()
 const open = ref(false)
 const triggerRef = ref<HTMLElement>()
 const dropdownRef = ref<HTMLElement>()
+const listRef = ref<HTMLElement>()
 const dropdownRect = ref<DOMRect | null>(null)
 const measureRef = ref<HTMLElement>()
 const triggerWidth = ref<number | null>(null)
@@ -188,6 +189,17 @@ async function toggleDropdown() {
   }
 
   open.value = !open.value
+
+  if (open.value) {
+    await nextTick()
+    const list = listRef.value
+    if (!list)
+      return
+    const activeItem = list.querySelector('[data-active]') as HTMLElement | null
+    if (activeItem) {
+      activeItem.scrollIntoView({ block: 'nearest' })
+    }
+  }
 }
 
 function closeDropdown() {
@@ -276,6 +288,7 @@ useEventListener(window, 'scroll', () => {
           :style="dropdownStyle"
         >
           <div
+            ref="listRef"
             max-h-80 overflow-x-hidden overflow-y-auto
             class="[scrollbar-gutter:stable]"
           >
@@ -292,6 +305,7 @@ useEventListener(window, 'scroll', () => {
                     ? 'bg-c-accent/8 text-c-accent cursor-pointer'
                     : 'cursor-pointer hover:bg-c-raised',
               ]"
+              :data-active="option.value === model ? '' : undefined"
 
               @click=" selectOption(option) "
             >

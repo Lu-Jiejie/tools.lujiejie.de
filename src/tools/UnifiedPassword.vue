@@ -21,9 +21,9 @@ import { useLocalStorage } from '@vueuse/core'
 import argon2 from 'argon2-browser/dist/argon2-bundled.min.js'
 import { computed, shallowRef, watch } from 'vue'
 import Panel from '~/components/container/Panel.vue'
-import NumberInput from '~/components/NumberInput.vue'
-import TextInput from '~/components/TextInput.vue'
-import ToggleButtonGroup from '~/components/ToggleButtonGroup.vue'
+import NumberInput from '~/components/input/NumberInput.vue'
+import TextInput from '~/components/input/TextInput.vue'
+import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

@@ -1,26 +1,7 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
-import type {
-  CSSProperties,
-} from 'vue'
-
-import {
-  onClickOutside,
-  useEventListener,
-} from '@vueuse/core'
-import {
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  useSlots,
-  watch,
-} from 'vue'
-
-/**
- * =========================================================
- * Types
- * =========================================================
- */
+import type { CSSProperties } from 'vue'
+import { onClickOutside, useEventListener } from '@vueuse/core'
+import { computed, nextTick, onMounted, ref, useSlots, watch } from 'vue'
 
 type Option = T & {
   label: string
@@ -28,11 +9,7 @@ type Option = T & {
   disabled?: boolean
 }
 
-/**
- * =========================================================
- * Props
- * =========================================================
- */
+// ── Props ──
 
 const props = withDefaults(
   defineProps<{
@@ -47,21 +24,11 @@ const props = withDefaults(
   },
 )
 
-/**
- * =========================================================
- * Model
- * =========================================================
- */
+// ── Model ──
 
-const model = defineModel<string>({
-  required: true,
-})
+const model = defineModel<string>({ required: true })
 
-/**
- * =========================================================
- * State
- * =========================================================
- */
+// ── State ──
 
 const slots = useSlots()
 const open = ref(false)
@@ -74,73 +41,44 @@ const triggerWidth = ref<number | null>(null)
 
 const hasTriggerSlot = computed(() => !!slots.trigger)
 
-/**
- * =========================================================
- * Measure max content width (text mode only)
- * =========================================================
- */
+// ── Dynamic trigger width (text mode only) ──
 
 function measureMaxWidth() {
   const container = measureRef.value
   if (!container)
     return
-
   let max = 0
-  const texts = [props.placeholder, ...props.options.map(o => o.label)]
-
-  for (const text of texts) {
+  for (const text of [props.placeholder, ...props.options.map(o => o.label)]) {
     container.textContent = text
     max = Math.max(max, container.scrollWidth)
   }
-
   triggerWidth.value = max + 60
 }
 
 onMounted(() => {
-  if (!hasTriggerSlot.value) {
-    requestAnimationFrame(() => {
-      measureMaxWidth()
-    })
-  }
+  if (!hasTriggerSlot.value)
+    requestAnimationFrame(measureMaxWidth)
 })
 
 watch(() => props.options, () => {
-  if (!hasTriggerSlot.value) {
+  if (!hasTriggerSlot.value)
     nextTick(measureMaxWidth)
-  }
 }, { deep: true })
-/**
- * =========================================================
- * Selected
- * =========================================================
- */
+
+// ── Selected option ──
 
 const selectedOption = computed(() =>
   props.options.find(o => o.value === model.value),
 )
 
-/**
- * =========================================================
- * Trigger Position
- * =========================================================
- */
-
-/**
- * =========================================================
- * Dropdown Position
- * =========================================================
- */
+// ── Dropdown positioning ──
 
 const dropdownStyle = computed<CSSProperties>(() => {
   const rect = dropdownRect.value
   if (!rect)
     return {}
-
   const dropdownMaxHeight = 320
-
-  const shouldFlip
-    = window.innerHeight - rect.bottom < dropdownMaxHeight
-
+  const shouldFlip = window.innerHeight - rect.bottom < dropdownMaxHeight
   return {
     position: 'fixed',
     left: `${rect.left}px`,
@@ -149,21 +87,10 @@ const dropdownStyle = computed<CSSProperties>(() => {
       : triggerWidth.value
         ? `${triggerWidth.value}px`
         : `${rect.width}px`,
-
-    top: shouldFlip
-      ? undefined
-      : `${rect.bottom + 2}px`,
-
-    bottom: shouldFlip
-      ? `${window.innerHeight - rect.top + 2}px`
-      : undefined,
+    top: shouldFlip ? undefined : `${rect.bottom + 2}px`,
+    bottom: shouldFlip ? `${window.innerHeight - rect.top + 2}px` : undefined,
   }
 })
-
-/**
- * Trigger min-width style — prevents width from jumping
- * when switching between different-length options
- */
 
 const triggerStyle = computed<CSSProperties>(() => {
   if (hasTriggerSlot.value || !triggerWidth.value)
@@ -171,34 +98,22 @@ const triggerStyle = computed<CSSProperties>(() => {
   return { width: `${triggerWidth.value}px` }
 })
 
-/**
- * =========================================================
- * Actions
- * =========================================================
- */
+// ── Actions ──
 
 async function toggleDropdown() {
   if (props.disabled)
     return
-
   if (!open.value) {
     const el = triggerRef.value
-    if (el) {
+    if (el)
       dropdownRect.value = el.getBoundingClientRect()
-    }
   }
-
   open.value = !open.value
-
   if (open.value) {
     await nextTick()
-    const list = listRef.value
-    if (!list)
-      return
-    const activeItem = list.querySelector('[data-active]') as HTMLElement | null
-    if (activeItem) {
+    const activeItem = listRef.value?.querySelector('[data-active]') as HTMLElement | null
+    if (activeItem)
       activeItem.scrollIntoView({ block: 'nearest' })
-    }
   }
 }
 
@@ -213,69 +128,45 @@ function selectOption(option: Option) {
   closeDropdown()
 }
 
-/**
- * =========================================================
- * Click Outside
- * =========================================================
- */
+// ── Outside interactions ──
 
 onClickOutside(dropdownRef, closeDropdown, { ignore: [triggerRef] })
-
-/**
- * =========================================================
- * Auto Close
- * =========================================================
- */
-
 useEventListener(window, 'resize', closeDropdown)
 useEventListener(window, 'scroll', () => {
   if (!open.value)
     return
   const el = triggerRef.value
-  if (el) {
+  if (el)
     dropdownRect.value = el.getBoundingClientRect()
-  }
-}, {
-  capture: true,
-  passive: true,
-})
+}, { capture: true, passive: true })
 </script>
 
 <template>
-  <div :style="triggerStyle" inline-flex relative>
-    <!-- Trigger -->
-
+  <div :style="triggerStyle" inline-flex select-none relative>
     <button
       ref="triggerRef"
       type="button"
-      border="~ c-border"
+      border="~ transparent"
       text-sm px-3.5 py-2.5 rounded-xl bg-c-input min-h-10 w-full transition-colors
       flex="~ items-center justify-between gap-3"
       :class="[
         disabled
           ? 'op-50 cursor-not-allowed'
-          : 'cursor-pointer hover:bg-c-surface',
+          : 'cursor-pointer hover:bg-c-surface hover:border-c-border focus-visible:border-c-border-strong focus-visible:bg-c-surface',
       ]"
-
       @click="toggleDropdown"
     >
-      <!-- Trigger Slot -->
-
       <slot name="trigger" :selected="selectedOption">
         <span text-left truncate>
           {{ selectedOption?.label || placeholder }}
         </span>
       </slot>
 
-      <!-- Arrow -->
-
       <div
         i-carbon-chevron-down text-xs shrink-0 transition-transform
         :class="{ 'rotate-180': open }"
       />
     </button>
-
-    <!-- Dropdown -->
 
     <Teleport to="body">
       <Transition name="select">
@@ -300,18 +191,14 @@ useEventListener(window, 'scroll', () => {
               :class="[
                 option.disabled
                   ? 'op-40 cursor-not-allowed'
-                  : option.value
-                    === model
+                  : option.value === model
                     ? 'bg-c-accent/8 text-c-accent cursor-pointer'
                     : 'cursor-pointer hover:bg-c-raised',
               ]"
               :data-active="option.value === model ? '' : undefined"
-
-              @click=" selectOption(option) "
+              @click="selectOption(option)"
             >
-              <!-- Option Slot -->
-
-              <slot name="option" :option="option" :selected=" option.value === model ">
+              <slot name="option" :option="option" :selected="option.value === model">
                 {{ option.label }}
               </slot>
             </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import BackToTop from '~/components/BackToTop.vue'
 import TheHeader from '~/components/layout/TheHeader.vue'
 import TheSidebar from '~/components/layout/TheSidebar.vue'
+import BackToTop from '~/components/ui/BackToTop.vue'
 import { useSidebar } from '~/composables'
 
 const { mobileOpen, closeMobile } = useSidebar()

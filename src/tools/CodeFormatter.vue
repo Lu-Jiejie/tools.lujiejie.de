@@ -15,12 +15,12 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import AlertTip from '~/components/AlertTip.vue'
-import BaseButton from '~/components/BaseButton.vue'
-import CodeEditor from '~/components/CodeEditor.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
-import CustomSelect from '~/components/CustomSelect.vue'
+import CodeEditor from '~/components/input/CodeEditor.vue'
+import CustomSelect from '~/components/input/SelectInput.vue'
+import AlertTip from '~/components/ui/AlertTip.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { isDark } from '~/composables/dark'
 import { useI18n } from '~/composables/useI18n'
 

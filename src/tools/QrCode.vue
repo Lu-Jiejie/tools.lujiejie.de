@@ -1,6 +1,6 @@
 <script lang="ts">
 import LabelField from '~/components/container/LabelField.vue'
-import ToggleButtonGroup from '~/components/ToggleButtonGroup.vue'
+import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -18,9 +18,9 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { encode } from 'uqr'
 import { computed, ref, shallowRef } from 'vue'
-import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
-import TextareaInput from '~/components/TextareaInput.vue'
+import TextareaInput from '~/components/input/TextareaInput.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

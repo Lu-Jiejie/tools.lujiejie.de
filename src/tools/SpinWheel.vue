@@ -1,5 +1,5 @@
 <script lang="ts">
-import TextInput from '~/components/TextInput.vue'
+import TextInput from '~/components/input/TextInput.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -17,8 +17,8 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { useLocalStorage, watchDebounced } from '@vueuse/core'
 import { computed, nextTick, onMounted, shallowRef, watch } from 'vue'
-import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

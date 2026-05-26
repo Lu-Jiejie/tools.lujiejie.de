@@ -16,14 +16,14 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import type { JsonSchemaNode } from '~/utils/jsonSchema'
 import { computed, shallowRef } from 'vue'
-import AlertTip from '~/components/AlertTip.vue'
-import BaseButton from '~/components/BaseButton.vue'
-import CodeEditor from '~/components/CodeEditor.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
-import DevToolbar from '~/components/DevToolbar.vue'
-import TextInput from '~/components/TextInput.vue'
+import CodeEditor from '~/components/input/CodeEditor.vue'
+import TextInput from '~/components/input/TextInput.vue'
+import AlertTip from '~/components/ui/AlertTip.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
+import DevToolbar from '~/components/ui/DevToolbar.vue'
 import { useI18n } from '~/composables/useI18n'
 import {
   generateJsonSchema,

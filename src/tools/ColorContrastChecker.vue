@@ -15,13 +15,13 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import AlertTip from '~/components/AlertTip.vue'
-import BaseButton from '~/components/BaseButton.vue'
-import ColorPickerInput from '~/components/ColorPickerInput.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
-import TextInput from '~/components/TextInput.vue'
+import ColorPickerInput from '~/components/input/ColorPickerInput.vue'
+import TextInput from '~/components/input/TextInput.vue'
+import AlertTip from '~/components/ui/AlertTip.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 interface Rgba {

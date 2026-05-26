@@ -122,7 +122,7 @@ watch(() => [props.previewColor, props.pickerColor], () => {
 </script>
 
 <template>
-  <div flex="~ col gap-2">
+  <div flex="~ col gap-2" select-none>
     <button
       ref="anchorRef" type="button"
       border="~ c-border"

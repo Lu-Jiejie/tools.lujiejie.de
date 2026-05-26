@@ -15,11 +15,11 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import AlertTip from '~/components/AlertTip.vue'
-import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
-import TextareaInput from '~/components/TextareaInput.vue'
-import TextInput from '~/components/TextInput.vue'
+import TextareaInput from '~/components/input/TextareaInput.vue'
+import TextInput from '~/components/input/TextInput.vue'
+import AlertTip from '~/components/ui/AlertTip.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

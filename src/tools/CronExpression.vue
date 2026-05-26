@@ -17,13 +17,13 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import cronstrue from 'cronstrue/i18n'
 import { computed, reactive, watch } from 'vue'
-import AlertTip from '~/components/AlertTip.vue'
-import BaseButton from '~/components/BaseButton.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
-import CustomSelect from '~/components/CustomSelect.vue'
-import NumberInput from '~/components/NumberInput.vue'
-import TextInput from '~/components/TextInput.vue'
+import NumberInput from '~/components/input/NumberInput.vue'
+import CustomSelect from '~/components/input/SelectInput.vue'
+import TextInput from '~/components/input/TextInput.vue'
+import AlertTip from '~/components/ui/AlertTip.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useLocale } from '~/composables/useLocale'
 

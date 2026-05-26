@@ -16,7 +16,7 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
 import Panel from '~/components/container/Panel.vue'
-import TextareaInput from '~/components/TextareaInput.vue'
+import TextareaInput from '~/components/input/TextareaInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

@@ -42,11 +42,11 @@ import {
   shallowRef,
 } from 'vue'
 
-import BaseButton from '~/components/BaseButton.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
-import TextareaInput from '~/components/TextareaInput.vue'
-import TextInput from '~/components/TextInput.vue'
+import TextareaInput from '~/components/input/TextareaInput.vue'
+import TextInput from '~/components/input/TextInput.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

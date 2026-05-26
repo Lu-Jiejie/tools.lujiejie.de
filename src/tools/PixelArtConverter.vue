@@ -28,13 +28,13 @@ import {
   watch,
 } from 'vue'
 
-import BaseButton from '~/components/BaseButton.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
-import CustomSelect from '~/components/CustomSelect.vue'
-import SpringSlider from '~/components/SpringSlider.vue'
-import ToggleButtonGroup from '~/components/ToggleButtonGroup.vue'
+import CustomSelect from '~/components/input/SelectInput.vue'
+import SpringSlider from '~/components/input/SliderInput.vue'
+import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
+import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 /**

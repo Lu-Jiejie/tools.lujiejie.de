@@ -18,6 +18,7 @@ import { computed, shallowRef } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
+import TextareaInput from '~/components/TextareaInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -255,11 +256,10 @@ async function copyResult() {
   <div flex="~ col gap-4">
     <Panel :title="t('source_label')">
       <div p-5 flex="~ col gap-3">
-        <textarea
+        <TextareaInput
           v-model="sourceText"
           :placeholder="t('source_placeholder')"
-          rows="8"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-y transition-colors
+          :rows="8"
         />
       </div>
     </Panel>

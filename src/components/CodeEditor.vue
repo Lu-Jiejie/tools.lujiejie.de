@@ -197,14 +197,14 @@ defineExpose({ rootRef })
 
 <template>
   <div
-    ref="rootRef" border="~ c-border" flex="~ col"
-    rounded-2xl bg-c-surface transition-colors relative overflow-hidden focus-within:border-c-accent
+    ref="rootRef" border="~ transparent" flex="~ col"
+    rounded-2xl bg-c-input transition-colors relative overflow-hidden focus-within:border-c-border-strong not-focus-within:hover:border-c-border
     :style="{ height: editorHeight }"
   >
     <div
       flex="~ gap-3 items-center justify-between"
       border="b c-border"
-      p="x-3 y-2" top-0 sticky z-10
+      p="x-3 y-2" bg-c-surface top-0 sticky z-10
     >
       <div
         flex="~ items-center gap-2" min-w-0 select-none

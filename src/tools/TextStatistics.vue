@@ -16,6 +16,7 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
 import Panel from '~/components/container/Panel.vue'
+import TextareaInput from '~/components/TextareaInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -77,11 +78,10 @@ const readTimeText = computed(() =>
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5>
-        <textarea
+        <TextareaInput
           v-model="text"
           :placeholder="t('input_placeholder')"
-          rows="10"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-y transition-colors
+          :rows="10"
         />
       </div>
     </Panel>

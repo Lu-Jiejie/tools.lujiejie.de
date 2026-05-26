@@ -308,14 +308,7 @@ useEventListener(window, 'scroll', () => {
   </div>
   <div
     ref="measureRef"
-    text-sm
-    style="
-    position: fixed;
-    visibility: hidden;
-    white-space: nowrap;
-    pointer-events: none;
-    height: auto;
-  "
+    text-sm h-auto invisible pointer-events-none whitespace-nowrap fixed
   />
 </template>
 

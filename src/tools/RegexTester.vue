@@ -21,6 +21,7 @@ import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
 import DevToolbar from '~/components/DevToolbar.vue'
+import TextareaInput from '~/components/TextareaInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { isDark } from '~/composables/dark'
 import { useI18n } from '~/composables/useI18n'
@@ -413,11 +414,10 @@ function applyExample(ex: Example) {
 
     <Panel :title="t('test_label')">
       <div p-5 flex="~ col gap-3">
-        <textarea
+        <TextareaInput
           v-model="testText"
           :placeholder="t('test_placeholder')"
-          rows="6"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-y transition-colors
+          :rows="6"
         />
       </div>
     </Panel>

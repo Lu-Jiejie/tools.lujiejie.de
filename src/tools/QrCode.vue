@@ -20,6 +20,7 @@ import { encode } from 'uqr'
 import { computed, ref, shallowRef } from 'vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
+import TextareaInput from '~/components/TextareaInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -113,25 +114,13 @@ function downloadBlob(blob: Blob, filename: string) {
   <div flex="~ col gap-4">
     <Panel :title="t('input_label')">
       <div p-5 flex="~ col gap-4">
-        <!-- <div flex="~ col gap-1.5">
-          <label for="qr-content" text-xs tracking-wide font-medium op-60 select-none uppercase>
-            {{ t('content') }}
-          </label>
-          <textarea
-            id="qr-content"
-            v-model="input"
-            :placeholder="t('placeholder')"
-            border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-none transition-colors
-            rows="3"
-          />
-        </div> -->
         <LabelField :label="t('content')">
-          <textarea
+          <TextareaInput
             id="qr-content"
             v-model="input"
             :placeholder="t('placeholder')"
-            border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-none transition-colors
-            rows="3"
+            :rows="3"
+            resize="none"
           />
         </LabelField>
 

@@ -45,6 +45,7 @@ import {
 import BaseButton from '~/components/BaseButton.vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
+import TextareaInput from '~/components/TextareaInput.vue'
 import TextInput from '~/components/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
@@ -171,12 +172,10 @@ watchDebounced(
   <div flex="~ col gap-4">
     <Panel :title="t('input')">
       <div p-5>
-        <textarea
+        <TextareaInput
           v-model="input"
           :placeholder="t('placeholder')"
-          rows="4" border="~ c-border focus:c-border-strong"
-          text-sm font-mono p="x-3 y-2" outline-none rounded-xl bg-c-input w-full resize-y
-          transition-colors
+          :rows="4"
         />
       </div>
     </Panel>

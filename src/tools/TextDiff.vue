@@ -16,6 +16,7 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
 import Panel from '~/components/container/Panel.vue'
+import TextareaInput from '~/components/TextareaInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -331,17 +332,17 @@ function marker(line: DiffLine | null, side: 'left' | 'right'): string {
   <div flex="~ col gap-4">
     <Panel :title="t('input')">
       <div flex="~ col gap-4 md:row" p-3>
-        <textarea
+        <TextareaInput
           v-model="leftText"
           :placeholder="t('placeholder_left')"
-          rows="8"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input flex-1 min-w-0 resize-y transition-colors
+          :rows="8"
+          class="flex-1 min-w-0"
         />
-        <textarea
+        <TextareaInput
           v-model="rightText"
           :placeholder="t('placeholder_right')"
-          rows="8"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input flex-1 min-w-0 resize-y transition-colors
+          :rows="8"
+          class="flex-1 min-w-0"
         />
       </div>
     </Panel>

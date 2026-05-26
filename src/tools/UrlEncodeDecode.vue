@@ -18,6 +18,7 @@ import { computed, shallowRef } from 'vue'
 import AlertTip from '~/components/AlertTip.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import Panel from '~/components/container/Panel.vue'
+import TextareaInput from '~/components/TextareaInput.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -98,11 +99,10 @@ async function copyOutput() {
             {{ t('swap') }}
           </BaseButton>
         </div>
-        <textarea
+        <TextareaInput
           v-model="input"
           :placeholder="t('input_placeholder')"
-          rows="6"
-          border="~ c-border focus:c-border-strong" text-sm font-mono px-3 py-2 outline-none rounded-xl bg-c-input w-full resize-y transition-colors
+          :rows="6"
         />
         <Transition name="warn">
           <AlertTip v-if="result.error" type="error">

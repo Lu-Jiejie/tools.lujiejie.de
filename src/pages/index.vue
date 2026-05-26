@@ -112,7 +112,7 @@ const categoryFilters = computed<{ id: ToolCategory | 'all', label: string, coun
           </button>
         </div>
 
-        <div border="~ c-border" px-3.5 py-2.5 rounded-xl bg-c-surface flex gap-2.5 transition-colors duration-200 items-center focus-within:border-c-accent hover:border-c-border-strong>
+        <div border="~ transparent" px-3.5 py-2.5 rounded-xl bg-c-input flex gap-2.5 transition-colors duration-200 items-center focus-within:border-c-border-strong hover:border-c-border focus-within:bg-c-surface hover:bg-c-surface>
           <div i-carbon-search text-base op-30 shrink-0 />
           <input
             v-model="searchQuery"

@@ -326,103 +326,232 @@ function marker(line: DiffLine | null, side: 'left' | 'right'): string {
     return side === 'left' ? '-' : '+'
   return ''
 }
+
+const diffTheme = {
+  deleteBg: 'bg-[rgba(239,68,68,0.105)] dark:bg-[rgba(239,68,68,0.16)]',
+  insertBg: 'bg-[rgba(34,197,94,0.105)] dark:bg-[rgba(34,197,94,0.16)]',
+
+  inlineDelete: 'bg-[rgba(239,68,68,0.26)] dark:bg-[rgba(248,113,113,0.32)]',
+  inlineInsert: 'bg-[rgba(34,197,94,0.26)] dark:bg-[rgba(74,222,128,0.32)]',
+}
 </script>
 
 <template>
   <div flex="~ col gap-4">
     <Panel :title="t('input')">
-      <div flex="~ col gap-4 md:row" p-3>
+      <div
+        flex="~ col md:row gap-4"
+        p-3
+      >
         <TextareaInput
           v-model="leftText"
           :placeholder="t('placeholder_left')"
           :rows="8"
-          class="flex-1 min-w-0"
+          flex="1"
+          min-w-0
         />
+
         <TextareaInput
           v-model="rightText"
           :placeholder="t('placeholder_right')"
           :rows="8"
-          class="flex-1 min-w-0"
+          flex="1"
+          min-w-0
         />
       </div>
     </Panel>
 
     <Panel :title="t('diff')">
-      <div flex="~ gap-2 wrap" border="b c-border" text-xs px-4 py-3>
-        <span px-2 py-1 rounded-md bg="[rgba(34,197,94,0.12)]" text="[rgb(22,163,74)]">
+      <div
+        flex="~ wrap gap-2"
+        border="b c-border"
+        text="xs"
+        px-4
+        py-3
+      >
+        <span
+
+          px-2 py-1 rounded-md
+          bg="[rgba(34,197,94,0.12)]"
+          text="[rgb(22,163,74)]"
+        >
           +{{ diffStats.added }} {{ t('added') }}
         </span>
-        <span px-2 py-1 rounded-md bg="[rgba(239,68,68,0.12)]" text="[rgb(220,38,38)]">
+
+        <span
+
+          px-2 py-1 rounded-md
+          bg="[rgba(239,68,68,0.12)]"
+          text="[rgb(220,38,38)]"
+        >
           -{{ diffStats.deleted }} {{ t('deleted') }}
         </span>
-        <span px-2 py-1 rounded-md bg="[rgba(245,158,11,0.14)]" text="[rgb(217,119,6)]">
+
+        <span
+
+          px-2 py-1 rounded-md
+          bg="[rgba(245,158,11,0.14)]"
+          text="[rgb(217,119,6)]"
+        >
           ~{{ diffStats.changed }} {{ t('changed') }}
         </span>
       </div>
-      <div max-h-500px overflow-auto class="diff-container">
-        <table text-sm font-mono w-full border-collapse class="diff-table">
+
+      <div
+        class="diff-container"
+        max-h-500px
+        overflow-auto
+      >
+        <table
+          class="diff-table"
+          w-full
+          text="sm"
+          font="mono"
+          border-collapse
+        >
           <thead>
             <tr>
-              <th class="diff-heading" colspan="2">
+              <th
+                class="diff-heading"
+                colspan="2"
+
+                bg="[$c-surface-raised]"
+
+                py="[10px]"
+                text="left xs uppercase"
+                font-600 px-3 top-0 sticky z-1
+                tracking="[0.04em]"
+              >
                 {{ t('original') }}
               </th>
-              <th class="diff-separator" />
-              <th class="diff-heading" colspan="2">
+
+              <th
+
+                min-w-px w-px
+                bg="[$c-border]"
+              />
+
+              <th
+                class="diff-heading"
+                colspan="2"
+
+                bg="[$c-surface-raised]"
+
+                py="[10px]"
+                text="left xs uppercase"
+                font-600 px-3 top-0 sticky z-1
+                tracking="[0.04em]"
+              >
                 {{ t('modified') }}
               </th>
             </tr>
           </thead>
+
           <tbody>
-            <tr v-for="(row, i) in diffRows" :key="i" class="diff-row">
+            <tr
+              v-for="(row, i) in diffRows"
+              :key="i"
+              leading="[1.55]"
+            >
               <td
                 class="diff-gutter"
-                :class="{ 'diff-delete-bg': row.left?.type === 'delete' || row.left?.type === 'modify' }"
-              >
-                <span class="diff-line-no">{{ row.left?.lineNo ?? '' }}</span>
-                <span class="diff-marker">{{ marker(row.left, 'left') }}</span>
-              </td>
-              <td
-                class="diff-content"
+
+                text="[rgba(128,128,128,0.62)]"
+
+                px-1 align-top grid min-w-46px w-46px select-none whitespace-nowrap
                 :class="{
                   'diff-delete-bg': row.left?.type === 'delete' || row.left?.type === 'modify',
-                  'diff-empty': !row.left,
                 }"
+              >
+                <span text-right>
+                  {{ row.left?.lineNo ?? '' }}
+                </span>
+
+                <span
+                  text-center
+                  text="[rgba(128,128,128,0.78)]"
+                >
+                  {{ marker(row.left, 'left') }}
+                </span>
+              </td>
+
+              <td
+                px-3 align-top min-w-360px whitespace-pre
+                :class="[
+                  {
+                    [diffTheme.deleteBg]:
+                      row.left?.type === 'delete'
+                      || row.left?.type === 'modify',
+
+                    'diff-empty': !row.left,
+                  },
+                ]"
               >
                 <template v-if="row.left">
                   <span
                     v-for="(segment, segmentIndex) in row.left.segments ?? [{ type: 'equal' as const, text: row.left.text }]"
                     :key="segmentIndex"
+                    rounded="3px"
                     :class="{
-                      'diff-inline-delete': segment.type === 'delete',
-                      'diff-inline-insert': segment.type === 'insert',
+                      [diffTheme.inlineDelete]: segment.type === 'delete',
+                      [diffTheme.inlineInsert]: segment.type === 'insert',
                     }"
-                  >{{ segment.text }}</span>
+                  >
+                    {{ segment.text }}
+                  </span>
                 </template>
               </td>
-              <td class="diff-separator" />
+
+              <td
+
+                min-w-px w-px
+                bg="[$c-border]"
+              />
+
               <td
                 class="diff-gutter"
-                :class="{ 'diff-insert-bg': row.right?.type === 'insert' || row.right?.type === 'modify' }"
-              >
-                <span class="diff-line-no">{{ row.right?.lineNo ?? '' }}</span>
-                <span class="diff-marker">{{ marker(row.right, 'right') }}</span>
-              </td>
-              <td
-                class="diff-content"
+
+                text="[rgba(128,128,128,0.62)]"
+
+                px-1 align-top grid min-w-46px w-46px select-none whitespace-nowrap
                 :class="{
                   'diff-insert-bg': row.right?.type === 'insert' || row.right?.type === 'modify',
-                  'diff-empty': !row.right,
                 }"
+              >
+                <span text-right>
+                  {{ row.right?.lineNo ?? '' }}
+                </span>
+
+                <span
+                  text-center
+                  text="[rgba(128,128,128,0.78)]"
+                >
+                  {{ marker(row.right, 'right') }}
+                </span>
+              </td>
+
+              <td
+
+                px-3 align-top min-w-360px whitespace-pre
+                :class="[
+                  {
+                    [diffTheme.insertBg]: row.right?.type === 'insert' || row.right?.type === 'modify',
+                    'diff-empty': !row.right,
+                  },
+                ]"
               >
                 <template v-if="row.right">
                   <span
                     v-for="(segment, segmentIndex) in row.right.segments ?? [{ type: 'equal' as const, text: row.right.text }]"
                     :key="segmentIndex"
+                    rounded="3px"
                     :class="{
-                      'diff-inline-delete': segment.type === 'delete',
-                      'diff-inline-insert': segment.type === 'insert',
+                      [diffTheme.inlineDelete]: segment.type === 'delete',
+                      [diffTheme.inlineInsert]: segment.type === 'insert',
                     }"
-                  >{{ segment.text }}</span>
+                  >
+                    {{ segment.text }}
+                  </span>
                 </template>
               </td>
             </tr>
@@ -437,63 +566,21 @@ function marker(line: DiffLine | null, side: 'left' | 'right'): string {
 .diff-container {
   background: linear-gradient(to right, rgba(0, 0, 0, 0.025), transparent 12px), var(--c-surface);
 }
+
 .diff-table {
   min-width: 100%;
   width: max-content;
   table-layout: auto;
 }
+
 .diff-heading {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 10px 12px;
-  background: var(--c-surface-raised);
   color: color-mix(in srgb, currentColor 70%, transparent);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-align: left;
-  text-transform: uppercase;
 }
-.diff-row {
-  line-height: 1.55;
-}
+
 .diff-gutter {
-  display: grid;
   grid-template-columns: minmax(22px, 1fr) 14px;
-  width: 46px;
-  min-width: 46px;
-  padding: 0 4px;
-  color: rgba(128, 128, 128, 0.62);
-  vertical-align: top;
-  user-select: none;
-  white-space: nowrap;
 }
-.diff-line-no {
-  text-align: right;
-}
-.diff-marker {
-  color: rgba(128, 128, 128, 0.78);
-  text-align: center;
-}
-.diff-content {
-  min-width: 360px;
-  padding: 0 12px;
-  overflow-wrap: normal;
-  white-space: pre;
-  vertical-align: top;
-}
-.diff-separator {
-  width: 1px;
-  min-width: 1px;
-  background: var(--c-border);
-}
-.diff-delete-bg {
-  background-color: rgba(239, 68, 68, 0.105);
-}
-.diff-insert-bg {
-  background-color: rgba(34, 197, 94, 0.105);
-}
+
 .diff-empty {
   background-image: repeating-linear-gradient(
     -45deg,
@@ -502,25 +589,5 @@ function marker(line: DiffLine | null, side: 'left' | 'right'): string {
     transparent 6px,
     transparent 12px
   );
-}
-.diff-inline-delete {
-  border-radius: 3px;
-  background-color: rgba(239, 68, 68, 0.26);
-}
-.diff-inline-insert {
-  border-radius: 3px;
-  background-color: rgba(34, 197, 94, 0.26);
-}
-:root.dark .diff-delete-bg {
-  background-color: rgba(239, 68, 68, 0.16);
-}
-:root.dark .diff-insert-bg {
-  background-color: rgba(34, 197, 94, 0.16);
-}
-:root.dark .diff-inline-delete {
-  background-color: rgba(248, 113, 113, 0.32);
-}
-:root.dark .diff-inline-insert {
-  background-color: rgba(74, 222, 128, 0.32);
 }
 </style>

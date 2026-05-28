@@ -26,6 +26,7 @@ import type { Color, Swatch, SwatchRole } from 'colorthief'
 import { getColorSync, getPaletteSync, getSwatchesSync } from 'colorthief'
 import { computed, shallowRef, watch } from 'vue'
 
+import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
 import ImageUploadInput from '~/components/input/ImageUploadInput.vue'
 import { useI18n } from '~/composables/useI18n'
@@ -48,6 +49,13 @@ const { t } = useI18n({
   'swatch.DarkMuted': ['Dark Muted', '深色柔和'],
   'swatch.LightVibrant': ['Light Vibrant', '浅色鲜艳'],
   'swatch.LightMuted': ['Light Muted', '浅色柔和'],
+
+  'how_it_works': ['How It Works', '工作原理'],
+  'how_1_title': ['Based on Color-Thief', '基于 Color-Thief'],
+  'how_1_desc': [
+    'This tool is powered by Color-Thief, an open-source JavaScript library that extracts dominant colors and palettes from images using the median cut quantization algorithm.',
+    '本工具基于 Color-Thief，一个开源的 JavaScript 库，通过中位切割量化算法从图像中提取主色调和色板。',
+  ],
 })
 
 const uploadedImage = shallowRef<HTMLImageElement | null>(null)
@@ -120,6 +128,18 @@ async function copyColor(color: Color, format: Format) {
 // ── Shared format list ──
 
 const FORMATS: Format[] = ['hex', 'rgb', 'hsl']
+
+// ── How It Works ──
+
+const explainItems = computed(() => [
+  {
+    title: t('how_1_title'),
+    description: t('how_1_desc'),
+    links: [
+      { label: 'GitHub: lokesh/color-thief', href: 'https://github.com/lokesh/color-thief' },
+    ],
+  },
+])
 </script>
 
 <template>
@@ -325,5 +345,10 @@ const FORMATS: Format[] = ['hex', 'rgb', 'hsl']
         </div>
       </Panel>
     </template>
+
+    <CollapsibleExplainer
+      :title="t('how_it_works')"
+      :items="explainItems"
+    />
   </div>
 </template>

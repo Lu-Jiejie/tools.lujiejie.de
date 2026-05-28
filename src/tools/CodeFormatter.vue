@@ -17,10 +17,10 @@ export const toolMeta = defineTool({
 import { computed, shallowRef } from 'vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import CodeEditor from '~/components/input/CodeEditor.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { isDark } from '~/composables/dark'
 import { useI18n } from '~/composables/useI18n'
 

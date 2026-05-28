@@ -18,7 +18,7 @@ export const toolMeta = defineTool({
 import { useLocalStorage, watchDebounced } from '@vueuse/core'
 import { computed, nextTick, onMounted, shallowRef, watch } from 'vue'
 import Panel from '~/components/container/Panel.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

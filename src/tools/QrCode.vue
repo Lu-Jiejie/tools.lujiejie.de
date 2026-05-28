@@ -19,8 +19,8 @@ export const toolMeta = defineTool({
 import { encode } from 'uqr'
 import { computed, ref, shallowRef } from 'vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import TextareaInput from '~/components/input/TextareaInput.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

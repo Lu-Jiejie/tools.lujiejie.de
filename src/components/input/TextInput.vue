@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 type InputMode = 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'

@@ -40,10 +40,10 @@ import {
 } from 'vue'
 
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import CodeEditor from '~/components/input/CodeEditor.vue'
 import SelectInput from '~/components/input/SelectInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import DevToolbar from '~/components/ui/DevToolbar.vue'
 import { useI18n } from '~/composables/useI18n'
 

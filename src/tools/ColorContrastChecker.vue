@@ -18,10 +18,10 @@ import { computed, shallowRef } from 'vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import ColorPickerInput from '~/components/input/ColorPickerInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 interface Rgba {

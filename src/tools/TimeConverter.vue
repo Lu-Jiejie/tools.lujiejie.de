@@ -17,10 +17,10 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { computed, onUnmounted, shallowRef, watch } from 'vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

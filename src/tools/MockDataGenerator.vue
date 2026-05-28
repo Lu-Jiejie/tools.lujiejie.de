@@ -18,11 +18,11 @@ export const toolMeta = defineTool({
 import { computed, ref, shallowRef, watch } from 'vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import CodeEditor from '~/components/input/CodeEditor.vue'
 import NumberInput from '~/components/input/NumberInput.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

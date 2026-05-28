@@ -18,10 +18,10 @@ import { computed, shallowRef, watch } from 'vue'
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import NumberInput from '~/components/input/NumberInput.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

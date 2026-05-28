@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isDev } from '~/composables/useDevMode'
 import { isPreviewProduction, showDevTools } from '~/composables/useDevPreview'
-import BaseButton from './BaseButton.vue'
+import BaseButton from '../input/BaseButton.vue'
 
 withDefaults(defineProps<{
   label?: string

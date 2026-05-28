@@ -31,11 +31,11 @@ import {
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import ImageUploadInput from '~/components/input/ImageUploadInput.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import SpringSlider from '~/components/input/SliderInput.vue'
 import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 /**

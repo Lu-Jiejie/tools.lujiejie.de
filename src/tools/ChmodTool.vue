@@ -17,9 +17,9 @@ export const toolMeta = defineTool({
 import { computed, reactive, watch } from 'vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import BaseButton from '~/components/input/BaseButton.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
-import BaseButton from '~/components/ui/BaseButton.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({

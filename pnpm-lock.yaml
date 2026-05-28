@@ -17,6 +17,9 @@ importers:
       argon2-browser:
         specifier: ^1.18.0
         version: 1.18.0
+      colorthief:
+        specifier: ^3.3.1
+        version: 3.3.1
       cronstrue:
         specifier: ^3.14.0
         version: 3.14.0
@@ -1354,6 +1357,15 @@ packages:
 
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
+
+  colorthief@3.3.1:
+    resolution: {integrity: sha512-a3qzYXy51h6p3725pV8rnJwUBGTtvYQge2pVhKJwL+vETUD5pCi6VKmQyu51pBHdUbu/BPEXbwFLS0GnxXNhGA==}
+    hasBin: true
+    peerDependencies:
+      sharp: '>=0.33.0'
+    peerDependenciesMeta:
+      sharp:
+        optional: true
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
@@ -4217,6 +4229,8 @@ snapshots:
   collection-utils@1.0.1: {}
 
   colorette@2.0.20: {}
+
+  colorthief@3.3.1: {}
 
   comma-separated-tokens@2.0.3: {}
 

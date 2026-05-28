@@ -31,6 +31,7 @@ import {
 import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
+import ImageUploadInput from '~/components/input/ImageUploadInput.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import SpringSlider from '~/components/input/SliderInput.vue'
 import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
@@ -82,60 +83,19 @@ const { t } = useI18n({
 
 /**
  * =========================================================
- * Upload
+ * Upload — provided by ImageUploadInput
  * =========================================================
  */
 
-const fileInput = ref<HTMLInputElement>()
-
-const uploadedImage
-  = shallowRef<HTMLImageElement | null>(null)
-
+const uploadedImage = shallowRef<HTMLImageElement | null>(null)
 const imageDataUrl = shallowRef('')
 
-const isDragging = ref(false)
-
-async function handleFile(file: File) {
-  if (!file.type.startsWith('image/'))
-    return
-
-  const reader = new FileReader()
-
-  reader.onload = () => {
-    const src = reader.result as string
-
-    imageDataUrl.value = src
-
-    const img = new Image()
-
-    img.onload = () => {
-      uploadedImage.value = img
-    }
-
-    img.src = src
-  }
-
-  reader.readAsDataURL(file)
+function onImageUpdate(img: HTMLImageElement | null) {
+  uploadedImage.value = img
 }
 
-function onFileChange(e: Event) {
-  const input = e.target as HTMLInputElement
-
-  const file = input.files?.[0]
-
-  if (file)
-    handleFile(file)
-
-  input.value = ''
-}
-
-function onDrop(e: DragEvent) {
-  isDragging.value = false
-
-  const file = e.dataTransfer?.files?.[0]
-
-  if (file)
-    handleFile(file)
+function onDataUrlUpdate(url: string) {
+  imageDataUrl.value = url
 }
 
 /**
@@ -613,64 +573,12 @@ function downloadPng() {
         <!-- Upload -->
 
         <LabelField :label="t('upload')">
-          <input
-            ref="fileInput"
-            type="file"
-            accept="image/*"
-            class="sr-only"
-            @change="onFileChange"
-          >
-
-          <div
-
-            border="~ dashed c-border"
-
-            bg="c-raised hover:c-surface"
-            group rounded-2xl h-40 cursor-pointer transition-all duration-300 relative overflow-hidden
-            @click="fileInput?.click()"
-            @drop.prevent="onDrop"
-            @dragover.prevent="isDragging = true"
-            @dragleave="isDragging = false"
-          >
-            <!-- 空状态占位 -->
-            <div
-              v-if="!imageDataUrl"
-              flex="~ items-center justify-center"
-              inset-0 absolute
-            >
-              <div
-                i-carbon-add
-                text-3xl
-                text-c-text-muted op-25
-                transition-all duration-300
-                group-hover:op-50 group-hover:scale-110
-              />
-            </div>
-
-            <!-- 已上传图片 -->
-            <img
-              v-else
-              :src="imageDataUrl"
-
-              p-2 h-full w-full transition-all duration-300 inset-0 absolute object-contain
-              class="group-hover:blur-[2px] group-hover:brightness-50"
-            >
-
-            <!-- hover 覆盖层 -->
-            <div
-              v-if="imageDataUrl"
-
-              flex="~ col items-center justify-center gap-1.5"
-
-              op-0 transition-all duration-300 inset-0 absolute group-hover:op-100
-              bg="black/20"
-            >
-              <div i-carbon-image-search text-xl text-white op-80 />
-              <span text-xs text-white tracking-wide font-medium>
-                {{ t('click_to_change') }}
-              </span>
-            </div>
-          </div>
+          <ImageUploadInput
+            :hint="t('upload_hint')"
+            :change-label="t('click_to_change')"
+            @update:image="onImageUpdate"
+            @update:data-url="onDataUrlUpdate"
+          />
         </LabelField>
 
         <!-- Density -->

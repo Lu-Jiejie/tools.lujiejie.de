@@ -142,7 +142,7 @@ const hash = shallowRef('')
 const length = shallowRef(16)
 
 const charsetTypes = useLocalStorage<string[]>(
-  'unified-password:charset',
+  'unified-password-charset',
   ['lower', 'upper', 'digits'],
 )
 

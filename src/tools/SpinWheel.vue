@@ -50,7 +50,7 @@ const COLORS = [
 ]
 
 const items = useLocalStorage<string[]>(
-  'random-wheel:items',
+  'spin-wheel-items',
   [
     '选项 1',
     '选项 2',

@@ -2,7 +2,6 @@
 import { shallowRef } from 'vue'
 
 const props = withDefaults(defineProps<{
-  label?: string
   icon?: string
   active?: boolean
   iconOnly?: boolean

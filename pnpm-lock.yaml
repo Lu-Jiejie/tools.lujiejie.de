@@ -44,6 +44,9 @@ importers:
       quicktype-core:
         specifier: ^23.2.6
         version: 23.2.6
+      relationship.js:
+        specifier: ^1.2.9
+        version: 1.2.9
       shiki:
         specifier: ^4.0.2
         version: 4.0.2
@@ -81,6 +84,9 @@ importers:
       '@types/node':
         specifier: ^25.6.2
         version: 25.6.2
+      '@types/relationship.js':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@unocss/eslint-plugin':
         specifier: ^66.6.8
         version: 66.6.8(eslint@10.3.0(jiti@2.6.1))(typescript@6.0.3)
@@ -885,6 +891,9 @@ packages:
 
   '@types/node@25.6.2':
     resolution: {integrity: sha512-sokuT28dxf9JT5Kady1fsXOvI4HVpjZa95NKT5y9PNTIrs2AsobR4GFAA90ZG8M+nxVRLysCXsVj6eGC7Vbrlw==}
+
+  '@types/relationship.js@1.2.2':
+    resolution: {integrity: sha512-2rLL8Nv36EsdvNrFFtrgFyqg06RZL/P/qLwAFGkRSrnFfZUud49hE23/UE7/vNUl8INrxUV5I331lTSzdtjIZw==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -2498,6 +2507,10 @@ packages:
     resolution: {integrity: sha512-NZQZdC5wOE/H3UT28fVGL+ikOZcEzfMGk/c3iN9UGxzWHMa1op7274oyiUVrAG4B2EuFhus8SvkaYnhvW92p9Q==}
     hasBin: true
 
+  relationship.js@1.2.9:
+    resolution: {integrity: sha512-pclNuxR3ZSL1dVuEtpJmpMcbkU387vooAHCbWxBlf0SZA4rcrKJRz0QwSGx/nZbh3firPMqT9YPU+CWU7bHlJA==}
+    engines: {node: '>=20', npm: '>=8', yarn: please-use-npm}
+
   reserved-identifiers@1.2.0:
     resolution: {integrity: sha512-yE7KUfFvaBFzGPs5H3Ops1RevfUEsDc5Iz65rOwWg4lE8HJSYtle77uul3+573457oHvBKuHYDl/xqUkKpEEdw==}
     engines: {node: '>=18'}
@@ -3602,6 +3615,8 @@ snapshots:
   '@types/node@25.6.2':
     dependencies:
       undici-types: 7.19.2
+
+  '@types/relationship.js@1.2.2': {}
 
   '@types/unist@3.0.3': {}
 
@@ -5591,6 +5606,8 @@ snapshots:
   regjsparser@0.13.0:
     dependencies:
       jsesc: 3.1.0
+
+  relationship.js@1.2.9: {}
 
   reserved-identifiers@1.2.0: {}
 

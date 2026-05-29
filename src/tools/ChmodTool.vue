@@ -261,8 +261,11 @@ symbolicInput.value = symbolic.value
         <div flex="~ col gap-3">
           <div flex="~ gap-3" items-center>
             <span shrink-0 w-16 />
-            <div flex="~ gap-2">
-              <span v-for="perm in PERM_BITS" :key="perm" text-xs tracking-wide font-medium text-center op-60 select-none uppercase>
+            <div flex="~ gap-3">
+              <span
+                v-for="perm in PERM_BITS" :key="perm"
+                text-xs tracking-wide font-medium ml--1 text-center op-60 w-9.5 block select-none uppercase
+              >
                 {{ t(perm) }}
               </span>
             </div>

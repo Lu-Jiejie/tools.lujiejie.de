@@ -248,7 +248,9 @@ defineExpose({ rootRef })
         <button
           v-if="copyable"
           flex="~ items-center justify-center"
-          text-c-text-muted rounded-lg border-none bg-c-input size-8 cursor-pointer transition-colors duration-200 hover:text-c-text hover:bg-c-surface
+          border="~ transparent"
+          transition="colors duration-200"
+          text-c-text-muted rounded-lg bg-c-input size-8 cursor-pointer hover:text-c-text focus-visible:border-c-border-strong hover:border-c-border focus-visible:bg-c-surface hover:bg-c-surface
           :title="copied ? '已复制' : '复制'"
           @click="copyCode"
         >

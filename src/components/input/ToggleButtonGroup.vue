@@ -12,9 +12,11 @@ const props = withDefaults(defineProps<{
   multiple?: boolean
   required?: boolean
   columns?: number
+  disabled?: boolean
 }>(), {
   multiple: true,
   required: false,
+  disabled: false,
 })
 
 const model = defineModel<OptionValue | OptionValue[] | undefined>({
@@ -31,6 +33,8 @@ function isSelected(value: OptionValue) {
 }
 
 function toggle(value: OptionValue) {
+  if (props.disabled)
+    return
   if (!props.multiple) {
     if (model.value === value) {
       if (!props.required)
@@ -80,14 +84,16 @@ function toggle(value: OptionValue) {
     <button
       v-for="o in options" :key="o.value" type="button"
       :aria-pressed="isSelected(o.value)"
+      :disabled="disabled"
       p="x-2.5 y-2.75" flex="~ col gap-0.75"
       border="~ transparent"
       text-center rounded-lg min-h-11 min-w-0 transition="colors duration-200"
-      :class="
+      :class="[
         isSelected(o.value)
           ? 'bg-c-surface border-c-border-strong text-c-accent'
-          : 'text-c-text-muted hover:text-c-text hover:bg-c-surface hover:border-c-border'
-      "
+          : 'text-c-text-muted hover:text-c-text hover:bg-c-surface hover:border-c-border',
+        disabled ? 'op-45 cursor-not-allowed' : '',
+      ]"
       @click="toggle(o.value)"
     >
       <span text-sm font-semibold truncate>

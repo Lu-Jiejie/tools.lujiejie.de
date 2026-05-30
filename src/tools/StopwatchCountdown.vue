@@ -51,13 +51,15 @@ const { t } = useI18n({
 
   enter_fullscreen: ['Enter fullscreen', '进入全屏'],
   exit_fullscreen: ['Exit fullscreen', '退出全屏'],
-  sound_on: ['Sound on', '提示音开'],
-  sound_off: ['Sound off', '提示音关'],
+  notify_on: ['Notifications on', '系统通知 开'],
+  notify_off: ['Notifications off', '系统通知 关'],
+  notify_title: ['Time\'s up', '时间到'],
+  notify_body: ['Your countdown has finished.', '您设置的倒计时已结束。'],
 
   how_sw_title: ['Stopwatch', '秒表'],
   how_sw_desc: ['Count up with centisecond precision. Press Lap to record a split without stopping the clock.', '以厘秒精度向上计时。点击「计次」可在不停表的情况下记录单圈成绩。'],
   how_cd_title: ['Countdown', '倒计时'],
-  how_cd_desc: ['Set hours, minutes and seconds, or pick a preset. A gentle chime sounds when time is up.', '设置时、分、秒，或选择快捷时长。时间到时会响起轻柔的提示音。'],
+  how_cd_desc: ['Set hours, minutes and seconds, or pick a preset. A system notification appears when time is up.', '设置时、分、秒，或选择快捷时长。时间到时会弹出系统消息通知。'],
   how_fs_title: ['Fullscreen', '全屏'],
   how_fs_desc: ['Expand the display to fill the screen for a grand, readable clock. Controls fade away while running and return on movement.', '展开为铺满屏幕的大气时钟。计时中控件会自动隐去，移动鼠标即可重新显示。'],
   how_keys_title: ['Shortcuts', '快捷键'],
@@ -78,7 +80,7 @@ const remaining = ref(0)
 const running = ref(false)
 const finished = ref(false)
 const laps = ref<{ index: number, total: number }[]>([])
-const soundOn = ref(true)
+const notifyOn = ref(true)
 const controlsVisible = ref(true)
 
 const cdH = ref(0)
@@ -247,6 +249,7 @@ function start() {
     finished.value = false
     cdTarget = performance.now() + remaining.value
     recordHistory(durationMs.value)
+    ensureNotifyPermission()
   }
   else {
     swStart = performance.now() - elapsed.value
@@ -284,7 +287,7 @@ function onCountdownFinish() {
   cancelAnimationFrame(rafId)
   controlsVisible.value = true
   clearTimeout(hideTimer)
-  beep()
+  notify()
 }
 
 function lap() {
@@ -333,32 +336,48 @@ function formatChipTime(ms: number) {
   return `${pad(h)}:${pad(m)}:${pad(s)}`
 }
 
-// A gentle three-note chime via the Web Audio API.
-function beep() {
-  if (!soundOn.value)
+// Show a desktop/system notification when the countdown ends. No sound is
+// played (silent), per the tool's notification-only design.
+function notify() {
+  if (!notifyOn.value || typeof Notification === 'undefined')
+    return
+  if (Notification.permission !== 'granted')
     return
   try {
-    const ctx = new AudioContext()
-    const now = ctx.currentTime
-    const notes = [880, 880, 1174.66]
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      const at = now + i * 0.28
-      osc.type = 'sine'
-      osc.frequency.value = freq
-      gain.gain.setValueAtTime(0, at)
-      gain.gain.linearRampToValueAtTime(0.18, at + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.24)
-      osc.connect(gain).connect(ctx.destination)
-      osc.start(at)
-      osc.stop(at + 0.26)
+    // eslint-disable-next-line no-new
+    new Notification(t('notify_title'), {
+      body: t('notify_body'),
+      silent: true,
     })
-    setTimeout(() => ctx.close(), 1200)
   }
   catch {
-    // Audio not available; fail silently.
+    // Notification not available; fail silently.
   }
+}
+
+// Request permission up front (when a countdown starts) so the end-of-time
+// alert can fire without a prompt interrupting the moment.
+function ensureNotifyPermission() {
+  if (!notifyOn.value || typeof Notification === 'undefined')
+    return
+  if (Notification.permission === 'default')
+    Notification.requestPermission()
+}
+
+// Toggle the notification preference. Turning it on prompts for permission and
+// only sticks if the browser grants it (a blocked permission keeps it off).
+async function toggleNotify() {
+  if (notifyOn.value) {
+    notifyOn.value = false
+    return
+  }
+  if (typeof Notification === 'undefined') {
+    notifyOn.value = true
+    return
+  }
+  if (Notification.permission === 'default')
+    await Notification.requestPermission()
+  notifyOn.value = Notification.permission === 'granted'
 }
 
 // In fullscreen the controls fade out while idle and reappear on movement,
@@ -442,32 +461,24 @@ const MODE_OPTIONS = computed(() => [
         @mousemove="pokeControls"
         @touchstart="pokeControls"
       >
-        <!-- Sound toggle (countdown only), top-left -->
+        <!-- Top-right controls: notification toggle (countdown only) sits to the
+             left of the fullscreen toggle. -->
         <div
-          v-if="mode === 'countdown'"
-          transition="opacity duration-300"
-          left-4 top-4 absolute
-          :class="(!isFullscreen || controlsVisible) ? 'op-100' : 'op-0 pointer-events-none'"
-        >
-          <BaseButton
-
-            icon-only bg-c-surface! hover:border-c-input! hover:bg-c-input!
-            :icon="soundOn ? 'i-carbon-volume-up' : 'i-carbon-volume-mute'"
-            :title="soundOn ? t('sound_on') : t('sound_off')"
-            @click="soundOn = !soundOn"
-          />
-        </div>
-
-        <!-- Fullscreen toggle, top-right -->
-        <div
+          flex="~ items-center gap-2"
           transition="opacity duration-300"
           right-4 top-4 absolute
           :class="(!isFullscreen || controlsVisible) ? 'op-100' : 'op-0 pointer-events-none'"
         >
           <BaseButton
-
+            v-if="mode === 'countdown'"
             icon-only bg-c-surface! hover:border-c-input! hover:bg-c-input!
-            :icon="isFullscreen ? 'i-carbon-minimize' : 'i-carbon-maximize'"
+            :icon="notifyOn ? 'i-carbon-notification op-70' : 'i-carbon-notification-off op-70'"
+            :title="notifyOn ? t('notify_on') : t('notify_off')"
+            @click="toggleNotify"
+          />
+          <BaseButton
+            icon-only bg-c-surface! hover:border-c-input! hover:bg-c-input!
+            :icon="isFullscreen ? 'i-carbon-minimize op-70' : 'i-carbon-maximize op-70'"
             :title="isFullscreen ? t('exit_fullscreen') : t('enter_fullscreen')"
             @click="toggleFullscreen"
           />
@@ -492,7 +503,6 @@ const MODE_OPTIONS = computed(() => [
           font="serif normal" leading-none tabular-nums
           flex="~ items-start justify-center gap-x-0.5 sm:gap-x-2"
           transition="colors duration-300"
-          :class="showFinished ? 'animate-pulse' : ''"
         >
           <div
             v-for="(tok, i) in clockTokens"

@@ -19,6 +19,7 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
 import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
+import RollingDigit from '~/components/ui/RollingDigit.vue'
 import { useI18n } from '~/composables/useI18n'
 
 const { t } = useI18n({
@@ -82,6 +83,9 @@ const finished = ref(false)
 const laps = ref<{ index: number, total: number }[]>([])
 const notifyOn = ref(true)
 const controlsVisible = ref(true)
+// Direction the rolling digits spin so the loop stays seamless: 'up' as time
+// grows / on the + stepper, 'down' as a countdown ticks away / on the − stepper.
+const rollDir = ref<'up' | 'down'>('down')
 
 const cdH = ref(0)
 const cdM = ref(5)
@@ -110,10 +114,6 @@ const engaged = computed(() =>
     : running.value || finished.value || remaining.value < durationMs.value - 1,
 )
 
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n))
-}
-
 function breakdown(ms: number) {
   const v = Math.max(0, ms)
   return {
@@ -129,6 +129,15 @@ interface ClockToken {
   text: string
   key?: 'h' | 'm' | 's' | 'ms'
   label?: string
+  // Per-character roll cap (digit's highest value) so each place loops within
+  // its real range: minutes/seconds tens wrap at 5 (→ 59), others at 9 (→ 99).
+  maxes?: number[]
+}
+
+// Highest value each character of a zero-padded field can show. Sexagesimal
+// fields (minutes, seconds) cap their leading digit at 5; others cap at 9.
+function digitMaxes(text: string, sexagesimal: boolean) {
+  return text.split('').map((_, i) => (sexagesimal && i === text.length - 2 ? 5 : 9))
 }
 
 // Both modes share one segmented display: H : M : S . MS, each numeric group
@@ -136,12 +145,15 @@ interface ClockToken {
 // reads `elapsed`.
 const clockTokens = computed<ClockToken[]>(() => {
   const b = breakdown(mode.value === 'stopwatch' ? elapsed.value : remaining.value)
+  const h = pad(b.h)
+  const m = pad(b.m)
+  const s = pad(b.s)
   return [
-    { type: 'num', key: 'h', text: pad(b.h), label: t('hours') },
+    { type: 'num', key: 'h', text: h, label: t('hours'), maxes: digitMaxes(h, false) },
     { type: 'sep', text: ':' },
-    { type: 'num', key: 'm', text: pad(b.m), label: t('minutes') },
+    { type: 'num', key: 'm', text: m, label: t('minutes'), maxes: digitMaxes(m, true) },
     { type: 'sep', text: ':' },
-    { type: 'num', key: 's', text: pad(b.s), label: t('seconds') },
+    { type: 'num', key: 's', text: s, label: t('seconds'), maxes: digitMaxes(s, true) },
     { type: 'sep', text: '.' },
     { type: 'num', key: 'ms', text: b.ms.toString().padStart(3, '0'), label: t('milliseconds') },
   ]
@@ -156,15 +168,51 @@ const steppersEnabled = computed(() =>
 function stepUnit(key: 'h' | 'm' | 's' | 'ms' | undefined, delta: number) {
   if (!steppersEnabled.value)
     return
+  rollDir.value = delta > 0 ? 'up' : 'down'
+  // Wrap around each field's range so stepping past either end rolls over
+  // (e.g. minutes 00 − 1 → 59, 59 + 1 → 00), matching the odometer digits.
   if (key === 'h')
-    cdH.value = clamp(cdH.value + delta, 0, 99)
+    cdH.value = (cdH.value + delta + 100) % 100
   else if (key === 'm')
-    cdM.value = clamp(cdM.value + delta, 0, 59)
+    cdM.value = (cdM.value + delta + 60) % 60
   else if (key === 's')
-    cdS.value = clamp(cdS.value + delta, 0, 59)
+    cdS.value = (cdS.value + delta + 60) % 60
   else
     return
   finished.value = false
+}
+
+// Press-and-hold on a stepper: fire once immediately, then after a short pause
+// repeat at an accelerating cadence so holding the arrow runs the value up or
+// down quickly. Pointer events drive the hold; the keyboard path is handled by
+// `onStepKey` so a held key doesn't double up with this.
+let holdTimer: ReturnType<typeof setTimeout> | undefined
+
+function startHold(key: 'h' | 'm' | 's' | 'ms' | undefined, delta: number, e: PointerEvent) {
+  if (e.button > 0 || !steppersEnabled.value)
+    return
+  stopHold()
+  stepUnit(key, delta)
+  let delay = 110
+  const run = () => {
+    stepUnit(key, delta)
+    delay = Math.max(45, delay - 12)
+    holdTimer = setTimeout(run, delay)
+  }
+  holdTimer = setTimeout(run, 420)
+}
+
+function stopHold() {
+  clearTimeout(holdTimer)
+  holdTimer = undefined
+}
+
+// Keyboard activation (Enter/Space) fires a click with detail 0; pointer
+// presses report a positive detail and are already handled by startHold, so
+// only the keyboard path steps here.
+function onStepKey(key: 'h' | 'm' | 's' | 'ms' | undefined, delta: number, e: MouseEvent) {
+  if (e.detail === 0)
+    stepUnit(key, delta)
 }
 
 const statusLabel = computed(() => {
@@ -243,6 +291,7 @@ function tick() {
 function start() {
   if (running.value)
     return
+  rollDir.value = mode.value === 'countdown' ? 'down' : 'up'
   if (mode.value === 'countdown') {
     if (remaining.value <= 0)
       return
@@ -271,10 +320,12 @@ function reset() {
   running.value = false
   cancelAnimationFrame(rafId)
   if (mode.value === 'stopwatch') {
+    rollDir.value = 'down'
     elapsed.value = 0
     laps.value = []
   }
   else {
+    rollDir.value = durationMs.value >= remaining.value ? 'up' : 'down'
     finished.value = false
     remaining.value = durationMs.value
   }
@@ -311,6 +362,7 @@ function primaryAction() {
 function applyMs(ms: number) {
   running.value = false
   cancelAnimationFrame(rafId)
+  rollDir.value = ms >= remaining.value ? 'up' : 'down'
   finished.value = false
   const total = Math.round(ms / 1000)
   cdH.value = Math.floor(total / 3600)
@@ -391,8 +443,13 @@ function pokeControls() {
 
 // Switching tabs preserves each mode's own state (elapsed / laps for the
 // stopwatch, remaining / finished for the countdown). Tab switching is blocked
-// while running, so this never interrupts an active timer.
-watch(mode, () => {
+// while running, so this never interrupts an active timer. The shared clock
+// reels roll from the leaving mode's time to the entering mode's time: up when
+// the entering time is larger, down when it is smaller.
+watch(mode, (next, prev) => {
+  const nextMs = next === 'stopwatch' ? elapsed.value : remaining.value
+  const prevMs = prev === 'stopwatch' ? elapsed.value : remaining.value
+  rollDir.value = nextMs >= prevMs ? 'up' : 'down'
   cancelAnimationFrame(rafId)
   controlsVisible.value = true
   clearTimeout(hideTimer)
@@ -426,9 +483,14 @@ useEventListener(window, 'keydown', (e: KeyboardEvent) => {
   }
 })
 
+// Releasing the pointer anywhere (or a cancelled gesture) ends an active hold.
+useEventListener(window, 'pointerup', stopHold)
+useEventListener(window, 'pointercancel', stopHold)
+
 onUnmounted(() => {
   cancelAnimationFrame(rafId)
   clearTimeout(hideTimer)
+  clearTimeout(holdTimer)
 })
 
 const MODE_OPTIONS = computed(() => [
@@ -497,88 +559,98 @@ const MODE_OPTIONS = computed(() => [
           <span text-left :class="(running || finished) ? 'text-c-accent' : ''">{{ statusLabel }}</span>
         </div>
 
-        <!-- The grand time display: per-unit columns with captions, plus
-             inline steppers for adjusting the countdown when idle. -->
-        <div
-          font="serif normal" leading-none tabular-nums
-          flex="~ items-start justify-center gap-x-0.5 sm:gap-x-2"
-          transition="colors duration-300"
-        >
+        <!-- The grand time display. Stopwatch and countdown share one persistent
+             slot and layout (the stepper rows are reserved in both modes so the
+             clock sits at an identical height). The digits are never remounted
+             on a tab switch, so the odometer reels roll their values from the
+             old mode's time to the new mode's time. -->
+        <div w-full relative flex="~ justify-center">
           <div
-            v-for="(tok, i) in clockTokens"
-            :key="i"
-            flex="~ col items-center"
+            font="serif normal" leading-none tabular-nums
+            flex="~ items-start justify-center gap-x-0.5 sm:gap-x-2"
+            transition="colors duration-300"
           >
-            <!-- Up stepper -->
             <div
-              v-if="mode === 'countdown'"
-              flex="~ items-center justify-center"
-              :class="isFullscreen ? 'h-11' : 'h-8'"
+              v-for="(tok, i) in clockTokens"
+              :key="i"
+              flex="~ col items-center"
             >
-              <button
-                v-if="tok.type === 'num' && tok.key !== 'ms'"
-                type="button"
-                :disabled="!steppersEnabled"
+              <!-- Up stepper (space reserved in both modes; button only on the countdown) -->
+              <div
                 flex="~ items-center justify-center"
-                outline-none rounded-lg size-8
-                transition="all duration-200"
-                :class="steppersEnabled
-                  ? 'text-c-text-faint hover:text-c-accent hover:bg-c-raised focus-visible:text-c-accent'
-                  : 'text-c-text-faint op-25 cursor-not-allowed'"
-                @click="stepUnit(tok.key, 1)"
+                :class="isFullscreen ? 'h-11' : 'h-8'"
               >
-                <div i-carbon-chevron-up text-base />
-              </button>
-            </div>
+                <button
+                  v-if="mode === 'countdown' && tok.type === 'num' && tok.key !== 'ms'"
+                  type="button"
+                  :disabled="!steppersEnabled"
+                  flex="~ items-center justify-center"
+                  outline-none rounded-lg size-8
+                  transition="all duration-200"
+                  :class="steppersEnabled
+                    ? 'text-c-text-faint hover:text-c-accent hover:bg-c-raised focus-visible:text-c-accent'
+                    : 'text-c-text-faint op-25 cursor-not-allowed'"
+                  @pointerdown="startHold(tok.key, 1, $event)"
+                  @click="onStepKey(tok.key, 1, $event)"
+                >
+                  <div i-carbon-chevron-up text-base />
+                </button>
+              </div>
 
-            <!-- Digits / separator -->
-            <div
-              leading-none whitespace-nowrap
-              :class="[
-                isFullscreen ? 'text-[clamp(3rem,14cqw,12rem)]' : 'text-[clamp(2rem,13cqw,5.5rem)]',
-                tok.type === 'sep'
-                  ? 'text-c-text-faint op-70'
-                  : showFinished ? 'text-c-accent' : 'text-c-text',
-              ]"
-            >
-              <template v-if="tok.type === 'num'">
+              <!-- Digits / separator -->
+              <div
+                leading-none whitespace-nowrap
+                :class="[
+                  isFullscreen ? 'text-[clamp(3rem,14cqw,12rem)]' : 'text-[clamp(2rem,13cqw,5.5rem)]',
+                  tok.type === 'sep'
+                    ? 'text-c-text-faint op-70'
+                    : showFinished ? 'text-c-accent' : 'text-c-text',
+                ]"
+              >
+                <template v-if="tok.type === 'num'">
+                  <template v-for="(ch, ci) in tok.text" :key="ci">
+                    <RollingDigit
+                      v-if="tok.key !== 'ms'"
+                      :digit="ch" :max="tok.maxes?.[ci] ?? 9" :dir="rollDir"
+                    />
+                    <RollingDigit
+                      v-else
+                      :digit="ch" :max="9" :dir="rollDir" :animate="!running"
+                    />
+                  </template>
+                </template>
+                <span v-else class="clk-sep">{{ tok.text }}</span>
+              </div>
+
+              <!-- Down stepper (space reserved in both modes; button only on the countdown) -->
+              <div
+                flex="~ items-center justify-center"
+                :class="isFullscreen ? 'h-11' : 'h-8'"
+              >
+                <button
+                  v-if="mode === 'countdown' && tok.type === 'num' && tok.key !== 'ms'"
+                  type="button"
+                  :disabled="!steppersEnabled"
+                  flex="~ items-center justify-center"
+                  outline-none rounded-lg size-8
+                  transition="all duration-200"
+                  :class="steppersEnabled
+                    ? 'text-c-text-faint hover:text-c-accent hover:bg-c-raised focus-visible:text-c-accent'
+                    : 'text-c-text-faint op-25 cursor-not-allowed'"
+                  @pointerdown="startHold(tok.key, -1, $event)"
+                  @click="onStepKey(tok.key, -1, $event)"
+                >
+                  <div i-carbon-chevron-down text-base />
+                </button>
+              </div>
+
+              <!-- Unit caption -->
+              <div mt-3 flex="~ items-center justify-center">
                 <span
-                  v-for="(ch, ci) in tok.text"
-                  :key="ci"
-                  class="clk-cell"
-                >{{ ch }}</span>
-              </template>
-              <span v-else class="clk-sep">{{ tok.text }}</span>
-            </div>
-
-            <!-- Down stepper -->
-            <div
-              v-if="mode === 'countdown'"
-              flex="~ items-center justify-center"
-              :class="isFullscreen ? 'h-11' : 'h-8'"
-            >
-              <button
-                v-if="tok.type === 'num' && tok.key !== 'ms'"
-                type="button"
-                :disabled="!steppersEnabled"
-                flex="~ items-center justify-center"
-                outline-none rounded-lg size-8
-                transition="all duration-200"
-                :class="steppersEnabled
-                  ? 'text-c-text-faint hover:text-c-accent hover:bg-c-raised focus-visible:text-c-accent'
-                  : 'text-c-text-faint op-25 cursor-not-allowed'"
-                @click="stepUnit(tok.key, -1)"
-              >
-                <div i-carbon-chevron-down text-base />
-              </button>
-            </div>
-
-            <!-- Unit caption -->
-            <div mt-3 flex="~ items-center justify-center">
-              <span
-                v-if="tok.type === 'num'"
-                text="[clamp(0.72rem,2.3cqw,1.05rem)] c-text-faint" leading-none tracking-widest font-mono uppercase
-              >{{ tok.label }}</span>
+                  v-if="tok.type === 'num'"
+                  text="[clamp(0.72rem,2.3cqw,1.05rem)] c-text-faint" leading-none tracking-widest font-mono uppercase
+                >{{ tok.label }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -684,13 +756,9 @@ const MODE_OPTIONS = computed(() => [
 }
 
 /* Fixed-width digit cells: DM Serif Display is not monospaced and lacks
-   tabular figures, so each digit is locked into an em-relative box (sized
-   against the parent font-size) to stop the time from shifting as it ticks. */
-.clk-cell {
-  display: inline-block;
-  width: 0.62em;
-  text-align: center;
-}
+   tabular figures. The numeric H/M/S/MS places roll via the RollingDigit reel
+   (which carries its own matching cell sizing); only the separators are laid
+   out here, locked into an em-relative box so the time never shifts as it ticks. */
 .clk-sep {
   display: inline-block;
   width: 0.34em;

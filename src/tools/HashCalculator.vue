@@ -42,12 +42,14 @@ import {
   shallowRef,
 } from 'vue'
 
-import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
+import Markdown from '~/components/container/Markdown.vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
 import TextareaInput from '~/components/input/TextareaInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
+import MD_EN from '~/contents/HashCalculator.en.md?raw'
+import MD_ZH from '~/contents/HashCalculator.zh.md?raw'
 
 const { t } = useI18n({
   input: ['Input', '输入'],
@@ -55,27 +57,6 @@ const { t } = useI18n({
   placeholder: ['Enter text to hash...', '输入要计算哈希的文本...'],
   algorithms: ['Algorithms', '算法'],
   empty: ['Enter text to calculate hashes', '输入文本以计算哈希'],
-  how_it_works: ['How It Works', '工作原理'],
-  how_1_title: ['Hash digest', '哈希摘要'],
-  how_1_desc: [
-    'A hash gives you a digest of the text. There is no decrypt button; the original text is not stored in the result.',
-    '哈希只是给文本算一个摘要。它没有“解密”这一步，结果里也不保存原文。',
-  ],
-  how_2_title: ['Input changes', '输入变化'],
-  how_2_desc: [
-    'Change one character and the digest should change. Keep the input and algorithm the same, and the result stays the same.',
-    '改一个字符，摘要通常就会变。输入和算法都不变，结果也会保持一致。',
-  ],
-  how_3_title: ['Legacy hashes', '旧哈希'],
-  how_3_desc: [
-    'MD5 and SHA-1 are fine for old checks and quick comparisons. Do not pick them for new security-sensitive work.',
-    'MD5 和 SHA-1 可以用来兼容旧系统或做快速比对，但不要用于新的安全敏感场景。',
-  ],
-  how_4_title: ['CRC32 checksum', 'CRC32 校验和'],
-  how_4_desc: [
-    'CRC32 is mainly for catching accidental data errors. It will not protect data from deliberate tampering.',
-    'CRC32 主要用来发现意外的数据错误，不适合拿来防篡改。',
-  ],
 })
 
 const ALGORITHMS = [
@@ -110,13 +91,6 @@ const activeAlgorithms = computed(() =>
     enabled.value.includes(a.label),
   ),
 )
-
-const explainItems = computed(() => [
-  { title: t('how_1_title'), description: t('how_1_desc') },
-  { title: t('how_2_title'), description: t('how_2_desc') },
-  { title: t('how_3_title'), description: t('how_3_desc') },
-  { title: t('how_4_title'), description: t('how_4_desc') },
-])
 
 function toggleAlgorithm(label: string) {
   const exists = enabled.value.includes(label)
@@ -204,9 +178,10 @@ watchDebounced(
       </div>
     </Panel>
 
-    <CollapsibleExplainer
-      :title="t('how_it_works')"
-      :items="explainItems"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown
+        :content="[MD_EN, MD_ZH]"
+      />
+    </Panel>
   </div>
 </template>

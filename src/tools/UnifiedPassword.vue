@@ -1,6 +1,6 @@
 <script lang="ts">
-import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
+import Markdown from '~/components/container/Markdown.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -25,6 +25,8 @@ import NumberInput from '~/components/input/NumberInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
 import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
 import { useI18n } from '~/composables/useI18n'
+import MD_EN from '~/contents/UnifiedPassword.en.md?raw'
+import MD_ZH from '~/contents/UnifiedPassword.zh.md?raw'
 
 const { t } = useI18n({
   input_label: ['Input', '输入'],
@@ -44,87 +46,7 @@ const { t } = useI18n({
   uppercase: ['Upper', '大写'],
   digits: ['Digits', '数字'],
   symbols: ['Symbols', '符号'],
-
-  how_it_works: ['How It Works', '工作原理'],
-
-  how_1_title: [
-    'Master password',
-    '主密码',
-  ],
-
-  how_1_desc: [
-    'You remember one master password. Make it strong; every generated password depends on it.',
-    '你只需要记住一个主密码。它要足够强，因为后面生成的密码都依赖它。',
-  ],
-
-  how_2_title: [
-    'Platform alias',
-    '平台别名',
-  ],
-
-  how_2_desc: [
-    'The alias changes the result. For example, github and google produce different passwords.',
-    '别名会改变结果。比如 github 和 google 会生成不同的密码。',
-  ],
-
-  how_3_title: [
-    'Local derivation',
-    '本地推导',
-  ],
-
-  how_3_desc: [
-    'Argon2id runs in the browser. The master password and alias are not sent to a server.',
-    'Argon2id 在浏览器里运行。主密码和别名不会发到服务器。',
-  ],
-
-  how_4_title: [
-    'Format password',
-    '格式化密码',
-  ],
-
-  how_4_desc: [
-    'The result is shaped by your length and character-set settings. Enabled character types are included at least once.',
-    '结果会按你设置的长度和字符集生成。启用的字符类型至少会出现一次。',
-  ],
-
-  how_5_title: [
-    'Repeat result',
-    '复现结果',
-  ],
-
-  how_5_desc: [
-    'Use the same master password, alias, length, and character sets to get the same password again.',
-    '主密码、别名、长度和字符集都一样时，就会再次得到同一个密码。',
-  ],
 })
-
-const explainItems = computed(() => [
-  {
-    title: t('how_1_title'),
-    description: t('how_1_desc'),
-    icon: 'i-carbon-password',
-  },
-  {
-    title: t('how_2_title'),
-    description: t('how_2_desc'),
-    icon: 'i-carbon-data-enrichment',
-  },
-  {
-    title: t('how_3_title'),
-    description: t('how_3_desc'),
-    icon: 'i-carbon-character-whole-number',
-  },
-  {
-    title: t('how_4_title'),
-    description: t('how_4_desc'),
-    icon: 'i-carbon-character-whole-number',
-  },
-  {
-    title: t('how_5_title'),
-    description: t('how_5_desc'),
-    icon: 'i-carbon-checkmark-outline',
-  },
-])
 
 const SALT = 'Unified_Password'
 
@@ -343,9 +265,8 @@ watch(
       </div>
     </Panel>
 
-    <CollapsibleExplainer
-      :title="t('how_it_works')"
-      :items="explainItems"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown :content="[MD_EN, MD_ZH]" />
+    </Panel>
   </div>
 </template>

@@ -17,7 +17,7 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import cronstrue from 'cronstrue/i18n'
 import { computed, reactive, watch } from 'vue'
-import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
+import Markdown from '~/components/container/Markdown.vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
 import NumberInput from '~/components/input/NumberInput.vue'
@@ -26,6 +26,8 @@ import TextInput from '~/components/input/TextInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useLocale } from '~/composables/useLocale'
+import MD_EN from '~/contents/CronExpression.en.md?raw'
+import MD_ZH from '~/contents/CronExpression.zh.md?raw'
 
 const { locale } = useLocale()
 
@@ -92,13 +94,6 @@ const PRESETS = [
 const presetValue = computed(() => {
   return PRESETS.find(p => p.value === expression.value)?.value || PRESET_PLACEHOLDER
 })
-
-const explainItems = computed(() => [
-  { title: t('how_1_title'), description: t('how_1_desc') },
-  { title: t('how_2_title'), description: t('how_2_desc') },
-  { title: t('how_3_title'), description: t('how_3_desc') },
-  { title: t('how_4_title'), description: t('how_4_desc') },
-])
 
 const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -613,9 +608,10 @@ manualInput.value = expression.value
       </div>
     </Panel>
 
-    <CollapsibleExplainer
-      :title="t('how_it_works')"
-      :items="explainItems"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown
+        :content="[MD_EN, MD_ZH]"
+      />
+    </Panel>
   </div>
 </template>

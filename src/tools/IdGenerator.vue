@@ -1,4 +1,5 @@
 <script lang="ts">
+import Markdown from '~/components/container/Markdown.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -15,7 +16,6 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue'
-import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
@@ -23,6 +23,8 @@ import NumberInput from '~/components/input/NumberInput.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
 import { useI18n } from '~/composables/useI18n'
+import MD_EN from '~/contents/IdGenerator.en.md?raw'
+import MD_ZH from '~/contents/IdGenerator.zh.md?raw'
 
 const { t } = useI18n({
   settings_label: ['Settings', '设置'],
@@ -41,27 +43,6 @@ const { t } = useI18n({
   nano_length: ['NanoID Length', 'NanoID 长度'],
   worker_id: ['Worker ID', 'Worker ID'],
   datacenter_id: ['Datacenter ID', 'Datacenter ID'],
-  how_it_works: ['How It Works', '工作原理'],
-  how_1_title: ['ID types', 'ID 类型'],
-  how_1_desc: [
-    'UUID v4 and NanoID are mostly random. UUID v3/v5 always return the same ID for the same namespace and name.',
-    'UUID v4 和 NanoID 主要靠随机数。UUID v3/v5 则相反，同一组命名空间和名称会得到同一个 ID。',
-  ],
-  how_2_title: ['Time data', '时间数据'],
-  how_2_desc: [
-    'ULID, ObjectId, Snowflake, and UUID v1 put time into the ID, so newer values usually sort after older ones.',
-    'ULID、ObjectId、Snowflake 和 UUID v1 会把时间放进 ID 里，所以新生成的值通常会排在旧值后面。',
-  ],
-  how_3_title: ['Hide time', '隐藏时间'],
-  how_3_desc: [
-    'If the creation time should stay hidden, avoid time-based IDs and use UUID v4 or NanoID instead.',
-    '如果不想让别人从 ID 里看出创建时间，就用 UUID v4 或 NanoID。',
-  ],
-  how_4_title: ['Snowflake bits', 'Snowflake 位段'],
-  how_4_desc: [
-    'Snowflake uses time, datacenter ID, worker ID, and a sequence number. Do not reuse the same worker settings on two generators.',
-    'Snowflake 用时间、Datacenter ID、Worker ID 和序列号拼出 ID。两台生成器不要用同一组 Worker 配置。',
-  ],
 })
 
 type IdType = 'uuid' | 'ulid' | 'nanoid' | 'objectid' | 'snowflake'
@@ -113,12 +94,6 @@ let lastSnowflakeTimestamp = 0n
 
 const needsNameInput = computed(() => idType.value === 'uuid' && (uuidVersion.value === 'v3' || uuidVersion.value === 'v5'))
 const outputText = computed(() => results.value.join('\n'))
-const explainItems = computed(() => [
-  { title: t('how_1_title'), description: t('how_1_desc') },
-  { title: t('how_2_title'), description: t('how_2_desc') },
-  { title: t('how_3_title'), description: t('how_3_desc') },
-  { title: t('how_4_title'), description: t('how_4_desc') },
-])
 
 function randomBytes(length: number): Uint8Array {
   return crypto.getRandomValues(new Uint8Array(length))
@@ -485,9 +460,10 @@ void generate()
       </div>
     </Panel>
 
-    <CollapsibleExplainer
-      :title="t('how_it_works')"
-      :items="explainItems"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown
+        :content="[MD_EN, MD_ZH]"
+      />
+    </Panel>
   </div>
 </template>

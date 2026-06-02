@@ -1,5 +1,6 @@
 <script lang="ts">
 import LabelField from '~/components/container/LabelField.vue'
+import Markdown from '~/components/container/Markdown.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -15,8 +16,7 @@ export const toolMeta = defineTool({
 
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
-import { computed, ref, shallowRef, watch } from 'vue'
-import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
+import { ref, shallowRef, watch } from 'vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
 import CodeEditor from '~/components/input/CodeEditor.vue'
@@ -24,6 +24,8 @@ import NumberInput from '~/components/input/NumberInput.vue'
 import CustomSelect from '~/components/input/SelectInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
 import { useI18n } from '~/composables/useI18n'
+import MD_EN from '~/contents/MockDataGenerator.en.md?raw'
+import MD_ZH from '~/contents/MockDataGenerator.zh.md?raw'
 
 const { t } = useI18n({
   model_title: ['Data Model', '数据模型'],
@@ -47,22 +49,6 @@ const { t } = useI18n({
   parse_success: [
     (n: string) => `Parsed ${n} fields successfully.`,
     (n: string) => `成功解析 ${n} 个字段。`,
-  ],
-  how_it_works: ['How It Works', '工作原理'],
-  how_1_title: ['Parse fields', '解析字段'],
-  how_1_desc: [
-    'The parser reads field names and rough types from JSON, SQL, TypeScript, Java, XML, or Go code.',
-    '解析器会从 JSON、SQL、TypeScript、Java、XML 或 Go 代码里读取字段名和大致类型。',
-  ],
-  how_2_title: ['Guess types', '猜测类型'],
-  how_2_desc: [
-    'Names like email, phone, date, id, and image are mapped to matching mock types. Other fields may need manual changes.',
-    'email、phone、date、id、image 这类字段名会匹配到对应的 Mock 类型。其他字段可能需要手动改。',
-  ],
-  how_3_title: ['Adjust fields', '调整字段'],
-  how_3_desc: [
-    'Before generating data, check the field list. Enum values are taken from the Options column, separated by commas.',
-    '生成前看一下字段列表。枚举值从 Options 里读取，用逗号分隔。',
   ],
 })
 
@@ -203,11 +189,6 @@ const outputJson = shallowRef('')
 const copied = shallowRef(false)
 const parseMessage = shallowRef('')
 const parseMessageType = shallowRef<'success' | 'error'>('success')
-const explainItems = computed(() => [
-  { title: t('how_1_title'), description: t('how_1_desc') },
-  { title: t('how_2_title'), description: t('how_2_desc') },
-  { title: t('how_3_title'), description: t('how_3_desc') },
-])
 
 // --- Drag state ---
 const dragState = ref<'idle' | 'pressing' | 'dragging'>('idle')
@@ -754,9 +735,8 @@ function downloadOutput() {
       </div>
     </Panel>
 
-    <CollapsibleExplainer
-      :title="t('how_it_works')"
-      :items="explainItems"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown :content="[MD_EN, MD_ZH]" />
+    </Panel>
   </div>
 </template>

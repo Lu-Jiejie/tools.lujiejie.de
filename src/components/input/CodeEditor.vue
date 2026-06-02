@@ -1,11 +1,8 @@
-<script lang="ts">
-import { createHighlighter } from 'shiki'
-</script>
-
 <script setup lang="ts">
 import { useLocalStorage } from '@vueuse/core'
-import { computed, nextTick, onMounted, shallowRef, watch } from 'vue'
+import { computed, nextTick, shallowRef, watch } from 'vue'
 import { isDark } from '~/composables/dark'
+import { useCodeHighlighter } from '~/composables/useCodeHighlighter'
 
 interface ThemeOption {
   label: string
@@ -45,41 +42,8 @@ const CODE_EDITOR_THEME_OPTIONS: ThemeOption[] = [
   { label: 'Material Theme', value: 'material-theme', light: 'material-theme-lighter', dark: 'material-theme-darker' },
 ]
 
-const ALL_SHIKI_THEMES = CODE_EDITOR_THEME_OPTIONS.flatMap(t => [t.light, t.dark]).filter((v, i, a) => a.indexOf(v) === i)
-const DEFAULT_LANGS = ['json', 'sql', 'typescript', 'javascript', 'java', 'xml', 'go', 'yaml', 'toml']
-
-type CodeHighlighter = Awaited<ReturnType<typeof createHighlighter>>
-
-let codeHighlighterPromise: Promise<CodeHighlighter> | null = null
-const loadedShikiLangs = new Set<string>()
-
 function uniqueValues(values: string[]) {
   return [...new Set(values.filter(Boolean))]
-}
-
-function getCodeHighlighter(initialLangs: string[]) {
-  if (!codeHighlighterPromise) {
-    const langs = uniqueValues([...DEFAULT_LANGS, ...initialLangs])
-
-    codeHighlighterPromise = createHighlighter({
-      themes: ALL_SHIKI_THEMES,
-      langs,
-    }).then((highlighter) => {
-      langs.forEach(lang => loadedShikiLangs.add(lang))
-      return highlighter
-    })
-  }
-
-  return codeHighlighterPromise
-}
-
-async function loadShikiLangs(highlighter: CodeHighlighter, langs: string[]) {
-  const missing = uniqueValues(langs).filter(lang => !loadedShikiLangs.has(lang))
-  if (missing.length === 0)
-    return
-
-  await highlighter.loadLanguage(...(missing as Parameters<typeof highlighter.loadLanguage>))
-  missing.forEach(lang => loadedShikiLangs.add(lang))
 }
 
 const THEME_OPTIONS = CODE_EDITOR_THEME_OPTIONS
@@ -91,7 +55,6 @@ const codePaddingTop = '0.75rem'
 const codeLineHeight = 'calc(0.875rem * 1.6)'
 const codeLineHeight2 = 'calc((0.875rem * 1.6) * 2)'
 
-const highlighter = shallowRef<CodeHighlighter | null>(null)
 const highlightedHtml = shallowRef('')
 const editorRef = shallowRef<HTMLTextAreaElement | null>(null)
 const rootRef = shallowRef<HTMLElement | null>(null)
@@ -117,17 +80,12 @@ const lineCount = computed(() => {
 
 const langsToLoad = computed(() => {
   return uniqueValues([
-    ...DEFAULT_LANGS,
     props.language || 'json',
     ...(props.langs || []),
   ])
 })
 
-onMounted(async () => {
-  highlighter.value = await getCodeHighlighter(langsToLoad.value)
-  await loadShikiLangs(highlighter.value, langsToLoad.value)
-  updateHighlight()
-})
+const { highlighter } = useCodeHighlighter(langsToLoad)
 
 function updateHighlight() {
   if (!highlighter.value) {
@@ -146,14 +104,6 @@ function updateHighlight() {
 }
 
 watch(() => [props.modelValue, props.language, isDark.value, highlighter.value, selectedTheme.value], updateHighlight)
-
-watch(() => langsToLoad.value.join('|'), async () => {
-  if (!highlighter.value)
-    return
-
-  await loadShikiLangs(highlighter.value, langsToLoad.value)
-  updateHighlight()
-})
 
 function syncScroll() {
   if (editorRef.value) {

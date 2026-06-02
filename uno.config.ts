@@ -58,9 +58,9 @@ export default defineConfig({
     }),
     presetWebFonts({
       fonts: {
-        sans: 'Inter', // ['DM Serif Display', 'Noto Serif Simplified Chinese']
+        sans: ['Inter', 'Noto Sans SC'],
         serif: ['DM Serif Display', 'Noto Serif SC'],
-        mono: 'Fira Code',
+        mono: ['Fira Code', 'Noto Sans SC'],
       },
     }),
   ],

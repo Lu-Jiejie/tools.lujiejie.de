@@ -1,4 +1,5 @@
 <script lang="ts">
+import Markdown from '~/components/container/Markdown.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -15,7 +16,6 @@ export const toolMeta = defineTool({
 <!-- eslint-disable import/first -->
 <script setup lang="ts">
 import { computed, shallowRef } from 'vue'
-import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
@@ -23,6 +23,8 @@ import ColorPickerInput from '~/components/input/ColorPickerInput.vue'
 import TextInput from '~/components/input/TextInput.vue'
 import AlertTip from '~/components/ui/AlertTip.vue'
 import { useI18n } from '~/composables/useI18n'
+import MD_EN from '~/contents/ColorContrastChecker.en.md?raw'
+import MD_ZH from '~/contents/ColorContrastChecker.zh.md?raw'
 
 interface Rgba {
   r: number
@@ -64,27 +66,6 @@ const { t } = useI18n({
   sample_secondary: ['Secondary note', '辅助说明'],
   sample_link: ['Learn more', '了解更多'],
   sample_icon_label: ['Notice', '提示'],
-  how_it_works: ['How It Works', '工作原理'],
-  how_1_title: ['Calculate brightness', '计算亮度'],
-  how_1_desc: [
-    'The tool converts the sRGB color to linear light, then calculates brightness from red, green, and blue.',
-    '工具会先把 sRGB 颜色转成线性光，再用红、绿、蓝三个通道算出亮度。',
-  ],
-  how_2_title: ['Compare colors', '对比颜色'],
-  how_2_desc: [
-    'Contrast is the lighter brightness divided by the darker brightness, with 0.05 added to both sides.',
-    '对比度就是较亮的亮度除以较暗的亮度，两边都会先加上 0.05。',
-  ],
-  how_3_title: ['WCAG levels', 'WCAG 等级'],
-  how_3_desc: [
-    'AA uses 4.5:1 for normal text and 3:1 for large text or UI graphics. AAA is stricter: 7:1 and 4.5:1.',
-    'AA 对普通文本要求 4.5:1，对大号文本和 UI 图形要求 3:1。AAA 更严格，分别是 7:1 和 4.5:1。',
-  ],
-  how_4_title: ['Recommendations', '推荐颜色'],
-  how_4_desc: [
-    'Recommended colors keep the background unchanged and move the foreground toward black or white until it passes.',
-    '推荐颜色会保持背景不变，只把前景色往黑色或白色方向调整，直到达到要求。',
-  ],
 })
 
 const foregroundInput = shallowRef('#666666')
@@ -99,25 +80,6 @@ const CHECKS = computed<CheckItem[]>(() => [
 ])
 
 const passedChecks = computed(() => CHECKS.value.filter(check => ratio.value >= check.required).length)
-const explainItems = computed(() => [
-  {
-    title: t('how_1_title'),
-    description: t('how_1_desc'),
-    links: [
-      { label: 'W3C WCAG Contrast Minimum', href: 'https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html' },
-    ],
-  },
-  {
-    title: t('how_2_title'),
-    description: t('how_2_desc'),
-    links: [
-      { label: 'Wikipedia: Contrast ratio', href: 'https://en.wikipedia.org/wiki/Contrast_ratio' },
-    ],
-  },
-  { title: t('how_3_title'), description: t('how_3_desc') },
-  { title: t('how_4_title'), description: t('how_4_desc') },
-])
-
 const foreground = computed(() => parseColor(foregroundInput.value))
 const background = computed(() => parseColor(backgroundInput.value))
 const hasError = computed(() => foreground.value === null || background.value === null)
@@ -457,9 +419,10 @@ function swapColors() {
       </div>
     </Panel>
 
-    <CollapsibleExplainer
-      :title="t('how_it_works')"
-      :items="explainItems"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown
+        :content="[MD_EN, MD_ZH]"
+      />
+    </Panel>
   </div>
 </template>

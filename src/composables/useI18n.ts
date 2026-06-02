@@ -27,6 +27,7 @@ const globalMessages: MessageRecord = {
   'header.toggleDark': ['Switch to dark mode', '切换到暗色模式'],
   'header.toggleLight': ['Switch to light mode', '切换到亮色模式'],
   'header.openMenu': ['Open menu', '打开菜单'],
+  'title.how_it_works': ['How It Works', '使用说明'],
 }
 
 export function useI18n(componentMessages?: MessageRecord) {

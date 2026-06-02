@@ -1,4 +1,5 @@
 <script lang="ts">
+import Markdown from '~/components/container/Markdown.vue'
 import { defineTool } from './index'
 
 export const toolMeta = defineTool({
@@ -28,7 +29,6 @@ import {
   watch,
 } from 'vue'
 
-import CollapsibleExplainer from '~/components/container/CollapsibleExplainer.vue'
 import LabelField from '~/components/container/LabelField.vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
@@ -37,6 +37,8 @@ import CustomSelect from '~/components/input/SelectInput.vue'
 import SpringSlider from '~/components/input/SliderInput.vue'
 import ToggleButtonGroup from '~/components/input/ToggleButtonGroup.vue'
 import { useI18n } from '~/composables/useI18n'
+import MD_EN from '~/contents/PixelArtConverter.en.md?raw'
+import MD_ZH from '~/contents/PixelArtConverter.zh.md?raw'
 
 /**
  * =========================================================
@@ -63,22 +65,6 @@ const { t } = useI18n({
   scale_2x: ['2x', '2x'],
   scale_4x: ['4x', '4x'],
   scale_8x: ['8x', '8x'],
-  how_it_works: ['How It Works', '工作原理'],
-  how_1_title: ['Based on giventofly/pixelit', '基于 giventofly/pixelit'],
-  how_1_desc: [
-    'This tool is powered by pixelit, an open-source JavaScript library for pixel-art conversion.',
-    '本工具基于开源 JavaScript 库 pixelit 实现像素画转换功能。',
-  ],
-  how_2_title: ['Pixelation', '像素化'],
-  how_2_desc: [
-    'The image is first downscaled to a smaller resolution based on the pixel density slider, then upscaled back with nearest-neighbor interpolation to create crisp pixel blocks.',
-    '先将图片按像素密度降低分辨率，再用最近邻插值放大，形成清晰的像素块效果。',
-  ],
-  how_3_title: ['Palette mode', '调色盘模式'],
-  how_3_desc: [
-    'Each pixel color is matched to the closest entry in the chosen palette using Euclidean color distance in RGB space.',
-    '每个像素的颜色通过 RGB 空间中的欧几里得色差距离，匹配到调色盘中最接近的颜色。',
-  ],
 })
 
 /**
@@ -271,24 +257,6 @@ const outputScaleOptions = [
   { value: '4', label: t('scale_4x') },
   { value: '8', label: t('scale_8x') },
 ]
-
-const explainItems = computed(() => [
-  {
-    title: t('how_1_title'),
-    description: t('how_1_desc'),
-    links: [
-      { label: 'GitHub: giventofly/pixelit', href: 'https://github.com/giventofly/pixelit' },
-    ],
-  },
-  {
-    title: t('how_2_title'),
-    description: t('how_2_desc'),
-  },
-  {
-    title: t('how_3_title'),
-    description: t('how_3_desc'),
-  },
-])
 
 /**
  * =========================================================
@@ -728,10 +696,9 @@ function downloadPng() {
       </div>
     </Panel>
 
-    <CollapsibleExplainer
-      :title="t('how_it_works')"
-      :items="explainItems"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown :content="[MD_EN, MD_ZH]" />
+    </Panel>
   </div>
 </template>
 

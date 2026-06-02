@@ -16,13 +16,15 @@ export const toolMeta = defineTool({
 <script setup lang="ts">
 import { useEventListener, useFullscreen, useStorage } from '@vueuse/core'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import MarkdownExplainer from '~/components/container/Markdown.vue'
+import Markdown from '~/components/container/Markdown.vue'
 import Panel from '~/components/container/Panel.vue'
 import BaseButton from '~/components/input/BaseButton.vue'
 import StepperInput from '~/components/input/StepperInput.vue'
 import RollingDigit from '~/components/ui/RollingDigit.vue'
 import { useI18n } from '~/composables/useI18n'
 import { useLocale } from '~/composables/useLocale'
+import MD_EN from '~/contents/PomodoroTimer.en.md?raw'
+import MD_ZH from '~/contents/PomodoroTimer.zh.md?raw'
 
 const { t } = useI18n({
   phase_focus: ['Focus', '专注'],
@@ -68,8 +70,6 @@ const { t } = useI18n({
   notify_focus_body: ['Nice work. Time for a break.', '做得好，休息一下吧。'],
   notify_break_title: ['Break over', '休息结束'],
   notify_break_body: ['Back to focus.', '回到专注。'],
-
-  how_title: ['How it works', '使用说明'],
 })
 
 const { locale } = useLocale()
@@ -424,29 +424,6 @@ const AUTO_OPTIONS = computed(() => [
 // Hover hint that answers "when does the long break start?".
 const dotsHint = computed(() => t('dots_hint', String(settings.value.longEvery)))
 
-// How-it-works copy as Markdown, rendered by MarkdownExplainer per locale.
-const HOW_EN = `## Work in rounds
-Focus for a set time, then take a short break. After several focus rounds a longer break begins **automatically**. The dots beneath the clock show your progress toward the next long break.
-
-## Controls
-- **Start / Pause** the current phase, **Reset** to restart it, or **Skip** to jump ahead.
-- Phases advance on their own — enable **Auto-start next phase** to roll into the next one without a tap.
-
-## Shortcuts
-- \`Space\` — start or pause · \`R\` — reset
-- \`S\` — skip · \`F\` — toggle fullscreen`
-
-const HOW_ZH = `## 以轮为单位
-专注一段固定时间后短暂休息；累计若干轮专注后会**自动**进入一次长休息。时钟下方的圆点表示距离下一次长休息的进度。
-
-## 控制
-- **开始 / 暂停**当前阶段，**重置**可重新开始，**跳过**可直接进入下一阶段。
-- 阶段会自动推进——开启**自动开始下一阶段**即可无需手动衔接。
-
-## 快捷键
-- \`空格\` 开始或暂停 · \`R\` 重置
-- \`S\` 跳过 · \`F\` 切换全屏`
-
 // Keep the idle display in sync when the active phase's duration is edited.
 watch(currentDuration, (ms) => {
   if (!running.value)
@@ -781,11 +758,12 @@ onUnmounted(() => {
     </Panel>
 
     <!-- How it works (hidden in fullscreen), rendered from Markdown -->
-    <MarkdownExplainer
-      v-if="!isFullscreen"
-      :title="t('how_title')"
-      :content="[HOW_EN, HOW_ZH]"
-    />
+    <Panel :title="t('title.how_it_works')">
+      <Markdown
+        v-if="!isFullscreen"
+        :content="[MD_EN, MD_ZH]"
+      />
+    </Panel>
   </div>
 </template>
 
